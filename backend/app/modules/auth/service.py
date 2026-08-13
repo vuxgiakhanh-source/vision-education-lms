@@ -8,6 +8,7 @@ from app.core.security import verify_password
 from app.database.database import get_db
 from fastapi import Depends
 from sqlalchemy.orm import Session
+from app.models.user import User
 
 
 class AuthService:
@@ -23,6 +24,12 @@ class AuthService:
         if not verify_password(request.password, user.hashed_password):
             raise WrongPasswordException()
         return user
+
+def create_token_payload(user: User) -> dict:
+    return {
+        "id": user.id,
+        "role": user.role
+    }
 #Để ở cuối
 def get_auth_service(db: Session = Depends(get_db)):
     repository = AuthRepository(db)
