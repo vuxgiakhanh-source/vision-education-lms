@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from 
 
 class LoginRequest(BaseModel):
     phone_number: str

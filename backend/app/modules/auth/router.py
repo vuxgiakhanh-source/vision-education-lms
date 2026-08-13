@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from .schemas import LoginRequest, LoginResponse
-from .service import AuthService, get_auth_service, create_token_payload
+from .service import AuthService, get_auth_service, create_token_payload, create_login_response
 from .exceptions import UserNotFoundException, WrongPasswordException
 from app.core.security import create_access_token
 
@@ -22,5 +22,4 @@ def login(login_request: LoginRequest,
             status_code=401,
             detail="Wrong password"
         )
-    return LoginResponse(access_token=create_access_token(create_token_payload()), token_type="bearer")
 
