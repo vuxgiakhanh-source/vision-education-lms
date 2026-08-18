@@ -32,7 +32,7 @@ class AuthService:
 def create_token_payload(user: User) -> dict:
     return {
         "id": user.id,
-        "role": user.role
+        "role": user.role.value
     }
 def create_login_response(user: User) -> LoginResponse:
     access_token = create_access_token(create_token_payload(user), timedelta(minutes=settings.access_token_expire_minutes))

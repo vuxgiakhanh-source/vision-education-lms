@@ -11,7 +11,7 @@ def login(login_request: LoginRequest,
           auth_service: AuthService = Depends(get_auth_service)
 ):
     try:
-        auth_service.login(login_request)
+        return auth_service.login(login_request)
     except UserNotFoundException:
         raise HTTPException(
             status_code=404,
