@@ -1,6 +1,8 @@
 from .exceptions import (
     UserNotFoundException,
-    WrongPasswordException
+    WrongPasswordException,
+    InvalidPhoneNumberException,
+    EmptyPasswordException
 )
 from .schemas import LoginRequest
 from .repository import AuthRepository
@@ -20,6 +22,10 @@ class AuthService:
         self.repository = repository
 
     def login(self, request: LoginRequest):
+        if len(request.phone_number) != 10:
+            raise InvalidPhoneNumberException()
+        if len(request.password) == 0:
+            raise EmptyPasswordException()
         user = self.repository.find_user_by_phone_number(
             request.phone_number
         )
