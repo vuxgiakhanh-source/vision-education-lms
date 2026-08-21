@@ -11,4 +11,5 @@ class Settings:
         self.database_url = f"mysql+pymysql://{self.mysql_user}:{self.mysql_password}@localhost:3306/{self.mysql_database}"
         self.secret_key = os.getenv("SECRET_KEY")
         self.access_token_expire_minutes =  int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+        self.allowed_origins = os.getenv("ALLOWED_ORIGINS").split(",")
 settings = Settings()

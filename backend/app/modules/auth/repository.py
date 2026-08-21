@@ -12,3 +12,13 @@ class AuthRepository:
             .filter(User.phone_number == phone_number)
             .first()
         )        
+    def find_user_by_id(
+        self,
+        user_id: int
+    ):
+        return (
+            self.db.query(User)
+            .filter(User.id == user_id)
+            .first()
+        )
+    

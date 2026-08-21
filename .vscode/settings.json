@@ -1,15 +1,21 @@
 {
-  "editor.inlineSuggest.enabled": false,
   "editor.quickSuggestions": {
-    "other": false,
-    "comments": false,
-    "strings": false
+    "comments": "off",
+    "strings": "off",
+    "other": "off"
   },
   "editor.suggestOnTriggerCharacters": false,
+  "editor.inlineSuggest.enabled": false,
+  "editor.inlineSuggest.mode": "off",
+  "editor.inlineSuggest.suppressSuggestions": true,
   "editor.tabCompletion": "off",
   "editor.snippetSuggestions": "none",
   "editor.wordBasedSuggestions": "off",
   "editor.parameterHints.enabled": false,
+  "editor.hover.enabled": "off",
+  "editor.lightbulb.enabled": "off",
+  "editor.suggest.preview": false,
+  "editor.acceptSuggestionOnEnter": "off",
   "editor.suggest.showWords": false,
   "editor.suggest.showSnippets": false,
   "editor.suggest.showClasses": false,
@@ -42,5 +48,30 @@
   "typescript.suggest.enabled": false,
   "javascript.suggest.enabled": false,
   "html.suggest.html5": false,
-  "css.suggest.enabled": false
+  "css.suggest.enabled": false,
+  "python.analysis.autoImportCompletions": false,
+  "python.autoComplete.extraPaths": [],
+  "github.copilot.enable": {
+    "*": false
+  },
+  "github.copilot.inlineSuggest.enable": false,
+  "github.copilot.editor.enableAutoCompletions": false,
+  "gemini.codeCompletions.enable": false,
+  "google.cloudcode.duetAI.enableInlineSuggestions": false,
+  "antigravity.autocomplete.enabled": false,
+  "[python]": {
+    "editor.inlineSuggest.enabled": false,
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    },
+    "editor.suggestOnTriggerCharacters": false,
+    "editor.wordBasedSuggestions": "off"
+  },
+  "geminicodeassist.enable": false,
+  "geminicodeassist.inlineSuggestions.enableAuto": false,
+  "geminicodeassist.inlineSuggestions.enable": false,
+  "geminicodeassist.displayInlineContextHint": false,
+  "geminicodeassist.autoComplete.enable": false
 }

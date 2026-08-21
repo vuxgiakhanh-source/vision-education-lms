@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { loginSchema } from '../schemas/authSchema'
 import { authService } from '../services/authService'
 import type { LoginFormData } from '../types/authTypes'
+import logoImage from '../../../assets/images/logo.webp'
 
 export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false)
@@ -28,24 +29,13 @@ export function LoginForm() {
 
     return (
         <div className="w-full max-w-[430px] bg-white rounded-[32px] p-8 sm:p-9 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col items-center border border-white">
-            {/* Logo VE Ribbon Gradient */}
-            <div className="mb-4">
-                <svg className="w-16 h-12" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="ve-grad-v" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#1E40AF" />
-                            <stop offset="50%" stopColor="#3B82F6" />
-                            <stop offset="100%" stopColor="#6366F1" />
-                        </linearGradient>
-                        <linearGradient id="ve-grad-e" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#3B82F6" />
-                            <stop offset="50%" stopColor="#6366F1" />
-                            <stop offset="100%" stopColor="#A855F7" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M12 18L36 58L56 18H44L36 38L24 18H12Z" fill="url(#ve-grad-v)" />
-                    <path d="M48 18H84C88 18 90 20 90 23V27C90 30 88 32 84 32H62V36H80C84 36 86 38 86 41V45C86 48 84 50 80 50H62V54H84C88 54 90 56 90 59V63H48V18Z" fill="url(#ve-grad-e)" />
-                </svg>
+            {/* Logo VE chính thức */}
+            <div className="mb-3">
+                <img
+                    src={logoImage}
+                    alt="Vision Education Logo"
+                    className="h-12 w-auto object-contain drop-shadow-sm"
+                />
             </div>
 
             {/* Header */}

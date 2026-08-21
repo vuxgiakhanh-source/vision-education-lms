@@ -3,7 +3,7 @@ from .schemas import LoginRequest, LoginResponse
 from .service import AuthService, get_auth_service, create_token_payload, create_login_response
 from .exceptions import UserNotFoundException, WrongPasswordException, InvalidPhoneNumberException, EmptyPasswordException
 from app.core.security import create_access_token
-
+from app.core.logger import logger
 auth_router = APIRouter()
 
 @auth_router.post("/login")
@@ -23,11 +23,13 @@ def login(login_request: LoginRequest,
             detail="Mật khẩu hoặc số điện thoại không đúng"
         )
     except InvalidPhoneNumberException:
+        logger.warning(f"Sdt: {login_request.phone_number} không hợp lệ")
         raise HTTPException(
             status_code=400,
             detail="Số điện thoại phải có đúng 10 chữ số"
         )
     except EmptyPasswordException:
+        logger.warning(f"Đăng nhập thất bại: Mật khẩu không được để trống :)")
         raise HTTPException(
             status_code=400,
             detail="Mật khẩu không được để trống"

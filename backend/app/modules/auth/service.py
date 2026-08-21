@@ -15,6 +15,7 @@ from app.core.security import create_access_token
 from app.modules.auth.schemas import LoginResponse
 from datetime import timedelta
 from app.core.config import settings
+from app.core.logger import logger
 
 
 class AuthService:
@@ -30,10 +31,19 @@ class AuthService:
             request.phone_number
         )
         if user is None:
+            logger.warning(f"Đăng nhập thất bại: Không tìm thấy tài khoản SDT {request.phone_number}")
             raise UserNotFoundException()
         if not verify_password(request.password, user.hashed_password):
+            logger.warning("Đăng nhập thất bại: Mật khẩu sai con ơi")
             raise WrongPasswordException()
+        logger.info(f"Đăng nhập thành công: ID {request.phone_number}, Sdt {request.phone_number}")
         return create_login_response(user)
+    def get_user_by_id(self, user_id: int):
+        user = self.repository.find_user_by_id(user_id)
+        if not user:
+            logger.warning(f"Tìm kiếm thất bại: Không tìm thấy tài khoản ID {user_id}")
+            raise UserNotFoundException()
+        return self.repository.find_user_by_id(user_id)
 
 def create_token_payload(user: User) -> dict:
     return {
@@ -49,6 +59,8 @@ def create_login_response(user: User) -> LoginResponse:
 def get_auth_service(db: Session = Depends(get_db)):
     repository = AuthRepository(db)
     return AuthService(repository)
+
+
 
 
     
