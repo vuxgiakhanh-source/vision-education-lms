@@ -23,5 +23,9 @@ def create_access_token(payload: dict, expires_delta: timedelta):
     SECRET_KEY = settings.secret_key
     access_token = jwt.encode(copy_payload, SECRET_KEY, ALGORITHM)
     return access_token
-
+#4 Giải mã token truy cập
+def decode_access_token(access_token: str) -> dict:
+    SECRET_KEY = settings.secret_key
+    payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+    return payload
 

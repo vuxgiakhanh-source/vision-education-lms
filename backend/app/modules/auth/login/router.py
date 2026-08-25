@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
-from .schemas import LoginRequest, LoginResponse
-from .service import AuthService, get_auth_service, create_token_payload, create_login_response
+from .schemas import LoginRequest
+from .service import LoginService, get_auth_service, create_token_payload, create_login_response
 from .exceptions import UserNotFoundException, WrongPasswordException, InvalidPhoneNumberException, EmptyPasswordException
 from app.core.security import create_access_token
 from app.core.logger import logger
-auth_router = APIRouter()
+login_router = APIRouter()
 
-@auth_router.post("/login")
+@login_router.post("/login")
 def login(login_request: LoginRequest, 
-          auth_service: AuthService = Depends(get_auth_service)
+          auth_service: LoginService = Depends(get_auth_service)
 ):
     try:
         return auth_service.login(login_request)

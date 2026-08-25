@@ -4,22 +4,21 @@ from .exceptions import (
     InvalidPhoneNumberException,
     EmptyPasswordException
 )
-from .schemas import LoginRequest
-from .repository import AuthRepository
+from .schemas import LoginRequest, LoginResponse
+from .repository import LoginRepository
 from app.core.security import verify_password
 from app.database.database import get_db
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.core.security import create_access_token
-from app.modules.auth.schemas import LoginResponse
 from datetime import timedelta
 from app.core.config import settings
 from app.core.logger import logger
 
 
-class AuthService:
-    def __init__(self, repository: AuthRepository):
+class LoginService:
+    def __init__(self, repository: LoginRepository):
         self.repository = repository
 
     def login(self, request: LoginRequest):
@@ -57,8 +56,8 @@ def create_login_response(user: User) -> LoginResponse:
 
 #Để ở cuối
 def get_auth_service(db: Session = Depends(get_db)):
-    repository = AuthRepository(db)
-    return AuthService(repository)
+    repository = LoginRepository(db)
+    return LoginService(repository)
 
 
 

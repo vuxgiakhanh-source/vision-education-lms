@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
-class AuthRepository:
+class LoginRepository:
     def __init__(self, db: Session):
         self.db = db
     def find_user_by_phone_number(
