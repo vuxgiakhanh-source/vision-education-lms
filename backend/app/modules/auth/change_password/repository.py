@@ -1,5 +1,4 @@
 from app.models.user import User
-from    .exceptions import EmptyOldPasswordException, EmptyNewPasswordException, PasswordUnchangedException
 from sqlalchemy.orm import Session
 
 class ChangePasswordRepository:

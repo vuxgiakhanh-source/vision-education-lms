@@ -1,6 +1,6 @@
-import bgImage from '../../../assets/images/background.webp'
-import laptopImage from '../../../assets/images/laptop.webp'
-import notebookImage from '../../../assets/images/notebook.webp'
+import bgImage from '../../../../assets/images/background.webp'
+import laptopImage from '../../../../assets/images/laptop.webp'
+import notebookImage from '../../../../assets/images/notebook.webp'
 import { LoginForm } from "../components/LoginForm"
 
 export function LoginPage() {

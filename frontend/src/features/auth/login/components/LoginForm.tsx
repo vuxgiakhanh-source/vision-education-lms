@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from 'react-router-dom'
-import { loginSchema } from '../schemas/authSchema'
-import { authService } from '../services/authService'
-import type { LoginFormData } from '../types/authTypes'
-import logoImage from '../../../assets/images/logo.webp'
+import { Link, useNavigate } from 'react-router-dom'
+import { loginSchema } from '../schemas/loginSchema'
+import { authService } from '../services/loginService'
+import type { LoginFormData } from '../types/loginTypes'
+import logoImage from '../../../../assets/images/logo.webp'
 
 export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false)
+
+    const navigate = useNavigate()
 
     const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema)
@@ -18,8 +20,14 @@ export function LoginForm() {
         try {
             const res = await authService.login(data)
             localStorage.setItem('access_token', res.access_token)
-            console.log('Đăng nhập thành công! Token: ', res.access_token)
-        } catch (error: any) {
+            if (res.must_change_password) {
+                navigate('/change-password')
+            }
+            else {
+                navigate('/dashboard')
+            }
+        } 
+        catch (error: any) {
             console.log('Đăng nhập thất bại: ', error)
             setError("root", {
                 message: error.message

@@ -1,9 +1,7 @@
 from .exceptions import (
-    EmptyOldPasswordException, 
     EmptyNewPasswordException, 
     PasswordUnchangedException,
-    UserNotFoundException,
-    WrongOldPasswordException
+    UserNotFoundException
 )
 from .schemas import ChangePasswordRequest, ChangePasswordResponse
 from .repository import ChangePasswordRepository
@@ -22,16 +20,8 @@ class ChangePasswordService:
         user = self.repository.find_user_by_id(user_id)
         if not user:
             raise UserNotFoundException()
-        if not user.must_change_password:
-            if not request.old_password:
-                raise EmptyOldPasswordException()
-            if request.old_password == request.new_password:
-                raise PasswordUnchangedException()
-            if not verify_password(request.old_password, user.hashed_password):
-                raise WrongOldPasswordException()
-        else:
-            if verify_password(request.new_password, user.hashed_password):
-                raise PasswordUnchangedException()
+        if verify_password(request.new_password, user.hashed_password):
+            raise PasswordUnchangedException()
         new_hashed_password = hash_password(request.new_password)
         self.repository.change_password(user, new_hashed_password)
         return create_change_password_response()

@@ -6,4 +6,5 @@ export type LoginFormData = {
 export type LoginResponse = {
     access_token: string
     token_type: string
+    must_change_password: boolean
 }
