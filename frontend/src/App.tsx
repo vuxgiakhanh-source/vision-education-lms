@@ -1,10 +1,16 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { LoginPage } from './features/auth/login/pages/LoginPage'
-import { BrowserRouter } from 'react-router-dom'
+import { ChangePasswordPage } from './features/auth/change_password/pages/ChangePasswordPage'
 
 export default function App() {
     return (
         <BrowserRouter>
-            <LoginPage />
+            <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/change-password" element={<ChangePasswordPage />} />
+                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
         </BrowserRouter>
     )
 }
