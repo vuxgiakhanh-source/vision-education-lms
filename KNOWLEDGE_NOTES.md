@@ -1,204 +1,723 @@
-# 📚 BÍ KÍP TOÀN TẬP: GIẢI MÃ KIẾN TRÚC & CÚ PHÁP LẠ (VISION LMS)
+# 📚 BI KIP TOAN TAP: VISION LMS - BACKEND & FRONTEND
 
-> Tài liệu này được viết theo cách **dễ hiểu nhất**, giải thích tường tận từ:
-> 1. Tại sao lại đẻ ra nhiều thư mục lồng nhau như vậy?
-> 2. Các file `router`, `service`, `repository`, `schemas`, `exceptions` sinh ra để làm gì?
-> 3. Giải mã tất cả các "cú pháp lạ", thư viện bí ẩn trong toàn bộ dự án.
+> Tai lieu nay tong hop toan bo thu vien, cong cu, cu phap duoc dung trong du an.
 
 ---
 
-## 🗺️ PHẦN 1: BẢN ĐỒ CẤU TRÚC THƯ MỤC (TẠI SAO LỒNG NHAU LẮM THẾ?)
-
-Dự án này được thiết kế theo chuẩn **Modular Architecture (Kiến trúc theo Module)** của các công ty công nghệ lớn.
-
-### 1. Phía Backend (`backend/app/`)
-
-```text
-backend/app/
-├── core/                  # 🧠 Não bộ & Trái tim (Dùng chung cho toàn bộ dự án)
-│   ├── config.py          # Đọc file .env (DB_URL, SECRET_KEY...)
-│   ├── security.py        # Các hàm băm mật khẩu (Bcrypt), tạo & giải mã JWT Token
-│   ├── dependencies.py    # Các "bộ lọc" dùng chung (Lấy user_id từ Token, check role...)
-│   └── logger.py          # Hệ thống ghi log (In màu ra terminal, ghi ra file)
-│
-├── database/              # 🔌 Cầu nối với Cơ sở dữ liệu
-│   └── database.py        # Tạo kết nối SQLAlchemy, hàm get_db() quản lý đóng/mở kết nối
-│
-├── models/                # 🗄️ Bảng Database thực tế (ORM Models)
-│   └── user.py            # Bảng 'users' trong database có các cột gì (id, phone, password...)
-│
-└── modules/               # 📦 Các tính năng nghiệp vụ cụ thể (Chia theo từng chức năng)
-    └── auth/              # Module xác thực người dùng
-        ├── login/         # Tính năng Đăng nhập
-        └── change_password/ # Tính năng Đổi mật khẩu
-```
+## PHaN BACKEND
 
 ---
 
-### 2. Bên trong mỗi Module con: 5 File này chia nhau làm gì?
+## 1. Pydantic - Validate du lieu
 
-Ví dụ trong `modules/auth/login/` bạn thấy có 5 file:
+**La gi?** Thu vien Python de dinh nghia 'khuon' du lieu.
 
-```mermaid
-flowchart TD
-    A[Client Request] -->|1. Gửi dữ liệu JSON| B[schemas.py<br/>'Bộ lọc kiểm tra form']
-    B -->|2. Dữ liệu chuẩn| C[router.py<br/>'Cửa tiếp tân HTTP']
-    C -->|3. Gọi hàm xử lý| D[service.py<br/>'Bộ não xử lý logic']
-    D -->|4. Cần tìm user| E[repository.py<br/>'Thủ kho lục Database']
-    E -->|5. Trả kết quả| D
-    D -->|6. Nếu sai quăng lỗi| F[exceptions.py<br/>'Bộ định nghĩa các loại lỗi']
-    F -->|7. Báo lỗi ra ngoài| C
-```
-
-| Tên File | Vai trò đời thực | Nhiệm vụ cụ thể trong code |
-| :--- | :--- | :--- |
-| **`schemas.py`** | **Tờ phiếu điền thông tin** | Dùng `Pydantic` định nghĩa: Form gửi lên gồm những trường gì (VD: `phone_number`, `password`), kiểu dữ liệu gì. |
-| **`router.py`** | **Nhân viên tiếp tân** | Nhận HTTP Request từ bên ngoài (`@router.post("/login")`). Không làm việc nặng, chỉ nhận request rồi chuyển tiếp cho Service. |
-| **`service.py`** | **Bộ não xử lý logic** | Quyết định logic: Kiểm tra SĐT có đủ 10 số không? Mật khẩu có khớp không? Tạo token JWT trả về. |
-| **`repository.py`** | **Thủ kho dữ liệu** | Chỉ làm việc với Database: Viết câu lệnh SQLAlchemy tìm user theo SĐT, tìm user theo ID. |
-| **`exceptions.py`** | **Danh sách các loại lỗi** | Định nghĩa các lỗi riêng của tính năng (VD: `UserNotFoundException`, `WrongPasswordException`). |
-
-> 🎯 **Tại sao không viết hết vào 1 file cho nhanh?**
-> * Viết 1 file thì ban đầu nhanh, nhưng khi dự án lên 100 API sẽ thành "núi rác" 5000 dòng, không ai dám sửa.
-> * Chia 5 file: Lỗi ở đâu vào đúng file đó sửa. Sau này muốn đổi từ MySQL sang MongoDB **chỉ cần sửa file `repository.py`**, các file còn lại giữ nguyên 100%!
-
----
-
-### 3. Phía Frontend (`frontend/src/`)
-
-Frontend cũng được chia theo từng **Tính năng (Feature-based)** tương ứng:
-
-```text
-frontend/src/
-├── config/           # Cấu hình biến môi trường (VITE_API_URL...)
-├── lib/              # Cấu hình các thư viện bên thứ 3 (axios.ts...)
-└── features/         # Các màn hình/tính năng
-    └── auth/         # Tính năng Auth
-        ├── components/  # Các khối giao diện nhỏ (LoginForm.tsx, InputField.tsx...)
-        ├── pages/       # Trang hoàn chỉnh gắn vào Router (LoginPage.tsx...)
-        ├── services/    # Các hàm gọi API Backend (authService.ts...)
-        ├── schemas/     # Validate form phía frontend (Zod schema...)
-        └── types/       # Kiểu dữ liệu TypeScript (User, LoginResponse...)
-```
-
----
-
-## 🪄 PHẦN 2: GIẢI MÃ CÁC CÚ PHÁP & THƯ VIỆN "LẠ"
-
-### 1. `@router.post("/login")` (Decorator trong Python)
-* **Ý nghĩa:** Dấu `@` gọi là **Decorator**. 
-* **Tác dụng:** Nó "dán nhãn" cho hàm bên dưới. Báo cho FastAPI biết: *"Khi có ai gửi phương thức `POST` tới đường dẫn `/login`, hãy chạy hàm này!"*.
-
----
-
-### 2. `Depends(...)` (Dependency Injection - Tiêm phụ thuộc)
-* **Ví dụ:** `auth_service: LoginService = Depends(get_auth_service)` hoặc `user_id = Depends(get_current_user_id)`
-* **Ý nghĩa:** Bạn không cần phải tự viết code khởi tạo `auth_service = LoginService(...)` trong hàm.
-* **FastAPI tự làm:** FastAPI sẽ tự chạy hàm trong `Depends()`, lấy kết quả ra và **nhét thẳng vào tham số** cho bạn dùng.
-
----
-
-### 3. `HTTPBearer()` & `credentials.credentials`
-* **Ý nghĩa:** Công cụ đọc Header Authorization tự động.
-* **FastAPI tự làm:** Tự thò tay vào Header lấy chuỗi `Bearer <token>`, cắt bỏ chữ `"Bearer "` và ném chuỗi token sạch vào `credentials.credentials`. Nếu không có token, nó **tự động chặn lại và trả lỗi 403/401** ngay lập tức.
-
----
-
-### 4. `yield` trong `get_db()` (Khác gì với `return`?)
 ```python
+from pydantic import BaseModel
+from typing import Optional
+
+class LoginRequest(BaseModel):
+    phone_number: str
+    password: str
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    must_change_password: bool
+
+class UserProfile(BaseModel):
+    full_name: str
+    age: Optional[int] = None
+    is_active: bool = True
+```
+
+**Khi nao dung?** Luon dung de dinh nghia Request (nhan vao) va Response (tra ra).
+
+---
+
+## 2. FastAPI - Web Framework
+
+### Router - Khai bao endpoint
+
+```python
+from fastapi import APIRouter
+router = APIRouter()
+
+@router.get('/users')
+def get_users(): ...
+
+@router.post('/login')
+def login(request: LoginRequest): ...
+
+@router.put('/change-password')
+def change_password(request: ChangePasswordRequest): ...
+
+@router.delete('/users/{user_id}')
+def delete_user(user_id: int): ...
+```
+
+### Depends - Dependency Injection (QUAN TRONG)
+
+```python
+from fastapi import Depends
+
+# Dinh nghia dependency
+def get_current_user_id(credentials = Depends(security)) -> int:
+    return user_id
+
+# Dung trong router - truyen TEN HAM, KHONG co ()
+@router.put('/change-password')
+def change_password(
+    request: ChangePasswordRequest,
+    user_id: int = Depends(get_current_user_id),
+    service: ChangePasswordService = Depends(get_auth_service)
+): ...
+```
+
+> QUY TAC VANG: Depends(ten_ham) - KHONG viet Depends(ten_ham())
+
+### HTTPException - Tra loi HTTP
+
+```python
+from fastapi import HTTPException, status
+
+raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token khong hop le')
+raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Du lieu sai')
+raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Khong tim thay')
+```
+
+### HTTPBearer - Xac thuc Bearer Token
+
+```python
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+security = HTTPBearer()
+
+def get_current_user_id(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+) -> int:
+    token = credentials.credentials  # JWT sach (da cat 'Bearer ')
+    ...
+```
+
+> FastAPI tu dong: tim header 'Authorization: Bearer TOKEN', cat 'Bearer ', neu khong co -> tra 403
+
+---
+
+## 3. SQLAlchemy - ORM Database
+
+### Khai bao Model
+
+```python
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import Integer, Column, String, Boolean, Enum, DateTime
+
+class Base(DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    full_name = Column(String(255), nullable=False)
+    phone_number = Column(String(255), nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    role = Column(Enum(UserRole), nullable=False)
+    must_change_password = Column(Boolean, default=True, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+```
+
+### Ket noi Database & Session
+
+```python
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+engine = create_engine("mysql+pymysql://user:password@localhost:3306/dbname")
+SessionLocal = sessionmaker(bind=engine)
+
 def get_db():
     db = SessionLocal()
     try:
-        yield db      # 1. Tạm dừng ở đây, đưa db cho API dùng
+        yield db   # cap db cho API dung
     finally:
-        db.close()    # 2. Sau khi API chạy xong (kể cả bị lỗi), tự động dọn dẹp đóng kết nối!
+        db.close() # tu dong dong du co loi hay khong
 ```
-* **Tại sao không dùng `return`?** Nếu `return`, hàm sẽ kết thúc ngay và không bao giờ chạy được dòng `db.close()`. Dùng `yield` giúp bảo vệ hệ thống **không bao giờ bị tràn RAM hoặc nghẽn kết nối database**.
+
+> Tai sao yield thay return?
+> return -> ham ket thuc ngay, khong bao gio chay db.close() -> tran ket noi.
+> yield -> tam dung, dua db ra dung, sau khi xong moi chay db.close().
+
+### CRUD co ban
+
+```python
+# READ - Tim 1 record
+user = db.query(User).filter(User.id == user_id).first()
+
+# READ - Tim nhieu records
+users = db.query(User).filter(User.is_active == True).all()
+
+# UPDATE - Sua record
+user.hashed_password = new_hashed_password
+db.commit()   # phai commit de luu xuong database
+
+# CREATE - Tao moi
+new_user = User(full_name="Nguyen Van A")
+db.add(new_user)
+db.commit()
+db.refresh(new_user)  # lay lai data sau insert
+
+# DELETE
+db.delete(user)
+db.commit()
+```
 
 ---
 
-### 5. `Bcrypt` (Salt là cái quái gì?)
-* **Tại sao không lưu mật khẩu thô vào Database?** Nếu Database bị lộ, hacker sẽ thấy hết mật khẩu của người dùng.
-* **Salt (Muối):** Là một chuỗi ký tự ngẫu nhiên được thêm vào mật khẩu trước khi băm.
-* **Tác dụng:** Cùng là mật khẩu `"123456"`, nhưng mỗi người dùng sẽ được trộn với một hạt muối khác nhau, tạo ra 2 chuỗi băm hoàn toàn khác nhau -> Hacker không thể dùng bảng tra cứu sẵn (Rainbow Table) để dịch ngược mật khẩu.
+## 4. bcrypt - Ma hoa mat khau
+
+**La gi?** Thuat toan bam mat khau mot chieu, khong the giai ma nguoc.
+
+```python
+from bcrypt import gensalt, hashpw, checkpw
+
+# Bam mat khau (luu vao database)
+def hash_password(password: str) -> str:
+    password_bytes = password.encode("utf-8")
+    hashed_bytes = hashpw(password_bytes, gensalt())
+    return hashed_bytes.decode("utf-8")
+
+# Xac thuc mat khau khi dang nhap
+def verify_password(password: str, hashed_password: str) -> bool:
+    return checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
+```
+
+> Tai sao encode/decode? bcrypt lam viec voi bytes, khong lam viec voi str.
+> .encode('utf-8') -> str -> bytes
+> .decode('utf-8') -> bytes -> str
 
 ---
 
-### 6. `JWT` (JSON Web Token - `jwt.encode` & `jwt.decode`)
-* **Bản chất:** JWT giống như một **"Chiếc thẻ căn cước đóng dấu đỏ"**.
-* **`create_access_token` (`jwt.encode`):** Đóng gói thông tin `{"id": 1, "role": "student"}` + thời hạn hết hạn (`exp`) + ký tên bằng con dấu bí mật `SECRET_KEY`.
-* **`decode_access_token` (`jwt.decode`):** Soi lại chữ ký bằng `SECRET_KEY`. Nếu chuẩn dấu mộc thì mở ruột ra đọc `user_id`. Nếu bị kẻ gian sửa dù chỉ 1 ký tự, chữ ký sẽ hỏng ngay và bị từ chối.
+## 5. python-jose - JWT Token
+
+**La gi?** Thu vien tao va giai ma JWT (JSON Web Token) - loai 'the can cuoc dien tu'.
+
+### Cau truc JWT
+
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9   <- Header (thuat toan)
+.eyJpZCI6MSwicm9sZSI6InN0dWRlbnQifQ    <- Payload (du lieu)
+.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV   <- Signature (chu ky)
+```
+
+### Cu phap
+
+```python
+from jose import jwt, JWTError
+from datetime import datetime, timezone, timedelta
+
+ALGORITHM = "HS256"
+
+# Tao token
+def create_access_token(payload: dict, expires_delta: timedelta) -> str:
+    copy_payload = payload.copy()
+    copy_payload["exp"] = datetime.now(timezone.utc) + expires_delta
+    return jwt.encode(copy_payload, SECRET_KEY, ALGORITHM)
+
+# Giai ma token
+def decode_access_token(token: str) -> dict:
+    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    # Tu dong raise JWTError neu: het han / bi sua / sai format
+
+# Bat loi token
+try:
+    payload = decode_access_token(token)
+except JWTError:
+    raise HTTPException(status_code=401, detail="Token khong hop le")
+```
+
+### JWTError bat nhung loi nao?
+
+| Tinh huong | Ket qua |
+|---|---|
+| Token het han (exp da qua) | JWTError |
+| Token bi sua noi dung | JWTError |
+| Token ky boi SECRET_KEY khac | JWTError |
+| Token sai format | JWTError |
 
 ---
 
-### 7. `Axios Interceptors` (Ở Frontend)
-* **Ý nghĩa:** Là một **"Trạm thu phí tự động"** trước khi request bay ra khỏi trình duyệt hoặc khi response trả về.
-* **Request Interceptor:** Tự động lấy Token từ `localStorage` và dán vào Header `Authorization: Bearer <token>` cho mọi request mà bạn không cần phải viết tay lặp lại ở 100 hàm gọi API.
-* **Response Interceptor:** Tự động bắt lỗi từ Backend (như Token hết hạn, sai mật khẩu) để thông báo đẹp mắt ra giao diện.
+## 6. python-dotenv - Bien moi truong
+
+**La gi?** Doc file .env va nap vao bien moi truong Python.
+
+```python
+from dotenv import load_dotenv
+import os
+
+load_dotenv()   # doc file .env, nap vao os.environ
+
+value = os.getenv("SECRET_KEY")
+value = int(os.getenv("EXPIRE_MINUTES"))
+value = os.getenv("ORIGINS").split(",")
+```
+
+### Trong du an nay
+
+```python
+# backend/app/core/config.py
+class Settings:
+    def __init__(self):
+        self.mysql_user = os.getenv("MYSQL_USER")
+        self.mysql_password = os.getenv("MYSQL_PASSWORD")
+        self.mysql_database = os.getenv("MYSQL_DATABASE")
+        self.database_url = f"mysql+pymysql://{self.mysql_user}:{self.mysql_password}@localhost:3306/{self.mysql_database}"
+        self.secret_key = os.getenv("SECRET_KEY")
+        self.access_token_expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+        self.allowed_origins = os.getenv("ALLOWED_ORIGINS").split(",")
+
+settings = Settings()  # singleton - import va dung o moi noi
+```
+
+> LUON them .env vao .gitignore - khong bao gio commit file nay len Git.
 
 ---
 
-## 💡 BẢNG TRA CỨU NHANH TỪ KHÓA LẠ
+## 7. loguru - He thong Log
 
-| Cú pháp / Từ khóa | Nó là cái gì? | Hiểu nôm na là gì? |
-| :--- | :--- | :--- |
-| `BaseModel` | Thư viện **Pydantic** | Khuôn đúc dữ liệu, tự động kiểm tra xem dữ liệu gửi lên đúng kiểu không. |
-| `Session` / `SessionLocal` | Thư viện **SQLAlchemy** | Một phiên làm việc với Database (giống như mở 1 tab kết nối SQL). |
-| `status_code=401` | Mã trạng thái HTTP | Báo lỗi: *"Chưa đăng nhập hoặc Token không hợp lệ"*. |
-| `status_code=403` | Mã trạng thái HTTP | Báo lỗi: *"Đã đăng nhập nhưng không có quyền truy cập"* (VD: Học sinh đòi vào trang Admin). |
-| `status_code=400` | Mã trạng thái HTTP | Báo lỗi: *"Dữ liệu gửi lên bị sai format"* (VD: SĐT không đủ 10 số). |
-| `sub` (Subject trong JWT) | Chuẩn quốc tế của JWT | Trường chuẩn lưu ID hoặc danh tính chính của người dùng bên trong Token. |
-| `KaTeX` | Thư viện Toán học | Giúp hiển thị công thức Toán/Lý/Hóa đẹp như sách giáo khoa trên Web. |
+**La gi?** Thu vien log dep hon print(), in mau ra terminal va ghi vao file.
 
----
+```python
+from loguru import logger
 
-## 🔐 PHẦN 3: TỔNG HỢP KIẾN THỨC VỪA HỌC (AUTHENTICATION & DEPENDENCIES)
+logger.info("Dang nhap thanh cong: ID 1")
+logger.warning("SDT khong hop le")
+logger.error("Loi ket noi database")
+logger.debug("Dang xu ly request...")
 
-### 1. Tại sao không lấy token từ `create_access_token` mà phải giải mã lại qua `dependencies.py`?
-* **Quy luật In vé vs Soát vé:**
-  * **`create_access_token` (Nhà máy in vé):** Chỉ chạy **1 lần duy nhất** khi đăng nhập thành công. Tạo ra token rồi đưa cho Client (trình duyệt) giữ trong `localStorage`. Server **không lưu token vào RAM hay biến toàn cục** (tính chất Stateless của RESTful API).
-  * **`get_current_user_id` (Cửa soát vé):** Chạy ở **mọi request sau đó** (đổi mật khẩu, xem khóa học, nộp bài...). Client phải tự kẹp "vé" vào Header gửi lên để Server soi và xác định: *"Request này là của User ID nào?"*.
+# Dung f-string nhu binh thuong
+logger.info(f'User ID {user.id} da dang nhap')
+```
 
----
+### Cau hinh cac handler
 
-### 2. Bộ đôi `HTTPBearer()` và `HTTPAuthorizationCredentials`
-* **`HTTPBearer()` (Máy quét cổng):** 
-  * Tự động tìm Header `Authorization: Bearer <token>`.
-  * Nếu không có Header hoặc sai cú pháp `Bearer `, **chặn lại ngay lập tức và trả lỗi 401/403**.
-  * Tự động hiển thị nút ổ khóa 🔒 trên Swagger UI (`/docs`).
-* **`HTTPAuthorizationCredentials` (Chiếc phong bì đựng vé):**
-  * Object chứa dữ liệu sau khi quét:
-    * `credentials.scheme` = `"Bearer"`
-    * `credentials.credentials` = **Chuỗi token JWT sạch nguyên bản** để đem đi giải mã.
+```python
+logger.remove()   # xoa handler mac dinh
 
----
+# Handler 1: In ra terminal co mau
+logger.add(sys.stdout, colorize=True, level="INFO")
 
-### 3. `JWTError` bắt những lỗi gì?
-Hàm `decode_access_token` sẽ quăng lỗi `JWTError` trong 3 tình huống:
-1. ⏰ **Token hết hạn (`exp`):** Thời gian sống của token đã trôi qua.
-2. 🕵️‍♂️ **Token giả mạo / Sai chữ ký:** Kẻ gian tự sửa nội dung hoặc token không được ký bởi `SECRET_KEY` của hệ thống.
-3. 💥 **Token hỏng / Sai format:** Gửi lên chuỗi rác không đúng cấu trúc 3 phần `header.payload.signature`.
+# Handler 2: Ghi vao file app.log, xoay khi >10MB
+logger.add("logs/app.log", level="INFO",
+    rotation="10 MB", retention="10 days", compression="zip")
+
+# Handler 3: Ghi rieng loi vao error.log, co stack trace
+logger.add("logs/error.log", level="ERROR",
+    rotation="10 MB", retention="30 days", backtrace=True, diagnose=True)
+```
 
 ---
 
-### 4. Quy tắc vàng khi dùng `Depends(...)` trong FastAPI
-* **Luôn truyền TÊN HÀM, KHÔNG có ngoặc tròn `()`:**
-  * ✅ Đúng: `user_id: int = Depends(get_current_user_id)`
-  * ❌ Sai: `user_id: int = Depends(get_current_user_id())`
-* **Cơ chế Tiêm tự động (Sub-dependency Chaining):**
-  * Bạn không cần tự gọi `get_current_user_id(...)` hay tự truyền `credentials` vào.
-  * FastAPI sẽ tự phân tích tham số từ dưới lên: `HTTPBearer` -> `credentials` -> `get_current_user_id` -> `user_id` -> nhét vào Router!
+## 8. Python Enum - Kieu liet ke
+
+**La gi?** Dinh nghia tap hop cac hang so co ten. Tranh dung string 'admin', 'teacher' tuy tien.
+
+```python
+from enum import Enum
+
+class UserRole(Enum):
+    ADMIN = "admin"
+    TEACHER = "teacher"
+    STUDENT = "student"
+
+role = UserRole.ADMIN
+role.value   # -> "admin"
+role.name    # -> "ADMIN"
+
+# Trong SQLAlchemy model:
+role = Column(Enum(UserRole), nullable=False)
+
+# Trong JWT payload:
+{"id": user.id, "role": user.role.value}
+```
 
 ---
 
-### 5. Chuẩn mã hóa `status` trong FastAPI
-* Tránh dùng số cứng (Magic Number) như `401`, `400`, `404`.
-* Import chuẩn: `from fastapi import status` (không import từ `fastapi.security`).
-* Sử dụng hằng số rõ nghĩa:
-  * `status.HTTP_401_UNAUTHORIZED` (Chưa đăng nhập / Token sai / Token hết hạn)
-  * `status.HTTP_400_BAD_REQUEST` (Dữ liệu gửi lên không hợp lệ / Thiếu mật khẩu)
-  * `status.HTTP_404_NOT_FOUND` (Không tìm thấy dữ liệu / User không tồn tại)
+## 9. Custom Exceptions - Loi tuy chinh
+
+**La gi?** Tao class loi rieng cho tung tinh huong nghiep vu.
+
+```python
+# exceptions.py
+class UserNotFoundException(Exception): pass
+class WrongPasswordException(Exception): pass
+class EmptyPasswordException(Exception): pass
+```
+
+```python
+# service.py - nem loi
+if not user:
+    raise UserNotFoundException()
+if not verify_password(password, user.hashed_password):
+    raise WrongPasswordException()
+```
+
+```python
+# router.py - bat loi va tra HTTP
+try:
+    return service.login(request)
+except UserNotFoundException:
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='...')
+except WrongPasswordException:
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='...')
+```
+
+> Tai sao khong raise HTTPException thang trong service?
+> Service khong nen biet ve HTTP. Service chi lo nghiep vu.
+> Router moi la noi quyet dinh loi nghiep vu -> HTTP status code nao.
 
 ---
-*Ghi chú được cập nhật tự động khi dự án có thêm tính năng mới.* 🚀
+---
 
+## PHaN FRONTEND
+
+---
+
+## 10. Zod - Validate Form
+
+**La gi?** Thu vien TypeScript de dinh nghia schema va validate du lieu form. Tuong tu Pydantic.
+
+### Cu phap co ban
+
+```typescript
+import { z } from 'zod'
+
+const schema = z.object({
+    phoneNumber: z.string()
+        .length(10, 'Phai co 10 chu so')
+        .regex(/^\d+$/, 'Chi duoc chua so'),
+    password: z.string().min(1, 'Khong duoc de trong'),
+    email: z.string().email('Email khong hop le'),
+    age: z.number().min(18, 'Phai du 18 tuoi'),
+})
+```
+
+### Cu phap nang cao - refine (validate lien truong)
+
+```typescript
+const changePasswordSchema = z.object({
+    newPassword: z.string().min(1, 'Khong duoc de trong'),
+    confirmNewPassword: z.string().min(1, 'Khong duoc de trong')
+}).refine(
+    (data) => data.newPassword === data.confirmNewPassword,
+    {
+        message: 'Mat khau xac nhan khong trung khop',
+        path: ['confirmNewPassword']
+    }
+)
+```
+
+### Lay TypeScript type tu schema
+
+```typescript
+// Khong can viet type rieng - infer tu dong tu schema
+type LoginFormData = z.infer<typeof loginSchema>
+```
+
+---
+
+## 11. React Hook Form - Quan ly Form
+
+**La gi?** Thu vien quan ly state form trong React.
+
+```typescript
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+const {
+    register,          // ket noi input voi form
+    handleSubmit,      // wrapper ham submit
+    formState: {
+        errors,        // object chua loi cua tung field
+        isSubmitting   // true khi dang submit (goi API)
+    },
+    setError           // set loi thu cong (dung cho loi tu server)
+} = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema)  // ket noi voi Zod
+})
+```
+
+### Ket noi input voi form
+
+```typescript
+// {...register('fieldName')} tu dong gan: name, onChange, onBlur, ref
+<input {...register('phoneNumber')} type='tel' />
+<input {...register('password')} type='password' />
+
+// Hien thi loi
+{errors.phoneNumber && <p>{errors.phoneNumber.message}</p>}
+```
+
+### Xu ly submit
+
+```typescript
+async function onSubmit(data: LoginFormData) {
+    // data da duoc Zod validate, chac chan dung format
+    try {
+        const res = await authService.login(data)
+    } catch (error: any) {
+        // loi tu server -> gan vao 'root'
+        setError('root', { message: error.message })
+    }
+}
+
+<form onSubmit={handleSubmit(onSubmit)}>
+    <button type='submit' disabled={isSubmitting}>
+        {isSubmitting ? 'Dang xu ly...' : 'Dang nhap'}
+    </button>
+</form>
+```
+
+```typescript
+// Hien thi loi server
+{errors.root && <div>{errors.root.message}</div>}
+```
+
+---
+
+## 12. Axios - Goi HTTP API
+
+**La gi?** Thu vien JavaScript de goi HTTP request den backend.
+
+```typescript
+import axios from 'axios'
+
+const api = axios.create({
+    baseURL: 'http://localhost:8000',
+    timeout: 10000   // 10 giay
+})
+
+api.get('/users')
+api.post('/login', { phone_number, password })
+api.put('/change-password', { new_password })
+api.delete('/users/1')
+
+// Lay data tu response - Axios boc response trong .data
+const res = await api.post<LoginResponse>('/login', body)
+const data = res.data   // moi la data thuc su
+```
+
+### Interceptors - Middleware tu dong
+
+```typescript
+// Request Interceptor - chay TRUOC KHI request bay di
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('access_token')
+        if (token && config.headers) {
+            config.headers.Authorization = `Bearer ${token}`
+        }
+        return config   // phai return config
+    },
+    (error) => { throw error }
+)
+
+// Response Interceptor - chay KHI response ve
+api.interceptors.response.use(
+    (response) => response,    // thanh cong -> tra nguyen
+    (error) => {
+        const message = error.response?.data?.detail || error.message || 'Loi khong xac dinh'
+        throw new Error(message)
+    }
+)
+```
+
+> Luu y: Frontend dung camelCase (phoneNumber), backend dung snake_case (phone_number).
+> Phai map thu cong trong service layer.
+
+---
+
+## 13. React Router DOM - Dieu huong
+
+```typescript
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom'
+
+// Cau hinh routes
+<BrowserRouter>
+    <Routes>
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/dashboard' element={<DashboardPage />} />
+        <Route path='/' element={<Navigate to='/login' replace />} />
+        <Route path='*' element={<Navigate to='/login' replace />} />
+    </Routes>
+</BrowserRouter>
+
+// Dieu huong bang code
+const navigate = useNavigate()
+navigate('/change-password')
+navigate('/dashboard', { replace: true })  // khong luu vao history
+
+// Dieu huong bang link
+<Link to='/login'>Quay lai dang nhap</Link>
+```
+
+---
+
+## 14. TypeScript Types - Kieu du lieu
+
+```typescript
+// type - dung cho object don gian
+type LoginFormData = {
+    phoneNumber: string
+    password: string
+}
+
+// Optional field
+type UserProfile = {
+    id: number
+    name: string
+    avatar?: string   // ? -> khong bat buoc
+}
+
+// interface - tuong tu type
+interface LoginResponse {
+    access_token: string
+    token_type: string
+    must_change_password: boolean
+}
+
+// Trong du an nay:
+// frontend/src/features/auth/login/types/loginTypes.ts
+export type LoginFormData = { phoneNumber: string; password: string }
+export type LoginResponse = { access_token: string; token_type: string; must_change_password: boolean }
+
+// frontend/src/features/auth/change_password/types/changePasswordTypes.ts
+export type ChangePasswordFormData = { newPassword: string; confirmNewPassword: string }
+export type ChangePasswordResponse = { message: string }
+```
+
+---
+
+## 15. import.meta.env - Bien moi truong Vite
+
+**La gi?** Cach doc bien moi truong trong du an Vite. Tuong tu os.getenv() cua Python.
+
+```typescript
+// File .env - ten bien PHAI bat dau bang VITE_
+// VITE_API_URL=http://localhost:8000
+
+const apiUrl = import.meta.env.VITE_API_URL
+
+// frontend/src/config/config.ts
+export const env = { API_URL: import.meta.env.VITE_API_URL }
+```
+
+> Bien khong bat dau bang VITE_ se khong duoc dua vao bundle (bao mat).
+
+---
+---
+
+## KIEN TRUC
+
+---
+
+## 16. Luong du lieu end-to-end
+
+### Luong Login
+
+```
+[1] User nhap SDT + mat khau vao LoginForm
+    | Zod validate (length 10, regex so, min 1)
+    v
+[2] authService.login(data)
+    | axios.post('/login', { phone_number, password })
+    v
+[3] Backend: POST /login
+    | Pydantic parse body -> LoginRequest
+    | LoginService.login()
+    |   +-- len(phone_number) != 10 -> InvalidPhoneNumberException -> 400
+    |   +-- len(password) == 0 -> EmptyPasswordException -> 400
+    |   +-- user not found -> UserNotFoundException -> 401
+    |   +-- verify_password() fail -> WrongPasswordException -> 401
+    | Tao JWT token -> LoginResponse
+    v
+[4] Response: { access_token, token_type, must_change_password }
+    v
+[5] localStorage.setItem('access_token', token)
+    +-- must_change_password = true -> navigate('/change-password')
+    +-- must_change_password = false -> navigate('/dashboard')
+```
+
+### Luong Change Password
+
+```
+[1] User nhap mat khau moi + xac nhan
+    | Zod validate + refine (2 field phai khop)
+    v
+[2] changePasswordService.changePassword(data)
+    | axios.put('/change-password', { new_password })
+    | (interceptor tu gan 'Authorization: Bearer TOKEN')
+    v
+[3] Backend: PUT /change-password
+    | HTTPBearer() doc token tu header
+    | get_current_user_id() giai ma JWT -> lay user_id
+    |   +-- JWTError -> 401 Unauthorized
+    | ChangePasswordService.change_password()
+    |   +-- new_password rong -> EmptyNewPasswordException -> 400
+    |   +-- user not found -> UserNotFoundException -> 404
+    |   +-- new == old -> PasswordUnchangedException -> 400
+    | hash_password(new_password) -> luu DB
+    v
+[4] Response: { message: 'Doi mat khau thanh cong' }
+    v
+[5] Hien thi success -> setTimeout 1500ms -> navigate('/dashboard')
+```
+
+---
+
+## 17. Quy tac dat ten & Status Code
+
+### HTTP Status Codes
+
+| Constant | So | Y nghia | Khi nao dung |
+|---|---|---|---|
+| HTTP_200_OK | 200 | Thanh cong | Mac dinh FastAPI tu tra |
+| HTTP_400_BAD_REQUEST | 400 | Du lieu sai | SDT sai, mat khau trong |
+| HTTP_401_UNAUTHORIZED | 401 | Chua xac thuc | Sai mat khau, token loi |
+| HTTP_403_FORBIDDEN | 403 | Khong co quyen | Da login nhung thieu quyen |
+| HTTP_404_NOT_FOUND | 404 | Khong tim thay | User khong ton tai |
+
+### Quy tac dat ten
+
+| Vi tri | Quy tac | Vi du |
+|---|---|---|
+| Python (backend) | snake_case | phone_number, hashed_password |
+| TypeScript (frontend) | camelCase | phoneNumber, hashedPassword |
+| Class Python | PascalCase | LoginService, UserRole |
+| Component React | PascalCase | LoginForm, ChangePasswordForm |
+| File Python | snake_case | login_service.py |
+| File TypeScript | camelCase / PascalCase | loginService.ts, LoginForm.tsx |
+
+### Import chuan - KHONG dung magic number
+
+```python
+# DUNG
+from fastapi import status
+raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, ...)
+
+# SAI
+raise HTTPException(status_code=400, ...)
+```
+
+### Depends - KHONG goi ham trong Depends
+
+```python
+# DUNG - truyen ten ham
+user_id: int = Depends(get_current_user_id)
+
+# SAI - truyen ket qua goi ham
+user_id: int = Depends(get_current_user_id())
+```
+
+---
+
+*Tai lieu duoc cap nhat: 2026-08-29 - Toan bo kien thuc tu luong Login & Change Password*

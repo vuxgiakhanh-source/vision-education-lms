@@ -35,7 +35,7 @@ class LoginService:
         if not verify_password(request.password, user.hashed_password):
             logger.warning("Đăng nhập thất bại: Mật khẩu sai con ơi")
             raise WrongPasswordException()
-        logger.info(f"Đăng nhập thành công: ID {request.phone_number}, Sdt {request.phone_number}")
+        logger.info(f"Đăng nhập thành công: ID {user.id}, Sdt {request.phone_number}")
         return create_login_response(user)
     def get_user_by_id(self, user_id: int):
         user = self.repository.find_user_by_id(user_id)

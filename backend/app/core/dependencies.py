@@ -15,7 +15,7 @@ def get_current_user_id(
         if not user_id:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token thiếu used id"
+                detail="Token thiếu user id"
             )
         return user_id
     except JWTError:
