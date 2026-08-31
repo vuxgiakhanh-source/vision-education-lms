@@ -378,240 +378,621 @@ except WrongPasswordException:
 ---
 ---
 
-## PHaN FRONTEND
+## PHAN FRONTEND: KIEN TRUC, TOAN BO CONG CU & FRAMEWORK
 
 ---
 
-## 10. Zod - Validate Form
+## 9. Buc tranh toan canh: Day chuyen hoat dong cua Frontend
 
-**La gi?** Thu vien TypeScript de dinh nghia schema va validate du lieu form. Tuong tu Pydantic.
+Hãy tưởng tượng toàn bộ Frontend của bạn là một **dây chuyền hoạt động khép kín**:
 
-### Cu phap co ban
-
-```typescript
-import { z } from 'zod'
-
-const schema = z.object({
-    phoneNumber: z.string()
-        .length(10, 'Phai co 10 chu so')
-        .regex(/^\d+$/, 'Chi duoc chua so'),
-    password: z.string().min(1, 'Khong duoc de trong'),
-    email: z.string().email('Email khong hop le'),
-    age: z.number().min(18, 'Phai du 18 tuoi'),
-})
-```
-
-### Cu phap nang cao - refine (validate lien truong)
-
-```typescript
-const changePasswordSchema = z.object({
-    newPassword: z.string().min(1, 'Khong duoc de trong'),
-    confirmNewPassword: z.string().min(1, 'Khong duoc de trong')
-}).refine(
-    (data) => data.newPassword === data.confirmNewPassword,
-    {
-        message: 'Mat khau xac nhan khong trung khop',
-        path: ['confirmNewPassword']
-    }
-)
-```
-
-### Lay TypeScript type tu schema
-
-```typescript
-// Khong can viet type rieng - infer tu dong tu schema
-type LoginFormData = z.infer<typeof loginSchema>
+```text
+[ Người dùng gõ URL trên trình duyệt ]
+                  │
+                  ▼
+         1. REACT ROUTER DOM (Lễ tân chỉ đường)
+                  │
+                  ▼
+         2. ROUTE GUARD (Bảo vệ soát vé)
+            ──► Chưa có vé (Token)? ──► ĐÁ VỀ /login
+            ──► Đang bắt đổi mật khẩu? ──► ÉP VÀO /change-password
+            ──► Đủ điều kiện? ──► Cho phép đi tiếp
+                  │
+                  ▼
+         3. PAGE & COMPONENT (Phòng khách & Bàn ghế của REACT)
+            ──► Trang trí bằng TAILWIND CSS (Màu sắc, bo góc, căn giữa)
+            ──► Ép khuôn chặt chẽ bằng TYPESCRIPT
+                  │
+                  ▼
+         4. REACT HOOK FORM (Người ghi order của khách)
+            ──► Lắng nghe từng phím người dùng gõ vào ô Input
+                  │
+                  ▼
+         5. ZOD & RESOLVER (KCS - Kiểm định chất lượng dữ liệu)
+            ──► Đúng 10 số điện thoại chưa?
+            ──► Mật khẩu có để trống không?
+            ──► KHÔNG ĐẠT ──► Báo lỗi đỏ lên màn hình ngay lập tức!
+            ──► ĐẠT YÊU CẦU ──► Cho phép kích hoạt nút Bấm
+                  │
+                  ▼
+         6. AXIOS (Người vận chuyển sang Backend FastAPI)
+            ──► Interceptor tự móc Token từ LocalStorage gắn vào Header
+            ──► Bắn request POST/PUT sang Backend
+                  │
+                  ▼
+         7. KẾT QUẢ TỪ BACKEND VỀ
+            ──► Lỗi ──► Báo lỗi server lên màn hình
+            ──► Thành công ──► Lưu Token/Cờ vào LocalStorage
+                              ──► REACT ROUTER đá sang /dashboard!
 ```
 
 ---
 
-## 11. React Hook Form - Quan ly Form
+## 10. Cau truc Feature-Based: Thu muc nao chua cong cu nao?
 
-**La gi?** Thu vien quan ly state form trong React.
+Trong cấu trúc của bạn (`src/features/auth/login/`), mỗi thư mục con là "nhà" của một công cụ cụ thể:
 
-```typescript
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+| Thư mục con | Công cụ đảm nhiệm | Nhiệm vụ thực tế trong dự án |
+|---|---|---|
+| `types/` | **TypeScript** | Định nghĩa các khuôn dữ liệu (`LoginFormData`, `LoginResponse`) |
+| `schemas/` | **Zod** | Viết luật kiểm tra dữ liệu (`loginSchema`: 10 số, không để trống) |
+| `services/` | **Axios** | Viết hàm gọi API sang Backend (`loginService.login()`) |
+| `components/` | **React + Tailwind + React Hook Form** | Form giao diện, ô input, nút bấm, bắt sự kiện gõ |
+| `pages/` | **React + Tailwind** | Lắp ráp các component lại thành một trang hoàn chỉnh |
+| `guards/` | **React Router DOM** | Người bảo vệ đứng gác cửa trang web (`ProtectedRoute`, `GuestRoute`) |
 
-const {
-    register,          // ket noi input voi form
-    handleSubmit,      // wrapper ham submit
-    formState: {
-        errors,        // object chua loi cua tung field
-        isSubmitting   // true khi dang submit (goi API)
-    },
-    setError           // set loi thu cong (dung cho loi tu server)
-} = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema)  // ket noi voi Zod
-})
+### 👉 Quy trinh 6 buoc chuan khi ban tu code 1 tinh nang moi:
+1. **Bước 1**: Vào `types/` ➔ Khai báo kiểu dữ liệu cần nhận/trả về (TypeScript).
+2. **Bước 2**: Vào `schemas/` ➔ Viết luật validate Zod.
+3. **Bước 3**: Vào `services/` ➔ Viết hàm gọi API qua Axios.
+4. **Bước 4**: Vào `components/` ➔ Viết giao diện Form, cắm Zod vào React Hook Form.
+5. **Bước 5**: Vào `pages/` ➔ Lắp ráp thành màn hình hoàn chỉnh.
+6. **Bước 6**: Vào `App.tsx` ➔ Đăng ký Route và bọc Route Guard bảo vệ.
+
+---
+
+## 11. Bang tong hop "Kho vu khi" Frontend (Doi chieu voi Python)
+
+Dự án Frontend của bạn được xây dựng bằng **9 công cụ cốt lõi** trong `package.json`:
+
+| Tên công cụ / Thư viện | Phiên bản | Nhiệm vụ chính trong dự án | Tương đương cái gì bên Python / Backend? |
+|---|---|---|---|
+| **React** | 19.x | Thư viện xây dựng giao diện bằng Component & State | Jinja2 Templates (nhưng React xịn hơn: tự đổi giao diện khi dữ liệu đổi) |
+| **TypeScript** | 5.x / 6.x | Thêm kiểu dữ liệu vào JavaScript để bắt lỗi từ lúc gõ code | Type Hints trong Python (`def login(user_id: int) -> dict:`) |
+| **Vite** | 8.x | Máy chủ chạy thử nghiệm (Dev Server) & đóng gói code siêu tốc | Uvicorn (khi chạy `uvicorn main:app --reload`) |
+| **Tailwind CSS** | 4.x | Thiết kế giao diện bằng các class viết tắt trực tiếp trong HTML/JSX | CSS thuần (nhưng không cần tự đặt tên class lung tung) |
+| **React Router DOM** | 7.x | Chuyển trang mượt mà (SPA) không bị giật/tải lại trang & Route Guard | APIRouter của FastAPI (nhưng chạy ngay trên trình duyệt) |
+| **Zod** | 4.x | Định nghĩa "khuôn" dữ liệu và validate form ở giao diện | **Pydantic** (`BaseModel`) |
+| **React Hook Form** | 7.x | Quản lý form nhập liệu, lưu dữ liệu ô gõ phím mà không lag | Form handling |
+| **@hookform/resolvers** | 5.x | "Cầu nối" để cắm schema của Zod vào React Hook Form | Không cần bên Python vì FastAPI tự kết hợp Pydantic |
+| **Axios** | 1.x | Bắn HTTP Request (POST, GET, PUT) sang Backend | Thư viện `requests` hoặc `httpx` của Python |
+
+---
+
+## 12. React 19 & JSX - Nen tang giao dien
+
+### 1. Tai sao lai can React? (Neu dung JavaScript thuan thi kho the nao?)
+
+#### 🔴 CÂU CHUYỆN 1: Nỗi ám ảnh khi làm bằng JavaScript thuần (Không có React)
+Hãy tưởng tượng bạn đang làm chức năng **Giỏ hàng** cho một trang web bán hàng:
+Trên màn hình lúc này có **4 chỗ** cùng hiển thị thông tin giỏ hàng:
+1. Góc trên cùng bên phải: Icon xe đẩy hiển thị số lượng: `🛒 0`
+2. Ở giữa trang: Cái nút bấm: `[Thêm vào giỏ]`
+3. Ở cột bên phải: Danh sách các món đồ đã chọn.
+4. Ở dưới chân trang: Dòng chữ tổng tiền: `Tổng: 0đ`
+
+Bây giờ, người dùng bấm nút **[Thêm vào giỏ]**.
+Nếu dùng **JavaScript thuần**, bạn (lập trình viên) phải tự tay viết code đi "săn lùng" từng thẻ HTML trên màn hình để sửa từng chữ một:
+```javascript
+// 1. Đi tìm icon xe đẩy để đổi số 0 thành số 1:
+document.getElementById('cart-badge').innerText = "1";
+
+// 2. Đi tìm cái nút vừa bấm để đổi chữ:
+document.getElementById('add-btn').innerText = "Đã thêm vào giỏ";
+
+// 3. Đi tìm cột danh sách bên phải để nhét thêm 1 dòng HTML vào:
+document.getElementById('cart-list').innerHTML += "<li>Áo thun 500k</li>";
+
+// 4. Đi tìm dòng tổng tiền ở chân trang để cộng tiền:
+document.getElementById('total-price').innerText = "500.000đ";
 ```
 
-### Ket noi input voi form
+😱 **NỖI ĐAU XUẤT HIỆN KHI:**
+Người dùng bấm nút **[Xóa sản phẩm]**:
+* Bạn lại phải tự tay viết code: trừ số ở xe đẩy về `0`, đổi chữ nút bấm quay lại thành `[Thêm vào giỏ]`, tìm đúng dòng `<li>` trong danh sách để xóa đi, rồi tính lại tổng tiền về `0đ`.
+* **Hậu quả**: Chỉ cần bạn lỡ tay quên cập nhật 1 chỗ (ví dụ quên trừ tiền ở chân trang, hoặc icon xe đẩy vẫn hiện số 1 trong khi giỏ đã rỗng) ➔ **Giao diện bị loạn cào cào, dữ liệu một đằng hiển thị một nẻo!** Trang web càng to thì code JS thuần càng biến thành một bãi rác không ai dám sửa.
 
-```typescript
-// {...register('fieldName')} tu dong gan: name, onChange, onBlur, ref
-<input {...register('phoneNumber')} type='tel' />
-<input {...register('password')} type='password' />
+---
 
-// Hien thi loi
-{errors.phoneNumber && <p>{errors.phoneNumber.message}</p>}
+#### 🟢 CÂU CHUYỆN 2: React xuất hiện và giải cứu thế nào?
+React đưa ra một triết lý làm thay đổi cả ngành công nghiệp web:
+> **"Lập trình viên CHỈ CẦN QUẢN LÝ DỮ LIỆU. Còn việc sửa HTML trên màn hình, HÃY ĐỂ REACT TỰ LÀM!"**
+
+Trong React, bạn chỉ cần tạo đúng 1 danh sách trong bộ nhớ (State):
+```javascript
+// Dữ liệu ban đầu: giỏ hàng rỗng
+const [cart, setCart] = useState([]) 
 ```
 
-### Xu ly submit
+Và trên giao diện JSX, bạn chỉ việc cắm biến `cart` vào các vị trí:
+* Icon xe đẩy: `🛒 {cart.length}`
+* Dưới chân trang: `Tổng tiền: {tính_tổng(cart)}`
+* Danh sách: Duyệt qua `cart` vẽ ra từng món.
 
-```typescript
-async function onSubmit(data: LoginFormData) {
-    // data da duoc Zod validate, chac chan dung format
-    try {
-        const res = await authService.login(data)
-    } catch (error: any) {
-        // loi tu server -> gan vao 'root'
-        setError('root', { message: error.message })
-    }
+Bây giờ, khi người dùng bấm nút [Thêm vào giỏ], bạn chỉ cần làm **ĐÚNG 1 VIỆC DUY NHẤT**:
+```javascript
+setCart([...cart, "Áo thun 500k"]) // Thêm áo thun vào danh sách cart
+```
+**HẾT! BẠN KHÔNG CẦN LÀM GÌ NỮA CẢ!**
+* Bạn không cần tìm thẻ xe đẩy.
+* Bạn không cần tìm thẻ chân trang.
+* Bạn không cần tìm thẻ danh sách.
+
+Ngay khi `cart` có thêm đồ, **React sẽ tự động nhìn thấy và tự động cập nhật cả 4 vị trí trên màn hình cùng một lúc trong 0.001 giây!** Không bao giờ có chuyện xe đẩy hiện số 1 mà chân trang lại hiện 0đ.
+
+---
+
+#### 🎯 ÁP DỤNG THẲNG VÀO DỰ ÁN VISION LMS CỦA BẠN:
+Nhìn vào form đăng nhập [LoginForm.tsx](file:///d:/vision-education-lms/frontend/src/features/auth/login/components/LoginForm.tsx):
+Khi người dùng bấm nút **Đăng nhập**, nếu dùng JS thuần bạn sẽ phải:
+* Đi tìm nút bấm đổi chữ thành "Đang đăng nhập...".
+* Đi khóa nút bấm lại (`disabled = true`) để khách không bấm liên tục.
+* Đi tìm chỗ hiện lỗi để xóa lỗi cũ.
+* Khi API trả về lỗi ➔ Lại đi tìm cái hộp đỏ nhét chữ "Sai mật khẩu" vào.
+
+Còn trong React của bạn hiện tại, mọi thứ chỉ phụ thuộc vào đúng 1 biến `isSubmitting`:
+```tsx
+<button disabled={isSubmitting}>
+    {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
+</button>
+```
+Khi gọi API ➔ `isSubmitting = true` ➔ Nút bấm **tự động khóa lại** và **tự động đổi chữ** mà bạn không cần đụng 1 ngón tay vào DOM!
+
+
+---
+
+### 2. Component - "Khối Lego giao diện"
+Component trong React thực chất chỉ là **một hàm trả về HTML (JSX)**.
+* **Quy tắc**: Tên Component bắt buộc phải **viết hoa chữ cái đầu** (PascalCase) để React phân biệt với thẻ HTML thông thường (thẻ `<button>` thường viết thường, còn `<LoginForm />` viết hoa).
+
+---
+
+### 3. `useState` - Bo nho cua Component (Vi du thuc te tu nut con mat mat khau)
+
+Hãy xem đoạn code thực tế từ file [LoginForm.tsx](file:///d:/vision-education-lms/frontend/src/features/auth/login/components/LoginForm.tsx#L11):
+
+```tsx
+// 1. Khai bao State:
+// - showPassword: bien luu gia tri hien tai (ban dau la false = dang an mat khau)
+// - setShowPassword: ham chuyen dung de cap nhat gia tri moi cho showPassword
+const [showPassword, setShowPassword] = useState(false)
+
+// 2. Ap dung vao o Input:
+// Neu showPassword la true -> type="text" (nhin thay mat khau)
+// Neu showPassword la false -> type="password" (hien thi dau cham tron)
+<input
+    type={showPassword ? "text" : "password"}
+    placeholder="Nhập mật khẩu"
+    {...register("password")}
+/>
+
+// 3. Nut bam con mat:
+// Khi nguoi dung click, dao nguoc gia tri (!showPassword: false -> true, true -> false)
+<button type="button" onClick={() => setShowPassword(!showPassword)}>
+    {showPassword ? <IconMatMo /> : <IconMatDong />}
+</button>
+```
+
+👉 **Co che hoat dong tung micro-giay**:
+1. Người dùng bấm vào nút con mắt ➔ Hàm `setShowPassword(true)` được gọi.
+2. React phát hiện biến `showPassword` vừa đổi từ `false` sang `true`.
+3. React **tự động vẽ lại (re-render) Component**: Thẻ `<input>` biến thành `type="text"`, icon chuyển thành mắt mở. Bạn không cần viết một dòng `document.getElementById` nào!
+
+---
+
+### 4. Props va `children` - Truyen du lieu giua cac Component
+
+* **Props**: Giống như việc bạn truyền tham số vào hàm Python:
+  ```tsx
+  // Dinh nghia component con nhan vao Prop ten la 'label'
+  function CustomLabel({ text }: { text: string }) {
+      return <label className="text-sm font-semibold text-gray-700">{text}</label>
+  }
+
+  // Component cha goi va truyen du lieu:
+  <CustomLabel text="Số điện thoại" />
+  <CustomLabel text="Mật khẩu mới" />
+  ```
+
+* **`children`**: Khi bạn muốn nhét cả một khối giao diện vào bụng một component khác:
+  ```tsx
+  // Component KhungCard boc ben ngoai:
+  function Card({ children }: { children: React.ReactNode }) {
+      return (
+          <div className="bg-white rounded-[32px] p-8 shadow-lg">
+              {children}  {/* Noi dung con se duoc hien thi o day */}
+          </div>
+      )
+  // Su dung:
+  <Card>
+      <h2>Dang nhap</h2>
+      <p>Nhap thong tin de tiep tuc</p>
+  </Card>
+  ```
+
+---
+
+### 5. CAM NANG CU PHAP THUC CHIEN (SYNTAX CHEAT SHEET - TUNG DONG, TUNG KY TU)
+
+
+#### Cú pháp 1: Khai báo một Component React
+```tsx
+export function TenComponent() {
+    return (
+        <div>
+            <h1>Tiêu đề</h1>
+        </div>
+    )
+}
+```
+* `export`: Để các file khác trong dự án có thể `import` vào dùng.
+* `function TenComponent()`: Tên component **bắt buộc viết hoa chữ cái đầu** (PascalCase).
+* `return (...)`: Phải có cặp ngoặc tròn `()`, bên trong là giao diện JSX.
+* **Quy tắc**: Bên trong `return` chỉ được có **duy nhất 1 thẻ bọc ngoài cùng** (thường là `<div>` hoặc thẻ rỗng `<> ... </>`).
+
+---
+
+#### Cú pháp 2: Khai báo State (`useState`)
+```tsx
+import { useState } from 'react'
+
+const [tên_biến, setTên_biến] = useState(giá_trị_ban_đầu)
+```
+* **Cấu trúc**: Luôn là một mảng gồm 2 phần tử trong ngoặc vuông `[ ]`:
+  * `tên_biến`: Chứa giá trị hiện tại để đem đi hiển thị.
+  * `setTên_biến`: Tên hàm dùng để đổi giá trị (luôn bắt đầu bằng chữ `set`).
+* **Ví dụ thực tế**:
+  ```tsx
+  const [showPassword, setShowPassword] = useState(false) // ban đầu ẩn mật khẩu
+  const [count, setCount] = useState(0)                  // ban đầu là số 0
+  const [name, setName] = useState("")                   // ban đầu là chuỗi rỗng
+  ```
+
+---
+
+#### Cú pháp 3: Bắt sự kiện bấm nút (`onClick`)
+```tsx
+<button type="button" onClick={() => setTên_biến(giá_trị_mới)}>
+    Bấm vào đây
+</button>
+```
+* `onClick`: Chữ `C` phải viết hoa.
+* `() => ...`: Bắt buộc phải có hàm mũi tên `() =>` ở trước. Nếu bạn viết `onClick={setCount(1)}` thì hàm sẽ tự chạy ngay khi vừa mở trang web!
+* **Ví dụ đảo ngược boolean true/false (như nút bật/tắt mắt mật khẩu)**:
+  ```tsx
+  <button type="button" onClick={() => setShowPassword(!showPassword)}>
+  ```
+
+---
+
+#### Cú pháp 4: Khai báo Type cho Component nhận `children` (Dùng cho Route Guard)
+```tsx
+// Bước 1: Khai báo khuôn Props bằng type
+type Props = {
+    children: React.ReactNode
 }
 
-<form onSubmit={handleSubmit(onSubmit)}>
-    <button type='submit' disabled={isSubmitting}>
-        {isSubmitting ? 'Dang xu ly...' : 'Dang nhap'}
-    </button>
-</form>
+// Bước 2: Gắn khuôn vào Component
+export function ProtectedRoute({ children }: Props) {
+    return <>{children}</>
+}
 ```
+* `type Props = { ... }`: Định nghĩa khuôn cho tham số đầu vào.
+* `children: React.ReactNode`: `children` là component con được bọc bên trong; `React.ReactNode` là kiểu dữ liệu cho phép con là bất kỳ thẻ JSX nào.
+* `{ children }: Props`: Nhận `children` và ép theo khuôn `Props`.
+* `<>{children}</>`: Cặp thẻ rỗng `<> </>` (React Fragment) bọc lấy `children` trả về.
 
-```typescript
-// Hien thi loi server
-{errors.root && <div>{errors.root.message}</div>}
+---
+
+#### Cú pháp 5: Làm việc với `localStorage` (Sổ tay trình duyệt)
+```tsx
+// 1. Lưu vào (chỉ lưu được chuỗi String):
+localStorage.setItem('access_token', res.access_token)
+localStorage.setItem('must_change_password', String(res.must_change_password)) // ép boolean thành string
+
+// 2. Lấy ra:
+const token = localStorage.getItem('access_token')
+
+// 3. Lấy boolean ra để so sánh if:
+const mustChange = localStorage.getItem('must_change_password') === 'true'
+
+// 4. Xóa sạch khi Logout:
+localStorage.clear()
 ```
 
 ---
 
-## 12. Axios - Goi HTTP API
+#### Cú pháp 6: Điều hướng trang bằng React Router
+* **Cách 1: Chuyển hướng tức thì bằng thẻ JSX (Dùng trong Route Guard)**:
+  ```tsx
+  import { Navigate } from 'react-router-dom'
 
-**La gi?** Thu vien JavaScript de goi HTTP request den backend.
+  // Gặp lệnh này là trình duyệt lập tức bay sang /login:
+  return <Navigate to="/login" replace />
+  ```
+  * `to="/login"`: Đường dẫn muốn đá người dùng đến.
+  * `replace`: Ghi đè lịch sử duyệt web để người dùng không bấm nút Back quay lại được.
 
-```typescript
-import axios from 'axios'
+* **Cách 2: Chuyển hướng bằng code trong hàm submit**:
+  ```tsx
+  import { useNavigate } from 'react-router-dom'
 
-const api = axios.create({
-    baseURL: 'http://localhost:8000',
-    timeout: 10000   // 10 giay
-})
+  const navigate = useNavigate() // Gọi ở đầu component
 
-api.get('/users')
-api.post('/login', { phone_number, password })
-api.put('/change-password', { new_password })
-api.delete('/users/1')
+  // Gọi trong hàm xử lý logic:
+  navigate('/dashboard')
+  ```
 
-// Lay data tu response - Axios boc response trong .data
-const res = await api.post<LoginResponse>('/login', body)
-const data = res.data   // moi la data thuc su
-```
+---
 
-### Interceptors - Middleware tu dong
+#### Cú pháp 7: Ráp toàn bộ cú pháp trên thành một Route Guard hoàn chỉnh
+```tsx
+import { Navigate } from 'react-router-dom'
 
-```typescript
-// Request Interceptor - chay TRUOC KHI request bay di
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('access_token')
-        if (token && config.headers) {
-            config.headers.Authorization = `Bearer ${token}`
-        }
-        return config   // phai return config
-    },
-    (error) => { throw error }
-)
+// 1. Khuôn Props
+type Props = {
+    children: React.ReactNode
+}
 
-// Response Interceptor - chay KHI response ve
-api.interceptors.response.use(
-    (response) => response,    // thanh cong -> tra nguyen
-    (error) => {
-        const message = error.response?.data?.detail || error.message || 'Loi khong xac dinh'
-        throw new Error(message)
+// 2. Component Guard
+export function ProtectedRoute({ children }: Props) {
+    // Lấy dữ liệu từ localStorage
+    const token = localStorage.getItem('access_token')
+    const mustChangePassword = localStorage.getItem('must_change_password') === 'true'
+
+    // Kiểm tra 1: Chưa đăng nhập -> đá về login
+    if (!token) {
+        return <Navigate to="/login" replace />
     }
-)
-```
 
-> Luu y: Frontend dung camelCase (phoneNumber), backend dung snake_case (phone_number).
-> Phai map thu cong trong service layer.
+    // Kiểm tra 2: Chưa đổi mật khẩu lần đầu -> ép sang đổi mật khẩu
+    if (mustChangePassword) {
+        return <Navigate to="/change-password" replace />
+    }
 
----
-
-## 13. React Router DOM - Dieu huong
-
-```typescript
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom'
-
-// Cau hinh routes
-<BrowserRouter>
-    <Routes>
-        <Route path='/login' element={<LoginPage />} />
-        <Route path='/dashboard' element={<DashboardPage />} />
-        <Route path='/' element={<Navigate to='/login' replace />} />
-        <Route path='*' element={<Navigate to='/login' replace />} />
-    </Routes>
-</BrowserRouter>
-
-// Dieu huong bang code
-const navigate = useNavigate()
-navigate('/change-password')
-navigate('/dashboard', { replace: true })  // khong luu vao history
-
-// Dieu huong bang link
-<Link to='/login'>Quay lai dang nhap</Link>
+    // Hợp lệ -> Cho phép xem trang con
+    return <>{children}</>
+}
 ```
 
 ---
 
-## 14. TypeScript Types - Kieu du lieu
 
+## 13. TypeScript - "Tam la chan" bat loi truoc khi chay
+
+### 1. Tai sao can TypeScript? (So sanh truc quan voi JavaScript thuan)
+
+* **Trong JS thuần**:
+  ```javascript
+  const user = { phoneNumber: "0912345678" }
+  console.log(user.phone_number) // Go nham chu -> undefined! Khong bao loi gi ca, web van chay va sinh ra bug ngam!
+  ```
+* **Trong TypeScript**:
+  ```typescript
+  type User = { phoneNumber: string }
+  const user: User = { phoneNumber: "0912345678" }
+  console.log(user.phone_number) 
+  // ❌ BI GACH DO LOOM NGAY LAP TUC:
+  // "Property 'phone_number' does not exist on type 'User'. Did you mean 'phoneNumber'?"
+  ```
+  TypeScript giúp bạn bắt sạch 90% lỗi gõ nhầm chính tả ngay khi bạn còn đang gõ phím!
+
+---
+
+### 2. Dinh nghia khuon bang `type` (Giong Pydantic BaseModel)
+
+Trong file [loginTypes.ts](file:///d:/vision-education-lms/frontend/src/features/auth/login/types/loginTypes.ts):
 ```typescript
-// type - dung cho object don gian
-type LoginFormData = {
+// Khuon cho Form nhap lieu:
+export type LoginFormData = {
     phoneNumber: string
     password: string
 }
 
-// Optional field
-type UserProfile = {
-    id: number
-    name: string
-    avatar?: string   // ? -> khong bat buoc
-}
-
-// interface - tuong tu type
-interface LoginResponse {
+// Khuon cho Response tu Backend tra ve:
+export type LoginResponse = {
     access_token: string
     token_type: string
     must_change_password: boolean
 }
-
-// Trong du an nay:
-// frontend/src/features/auth/login/types/loginTypes.ts
-export type LoginFormData = { phoneNumber: string; password: string }
-export type LoginResponse = { access_token: string; token_type: string; must_change_password: boolean }
-
-// frontend/src/features/auth/change_password/types/changePasswordTypes.ts
-export type ChangePasswordFormData = { newPassword: string; confirmNewPassword: string }
-export type ChangePasswordResponse = { message: string }
 ```
 
 ---
 
-## 15. import.meta.env - Bien moi truong Vite
+### 3. Generics `<T>` - "May dong hop da nang"
 
-**La gi?** Cach doc bien moi truong trong du an Vite. Tuong tu os.getenv() cua Python.
-
+Hãy nhìn vào cách gọi API trong [loginService.ts](file:///d:/vision-education-lms/frontend/src/features/auth/login/services/loginService.ts):
 ```typescript
-// File .env - ten bien PHAI bat dau bang VITE_
-// VITE_API_URL=http://localhost:8000
+// Truyen <LoginResponse> vao sau ham post:
+const res = await api.post<LoginResponse>('/login', data)
+```
+* **Nếu KHÔNG có `<LoginResponse>`**: Biến `res.data` sẽ có kiểu `any` (người mù). Bạn gõ `res.data.` sẽ không có gợi ý gì cả, nếu gõ nhầm `res.data.must_change_pasword` thì IDE cũng im lặng.
+* **Khi CÓ `<LoginResponse>`**: IDE biết chính xác 100% bên trong `res.data` gồm có những trường gì:
+  * `res.data.access_token` (string)
+  * `res.data.must_change_password` (boolean)
+  Gõ phím đến đâu, IDE gợi ý tự động (IntelliSense) đến đó!
 
-const apiUrl = import.meta.env.VITE_API_URL
+---
 
-// frontend/src/config/config.ts
-export const env = { API_URL: import.meta.env.VITE_API_URL }
+## 14. Tailwind CSS v4 - Giai ma Form dang nhap sang trong cua ban
+
+Hãy nhìn đoạn code tạo chiếc hộp Form đăng nhập trong [LoginForm.tsx](file:///d:/vision-education-lms/frontend/src/features/auth/login/components/LoginForm.tsx#L39):
+
+```tsx
+<div className="w-full max-w-[430px] bg-white rounded-[32px] p-8 sm:p-9 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col items-center border border-white">
 ```
 
-> Bien khong bat dau bang VITE_ se khong duoc dua vao bundle (bao mat).
+Giải mã từng class Tailwind:
+* `w-full`: Chiều rộng 100% (chiếm trọn màn hình điện thoại).
+* `max-w-[430px]`: Nhưng trên màn hình to thì tối đa chỉ rộng 430px (không bị bè ngang xấu xí).
+* `bg-white`: Màu nền trắng tinh khôi.
+* `rounded-[32px]`: Bo tròn 4 góc cực kỳ mềm mại với bán kính 32px (chuẩn phong cách hiện đại).
+* `p-8 sm:p-9`: Khoảng cách đệm bên trong (padding): trên mobile là 32px, trên tablet/desktop là 36px.
+* `shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)]`: Đổ bóng mờ mịn màng tạo cảm giác chiếc hộp đang nổi bồng bềnh trên mặt bàn.
+* `flex flex-col items-center`: Xếp tất cả phần tử bên trong (logo, tiêu đề, input, nút bấm) thành **một cột dọc thẳng hàng ở giữa**.
+
+---
+
+## 15. Zod - Kiem tra du lieu truoc khi gui
+
+Hãy xem cách bạn viết luật kiểm tra trong [loginSchema.ts](file:///d:/vision-education-lms/frontend/src/features/auth/login/schemas/loginSchema.ts):
+
+```typescript
+import { z } from 'zod'
+
+export const loginSchema = z.object({
+    // Luat 1: So dien thoai
+    phoneNumber: z.string()
+        .length(10, 'Số điện thoại phải đúng 10 số')        // Bat buoc dung 10 ky tu
+        .regex(/^[0-9]+$/, 'Số điện thoại chỉ được chứa chữ số'), // Bat buoc chi chua so tu 0-9
+    
+    // Luat 2: Mat khau
+    password: z.string()
+        .min(1, 'Mật khẩu không được để trống')             // Khong duoc la chuoi rong ""
+})
+```
+
+### Cu phap nang cao: `.refine()` (Kiem tra 2 o phai trung nhau)
+Trong [changePasswordSchema.ts](file:///d:/vision-education-lms/frontend/src/features/auth/change_password/schemas/changePasswordSchema.ts):
+```typescript
+export const changePasswordSchema = z.object({
+    newPassword: z.string().min(1, 'Vui lòng nhập mật khẩu mới'),
+    confirmNewPassword: z.string().min(1, 'Vui lòng xác nhận mật khẩu mới')
+}).refine((data) => data.newPassword === data.confirmNewPassword, {
+    // Neu 2 o khong giong nhau -> Gan loi vao o confirmNewPassword:
+    message: 'Mật khẩu xác nhận không khớp',
+    path: ['confirmNewPassword']
+})
+```
+
+---
+
+## 16. React Hook Form & @hookform/resolvers - Dieu phoi Form dinh cao
+
+### 1. Tai sao khong dung `useState` cho Form?
+Nếu một form có 10 ô input, bạn phải tạo 10 cái `useState`. Cứ mỗi lần người dùng gõ 1 chữ cái, toàn bộ trang web bị giật và re-render lại 10 lần ➔ Rất lag!
+**React Hook Form** giải quyết triệt để: Nó lắng nghe ngầm và chỉ cập nhật khi nào submit hoặc có lỗi!
+
+---
+
+### 2. Mo xe tung dong khoi tao trong `LoginForm.tsx`:
+
+```tsx
+const {
+    register,          // 1. Ham "cam day" noi the <input> vao bo dieu khien form
+    handleSubmit,      // 2. Ham chan load lai trang mac dinh va goi Zod kiem tra truoc
+    formState: {
+        errors,        // 3. Object chua toan bo loi (neu Zod bao loi thi errors se co du lieu)
+        isSubmitting   // 4. Bien boolean: true khi nguoi dung dang bam nut va cho API tra ve
+    },
+    setError           // 5. Ham dung de gan thu cong loi tu server tra ve (vi du: "Sai mat khau")
+} = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema) // <-- Phep thuat nam o day: Bat tay truc tiep voi Zod!
+})
+```
+
+---
+
+### 3. Cach su dung tren the JSX:
+
+```tsx
+<form onSubmit={handleSubmit(onSubmit)}>
+    {/* 1. Ket noi input bang cu phap spread {...register('phoneNumber')} */}
+    <input {...register("phoneNumber")} />
+
+    {/* 2. Neu o nay co loi tu Zod -> Hien thi dong chu do ngay duoi o input */}
+    {errors.phoneNumber && (
+        <p className="text-red-500 text-xs mt-1">{errors.phoneNumber.message}</p>
+    )}
+
+    {/* 3. Nut bam: Khi dang submitting thi doi chu va vo hieu hoa nut bam */}
+    <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
+    </button>
+</form>
+```
+
+---
+
+## 17. Axios - Ket noi API & Interceptors tu dong hoa
+
+File [axios.ts](file:///d:/vision-education-lms/frontend/src/lib/axios.ts):
+
+### 1. Request Interceptor (Tram thu phi tu dong)
+Mỗi khi bạn gọi bất kỳ API nào (`api.get`, `api.post`, `api.put`), request đó bắt buộc phải đi qua cái "trạm thu phí" này trước khi bay sang Backend:
+
+```typescript
+api.interceptors.request.use((config) => {
+    // 1. Tu dong mo so tay lay Token ra
+    const token = localStorage.getItem('access_token')
+
+    // 2. Neu co token -> Tu dong gan vao Header: "Authorization: Bearer <TOKEN>"
+    if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
+
+    return config // Cho phep request bay di tiep
+})
+```
+👉 **Lợi ích**: Bạn không cần phải copy-paste dòng lấy Token ở 100 hàm gọi API khác nhau. Trạm thu phí này tự động dán vé cho tất cả!
+
+---
+
+### 2. Response Interceptor (Bo loc thong bao loi)
+Khi Backend FastAPI trả lỗi về (ví dụ lỗi 400, 401 với format `{ "detail": "Sai mật khẩu" }`):
+
+```typescript
+api.interceptors.response.use(
+    (response) => response, // Neu thanh cong -> Tra ve nguyen ven
+    (error) => {
+        // Tu dong trich xuat thong bao loi tu FastAPI backend:
+        const message = error.response?.data?.detail || error.message || 'Đã có lỗi xảy ra'
+        throw new Error(message) // Nem loi duoi dang chuoi tieng Viet sach se
+    }
+)
+Nhờ có bộ lọc này, trong component của bạn chỉ cần viết:
+```typescript
+catch (error: any) {
+    setError("root", { message: error.message }) // error.message da la chuoi dep de hien thi!
+}
+```
+
+
+---
+
+## 18. React Router DOM v7 & Route Guard
+
+Điều phối người dùng vào đúng trang và "đá" ra ngoài nếu không đủ điều kiện.
+
+* **`<BrowserRouter>`**: Bọc toàn bộ ứng dụng ở `App.tsx` để kích hoạt tính năng định tuyến.
+* **`<Routes>` & `<Route path="..." element={<Trang />} />`**: Bảng ánh xạ từ URL vào Component.
+* **`<Navigate to="..." replace />`**: Component tự động chuyển hướng ngay tức khắc.
+* **`useNavigate()`**: Hook để chuyển hướng bằng code (ví dụ sau khi gọi API thành công: `navigate('/dashboard')`).
+* **Route Guard**: Dùng Component bọc lấy trang cần bảo vệ để kiểm tra `localStorage`.
+
+---
+
+## 19. Vite & Bien moi truong
+
+* Chạy dev: `npm run dev` (khởi động máy chủ Vite trên cổng 5173).
+* File `.env`: Mọi biến môi trường ở Frontend **bắt buộc phải có tiền tố `VITE_`** thì Vite mới cho phép đọc:
+  ```env
+  VITE_API_URL=http://localhost:8000
+  ```
+* Đọc biến môi trường trong code:
+  ```typescript
+  const apiUrl = import.meta.env.VITE_API_URL
+  ```
 
 ---
 ---
@@ -620,7 +1001,8 @@ export const env = { API_URL: import.meta.env.VITE_API_URL }
 
 ---
 
-## 16. Luong du lieu end-to-end
+## 20. Luong du lieu end-to-end
+
 
 ### Luong Login
 
@@ -674,50 +1056,327 @@ export const env = { API_URL: import.meta.env.VITE_API_URL }
 
 ---
 
-## 17. Quy tac dat ten & Status Code
+## 21. Quy tac dat ten & Status Code
 
 ### HTTP Status Codes
 
-| Constant | So | Y nghia | Khi nao dung |
-|---|---|---|---|
-| HTTP_200_OK | 200 | Thanh cong | Mac dinh FastAPI tu tra |
-| HTTP_400_BAD_REQUEST | 400 | Du lieu sai | SDT sai, mat khau trong |
-| HTTP_401_UNAUTHORIZED | 401 | Chua xac thuc | Sai mat khau, token loi |
-| HTTP_403_FORBIDDEN | 403 | Khong co quyen | Da login nhung thieu quyen |
-| HTTP_404_NOT_FOUND | 404 | Khong tim thay | User khong ton tai |
+---
 
-### Quy tac dat ten
+## PHAN TYPESCRIPT & REACT NANG CAO (GIAI MA TOAN BO CU PHAP "LA")
 
-| Vi tri | Quy tac | Vi du |
-|---|---|---|
-| Python (backend) | snake_case | phone_number, hashed_password |
-| TypeScript (frontend) | camelCase | phoneNumber, hashedPassword |
-| Class Python | PascalCase | LoginService, UserRole |
-| Component React | PascalCase | LoginForm, ChangePasswordForm |
-| File Python | snake_case | login_service.py |
-| File TypeScript | camelCase / PascalCase | loginService.ts, LoginForm.tsx |
+---
 
-### Import chuan - KHONG dung magic number
+## 22. Giai ma toan bo ky hieu & Cu phap "la" trong TypeScript / React
 
-```python
-# DUNG
-from fastapi import status
-raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, ...)
+### 1. Dấu ngoặc nhọn `<T>` (Generics) - "Truyền kiểu dữ liệu như truyền tham số"
 
-# SAI
-raise HTTPException(status_code=400, ...)
-```
+Trong TypeScript, bạn thường thấy dấu `<...>` đi kèm các hàm hoặc component. Đó gọi là **Generics**.
+Nó giống như việc bạn gửi thêm "hướng dẫn" cho hàm biết nó đang làm việc với loại dữ liệu nào.
 
-### Depends - KHONG goi ham trong Depends
+```typescript
+// 1. Trong useState: Khai bao state co the la string hoac null
+const [message, setMessage] = useState<string | null>(null)
 
-```python
-# DUNG - truyen ten ham
-user_id: int = Depends(get_current_user_id)
+// 2. Trong Axios: Bao cho Axios biet API se tra ve kieu LoginResponse
+const res = await api.post<LoginResponse>('/login', data)
+// -> TypeScript se biet luon res.data co field .access_token, .must_change_password!
 
-# SAI - truyen ket qua goi ham
-user_id: int = Depends(get_current_user_id())
+// 3. Trong useForm: Bao cho React Hook Form biet form nay gom nhung o input nao
+const form = useForm<LoginFormData>({ ... })
 ```
 
 ---
 
-*Tai lieu duoc cap nhat: 2026-08-29 - Toan bo kien thuc tu luong Login & Change Password*
+### 2. Cu phap `{ children }: { children: React.ReactNode }` la gi?
+
+Day la cu phap gay "hoang mang" nhat cho nguoi moi hoc React + TS. Hay che no lam 2 nua:
+
+```typescript
+export function ProtectedRoute({ children }: { children: React.ReactNode })
+//                             \___________/  \___________________________/
+//                                Nua 1                   Nua 2
+//                            (Destructuring)       (TypeScript Type)
+```
+
+* **Nửa 1: `{ children }` (Bóc tách Props)**
+  Trong React, component con duoc boc ben trong component cha duoc goi la `children`.
+  Thay vi viet:
+  ```typescript
+  function ProtectedRoute(props) {
+      const children = props.children;
+  }
+  ```
+  Nguoi ta viet tat thanh `{ children }`.
+
+* **Nửa 2: `: { children: React.ReactNode }` (Dinh nghia kieu cho TypeScript)**
+  * Dấu hai chấm `:` trong TypeScript nghia la "co kieu du lieu la".
+  * `React.ReactNode`: La kieu du lieu dai dien cho **"bat cu thu gi React co the hien thi duoc"** (mot the JSX, mot chuoi chu, mot so, hoac nhieu the long nhau).
+
+---
+
+### 3. Destructuring - Boc tach phan tu ra khoi Object
+
+Thay vi phai cham cham tung bien:
+```typescript
+// Cach cu, dai dong:
+const form = useForm()
+const register = form.register
+const handleSubmit = form.handleSubmit
+const errors = form.formState.errors
+
+// Cach hien dai (Destructuring):
+const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting } // boc tiep ben trong formState
+} = useForm()
+```
+
+---
+
+### 4. Dau ba cham `...` (Spread Operator) trong input
+
+Khi viet: `<input {...register('phoneNumber')} />`
+Dau `...` nghia la: "Lay toan bo cac thuoc tinh ma ham `register` tao ra, trai thang vao the `<input>`".
+Nó tuong duong voi:
+```tsx
+<input 
+    name="phoneNumber"
+    onChange={...}
+    onBlur={...}
+    ref={...}
+/>
+```
+Nho dau `...` ma ban khong can tu viet su kien onChange, luu state thu cong nua!
+
+---
+
+### 5. Dau `&&` va `? :` trong JSX (Render co dieu kien)
+
+* **Toan tu `&&` (Neu dung thi hien thi):**
+  ```tsx
+  {errors.phoneNumber && (
+      <p className="text-red-500">{errors.phoneNumber.message}</p>
+  )}
+  ```
+  *Dich nghia:* "Neu co loi phoneNumber thi ve the `<p>` ra, neu khong co thi dung ve gi ca".
+
+* **Toan tu 3 ngoi `condition ? <A /> : <B />` (If...Else):**
+  ```tsx
+  {isSubmitting ? "Dang dang nhap..." : "Dang nhap"}
+  ```
+  *Dich nghia:* "Neu dang submit thi chu la 'Dang dang nhap...', nguoc lai thi la 'Dang nhap'".
+
+---
+
+### 6. `localStorage` - Bo nho so tay tren trinh duyet
+
+`localStorage` la bo nho luu tru key-value (chuoi - chuoi) cua trinh duyet, **F5 hay tat trinh duyet bat lai van con nguyen**.
+
+| Ham | Muc dich | Vi du |
+|---|---|---|
+| `localStorage.setItem(key, value)` | Luu gia tri | `localStorage.setItem('access_token', token)` |
+| `localStorage.getItem(key)` | Lay gia tri ra | `const token = localStorage.getItem('access_token')` |
+| `localStorage.removeItem(key)` | Xoa 1 gia tri | `localStorage.removeItem('access_token')` |
+| `localStorage.clear()` | Xoa sach tat ca | `localStorage.clear()` (khi logout) |
+
+> ⚠️ **LUU Y QUAN TRONG**: `localStorage` CHI LUU DUOC CHUOI (STRING).
+> - Muon luu boolean: `localStorage.setItem('must_change_password', String(res.must_change_password))` -> Luu thanh chuoi `'true'` hoac `'false'`.
+> - Khi doc ra de so sanh boolean:
+>   `const mustChange = localStorage.getItem('must_change_password') === 'true'` (so sanh voi chuoi `'true'`).
+
+---
+
+### 7. `<Navigate to="..." replace />` cua React Router
+
+* **`<Navigate />` la gi?**
+  La mot component dac biet cua `react-router-dom`. Khi React render ra component nay, trinh duyet lap tuc bi "boc dau" chuyen sang URL moi.
+* **`replace` la gi?**
+  Binh thuong khi chuyen trang, trinh duyet se them 1 trang vao Lich su (History).
+  Khi them `replace`, no se **ghi de** trang hien tai trong lich su, nguoi dung se khong the bam nut "Back" tren trinh duyet de quay lai trang bi cam duoc.
+
+---
+
+### 8. Arrow Function `() => { ... }`
+
+```typescript
+// Ham truyen thong:
+function cong(a, b) {
+    return a + b;
+}
+
+// Arrow function (viet gon):
+const cong = (a, b) => a + b;
+
+// Dùng làm callback trong React (vi du nut bam):
+<button onClick={() => setShowPassword(!showPassword)}>
+```
+
+---
+
+---
+
+## 23. Huong dan toan tap: Tu Code Route Guard tu A den Z
+
+### Ban chat: Route Guard hoat dong the nao?
+
+```
+                      Nguoi dung go URL tren trinh duyet
+                                    |
+                                    v
+                         [ ROUTE GUARD kiem tra ]
+                                    |
+         +--------------------------+--------------------------+
+         |                                                     |
+  (Chua du dieu kien)                                   (Du dieu kien hop le)
+         |                                                     |
+         v                                                     v
+Tra ve <Navigate to="..." />                             Tra ve {children}
+(Da nguoi dung sang trang khac)                     (Hien thi trang nguoi dung muon xem)
+```
+
+---
+
+### File 1: Tao file `frontend/src/features/auth/guards/AuthGuard.tsx`
+
+```tsx
+import { Navigate } from 'react-router-dom'
+
+// --------------------------------------------------------------------------
+// 1. ProtectedRoute: Bao ve trang can dang nhap (Dashboard, etc.)
+// --------------------------------------------------------------------------
+export function ProtectedRoute({ children }: { children: React.ReactNode }) {
+    const token = localStorage.getItem('access_token')
+    const mustChangePassword = localStorage.getItem('must_change_password') === 'true'
+
+    // Dieu kien 1: Chua dang nhap -> Da ve trang login
+    if (!token) {
+        return <Navigate to="/login" replace />
+    }
+
+    // Dieu kien 2: Da dang nhap nhung chua doi mat khau lan dau -> Ep sang trang doi mat khau
+    if (mustChangePassword) {
+        return <Navigate to="/change-password" replace />
+    }
+
+    // Neu hop le -> Cho phep xem trang
+    return <>{children}</>
+}
+
+// --------------------------------------------------------------------------
+// 2. ForceChangePasswordRoute: Dành rieng cho trang /change-password
+// --------------------------------------------------------------------------
+export function ForceChangePasswordRoute({ children }: { children: React.ReactNode }) {
+    const token = localStorage.getItem('access_token')
+    const mustChangePassword = localStorage.getItem('must_change_password') === 'true'
+
+    // Chua dang nhap -> Khong duoc vao doi pass -> Da ve login
+    if (!token) {
+        return <Navigate to="/login" replace />
+    }
+
+    // Neu da doi mat khau roi (mustChangePassword = false) ma van mo /change-password -> Day vao dashboard
+    if (!mustChangePassword) {
+        return <Navigate to="/dashboard" replace />
+    }
+
+    return <>{children}</>
+}
+
+// --------------------------------------------------------------------------
+// 3. GuestRoute: Dành rieng cho trang /login (Chi danh cho khach chua dang nhap)
+// --------------------------------------------------------------------------
+export function GuestRoute({ children }: { children: React.ReactNode }) {
+    const token = localStorage.getItem('access_token')
+    const mustChangePassword = localStorage.getItem('must_change_password') === 'true'
+
+    // Neu da dang nhap roi:
+    if (token) {
+        // Neu chua doi mat khau lan dau -> Day sang /change-password
+        if (mustChangePassword) {
+            return <Navigate to="/change-password" replace />
+        }
+        // Neu da doi xong xuoi -> Day vao /dashboard
+        return <Navigate to="/dashboard" replace />
+    }
+
+    // Chua dang nhap -> Cho phep xem form Login
+    return <>{children}</>
+}
+```
+
+---
+
+### File 2: Cach lap vao `App.tsx`
+
+```tsx
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { LoginPage } from './features/auth/login/pages/LoginPage'
+import { ChangePasswordPage } from './features/auth/change_password/pages/ChangePasswordPage'
+import { ProtectedRoute, GuestRoute, ForceChangePasswordRoute } from './features/auth/guards/AuthGuard'
+
+// Trang Dashboard tam thoi de test
+function DashboardPage() {
+    return (
+        <div className="p-8 text-center">
+            <h1 className="text-2xl font-bold text-green-600">Trang Dashboard!</h1>
+            <p className="mt-2 text-gray-600">Ban da dang nhap va doi mat khau thanh cong.</p>
+            <button 
+                onClick={() => {
+                    localStorage.clear()
+                    window.location.href = '/login'
+                }}
+                className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg"
+            >
+                Dang xuat
+            </button>
+        </div>
+    )
+}
+
+export default function App() {
+    return (
+        <BrowserRouter>
+            <Routes>
+                {/* 1. Trang Login: Duoc bao ve boi GuestRoute (da login khong duoc vao nua) */}
+                <Route 
+                    path="/login" 
+                    element={
+                        <GuestRoute>
+                            <LoginPage />
+                        </GuestRoute>
+                    } 
+                />
+
+                {/* 2. Trang Change Password: Chi ai chua doi pass lan dau moi vao duoc */}
+                <Route 
+                    path="/change-password" 
+                    element={
+                        <ForceChangePasswordRoute>
+                            <ChangePasswordPage />
+                        </ForceChangePasswordRoute>
+                    } 
+                />
+
+                {/* 3. Trang Dashboard: Can dang nhap va da doi mat khau */}
+                <Route 
+                    path="/dashboard" 
+                    element={
+                        <ProtectedRoute>
+                            <DashboardPage />
+                        </ProtectedRoute>
+                    } 
+                />
+
+                {/* Cac duong dan mac dinh */}
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+        </BrowserRouter>
+    )
+}
+```
+
+---
+
+*Tai lieu duoc cap nhat: 2026-08-31 - Toan bo kien thuc TypeScript, ES6+ va Route Guard*

@@ -15,6 +15,7 @@ from app.core.security import create_access_token
 from datetime import timedelta
 from app.core.config import settings
 from app.core.logger import logger
+import re
 
 
 class LoginService:
@@ -22,7 +23,7 @@ class LoginService:
         self.repository = repository
 
     def login(self, request: LoginRequest):
-        if len(request.phone_number) != 10:
+        if not re.match(r"^0\d{9}$", request.phone_number):
             raise InvalidPhoneNumberException()
         if len(request.password) == 0:
             raise EmptyPasswordException()
@@ -33,7 +34,7 @@ class LoginService:
             logger.warning(f"Đăng nhập thất bại: Không tìm thấy tài khoản SDT {request.phone_number}")
             raise UserNotFoundException()
         if not verify_password(request.password, user.hashed_password):
-            logger.warning("Đăng nhập thất bại: Mật khẩu sai con ơi")
+            logger.warning("Đăng nhập thất bại: Mật khẩu sai")
             raise WrongPasswordException()
         logger.info(f"Đăng nhập thành công: ID {user.id}, Sdt {request.phone_number}")
         return create_login_response(user)
@@ -42,7 +43,7 @@ class LoginService:
         if not user:
             logger.warning(f"Tìm kiếm thất bại: Không tìm thấy tài khoản ID {user_id}")
             raise UserNotFoundException()
-        return self.repository.find_user_by_id(user_id)
+        return user
 
 def create_token_payload(user: User) -> dict:
     return {

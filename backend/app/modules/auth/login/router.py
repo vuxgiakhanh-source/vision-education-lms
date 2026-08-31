@@ -29,7 +29,7 @@ def login(login_request: LoginRequest,
             detail="Số điện thoại phải có đúng 10 chữ số"
         )
     except EmptyPasswordException:
-        logger.warning(f"Đăng nhập thất bại: Mật khẩu không được để trống :)")
+        logger.warning(f"Đăng nhập thất bại: Mật khẩu không được để trống")
         raise HTTPException(
             status_code=400,
             detail="Mật khẩu không được để trống"
