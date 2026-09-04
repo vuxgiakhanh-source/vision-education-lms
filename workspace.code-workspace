@@ -1,0 +1,14 @@
+﻿{
+    "settings":  {
+                     "workbench.activityBar.location":  "hidden",
+                     "workbench.sideBar.location":  "left",
+                     "workbench.startupEditor":  "none",
+                     "window.zoomLevel":  1,
+                     "workbench.tips.enabled":  false
+                 },
+    "folders":  [
+                    {
+                        "path":  "."
+                    }
+                ]
+}

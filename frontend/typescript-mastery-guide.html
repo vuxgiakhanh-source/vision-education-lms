@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TypeScript Mastery Guide — Từ Newbie đến Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --bg-code: #0d1117;
+            --bg-code-header: #161b22;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --border-color: #1e293b;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --gradient-5: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 119, 198, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 50%, rgba(59, 130, 246, 0.08), transparent),
+                radial-gradient(ellipse 60% 40% at 20% 80%, rgba(139, 92, 246, 0.08), transparent);
+            pointer-events: none;
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 900px; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue); padding: 0.4rem 1rem; border-radius: 50px;
+            font-size: 0.8rem; font-weight: 600; margin-bottom: 1.5rem; letter-spacing: 0.05em;
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 50%, #3b82f6 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p { font-size: 1.15rem; color: var(--text-secondary); max-width: 650px; margin: 0 auto 2.5rem; }
+        .hero-stats { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
+        .hero-stat { text-align: center; }
+        .hero-stat-number {
+            font-size: 2rem; font-weight: 800;
+            background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+        .toc { max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .toc h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 2rem; text-align: center; }
+        .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+        .toc-item {
+            display: flex; align-items: center; gap: 1rem; background: var(--bg-card);
+            border: 1px solid var(--border-color); border-radius: 14px; padding: 1rem 1.25rem;
+            text-decoration: none; color: var(--text-primary); transition: all 0.25s ease;
+        }
+        .toc-item:hover { border-color: var(--accent-blue); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1); }
+        .toc-number {
+            width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; color: white;
+        }
+        .toc-text { font-weight: 600; font-size: 0.9rem; }
+        .toc-level { font-size: 0.7rem; color: var(--text-muted); font-weight: 500; display: block; margin-top: 2px; }
+        .content { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 6rem; }
+        .section { margin-bottom: 5rem; scroll-margin-top: 2rem; }
+        .section-header {
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+            padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);
+        }
+        .section-icon {
+            width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center;
+            justify-content: center; font-size: 1.4rem; flex-shrink: 0; color: white;
+        }
+        .section h2 { font-size: 1.7rem; font-weight: 800; line-height: 1.2; }
+        .section h3 {
+            font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 2.5rem 0 1rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .section h3::before { content: '▸'; color: var(--accent-blue); font-size: 1.1rem; }
+        .section h4 { font-size: 1.05rem; font-weight: 600; color: var(--accent-cyan); margin: 1.5rem 0 0.75rem; }
+        .section p { color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.95rem; }
+        .code-block {
+            background: var(--bg-code); border: 1px solid var(--border-color);
+            border-radius: 12px; margin: 1rem 0 1.5rem; overflow: hidden;
+        }
+        .code-header {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg-code-header); padding: 0.6rem 1rem; border-bottom: 1px solid var(--border-color);
+        }
+        .code-dots { display: flex; gap: 6px; }
+        .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .code-dot.red { background: #ff5f56; }
+        .code-dot.yellow { background: #ffbd2e; }
+        .code-dot.green { background: #27c93f; }
+        .code-filename { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
+        .code-body { padding: 1rem 1.25rem; overflow-x: auto; }
+        .code-body pre {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.7;
+            color: #e6edf3; white-space: pre; margin: 0;
+        }
+        .kw { color: #ff7b72; font-weight: 500; }
+        .type { color: #79c0ff; }
+        .str { color: #a5d6ff; }
+        .num { color: #79c0ff; }
+        .fn { color: #d2a8ff; }
+        .cm { color: #8b949e; font-style: italic; }
+        .op { color: #ff7b72; }
+        .pr { color: #ffa657; }
+        .const { color: #79c0ff; }
+        .bool { color: #ff7b72; }
+        .iface { color: #7ee787; }
+        .param { color: #ffa657; }
+        .generic { color: #d2a8ff; }
+        .callout {
+            border-radius: 12px; padding: 1.15rem 1.25rem; margin: 1.25rem 0;
+            display: flex; gap: 0.75rem; align-items: flex-start; font-size: 0.9rem; line-height: 1.6;
+        }
+        .callout-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+        .callout-content { flex: 1; }
+        .callout-content strong { display: block; margin-bottom: 0.25rem; }
+        .callout.tip { background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+        .callout.warning { background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .callout.danger { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .callout.info { background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); color: #93c5fd; }
+        .callout.purple { background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.2); color: #c4b5fd; }
+        .compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.88rem; }
+        .compare-table th {
+            background: var(--bg-card); padding: 0.75rem 1rem; text-align: left;
+            font-weight: 700; border-bottom: 2px solid var(--border-color); white-space: nowrap;
+        }
+        .compare-table td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+        .compare-table tr:hover td { background: rgba(59, 130, 246, 0.03); }
+        .compare-table code {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: var(--bg-code);
+            padding: 0.15rem 0.4rem; border-radius: 4px; color: #79c0ff;
+        }
+        code {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; background: var(--bg-code);
+            padding: 0.15rem 0.45rem; border-radius: 5px; color: #79c0ff; border: 1px solid var(--border-color);
+        }
+        .level {
+            display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.65rem;
+            border-radius: 50px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em;
+        }
+        .level.newbie { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+        .level.junior { background: rgba(59, 130, 246, 0.15); color: #93c5fd; }
+        .level.mid { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; }
+        .level.senior { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+        .level.pro { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+        .section ul, .section ol { padding-left: 1.25rem; margin-bottom: 1rem; color: var(--text-secondary); }
+        .section li { margin-bottom: 0.4rem; font-size: 0.92rem; }
+        .section li strong { color: var(--text-primary); }
+        .footer { text-align: center; padding: 3rem 1.5rem; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.85rem; }
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .hero-stats { gap: 1rem; }
+            .toc-grid { grid-template-columns: 1fr; }
+            .code-body { padding: 0.75rem 1rem; }
+            .code-body pre { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">🔷 TYPESCRIPT MASTERY GUIDE</div>
+        <h1>Từ Newbie đến Pro trong TypeScript</h1>
+        <p>Tài liệu toàn diện, hệ thống từ căn bản đến nâng cao. Sau khi đọc xong, bạn có thể tự tin <strong>một mình cân toàn bộ Frontend</strong> của bất kỳ dự án nào.</p>
+        <div class="hero-stats">
+            <div class="hero-stat"><div class="hero-stat-number">15</div><div class="hero-stat-label">Chương học</div></div>
+            <div class="hero-stat"><div class="hero-stat-number">100+</div><div class="hero-stat-label">Ví dụ thực tế</div></div>
+            <div class="hero-stat"><div class="hero-stat-number">5</div><div class="hero-stat-label">Cấp độ</div></div>
+        </div>
+    </div>
+</section>
+
+<nav class="toc">
+    <h2>📚 Mục Lục</h2>
+    <div class="toc-grid">
+        <a href="#ch1" class="toc-item"><div class="toc-number" style="background:var(--gradient-4)">1</div><div><div class="toc-text">TypeScript là gì? Tại sao cần học?</div><span class="toc-level">🟢 Newbie</span></div></a>
+        <a href="#ch2" class="toc-item"><div class="toc-number" style="background:var(--gradient-4)">2</div><div><div class="toc-text">Các kiểu dữ liệu cơ bản</div><span class="toc-level">🟢 Newbie</span></div></a>
+        <a href="#ch3" class="toc-item"><div class="toc-number" style="background:var(--gradient-4)">3</div><div><div class="toc-text">Hàm (Function) trong TypeScript</div><span class="toc-level">🟢 Newbie</span></div></a>
+        <a href="#ch4" class="toc-item"><div class="toc-number" style="background:var(--gradient-3)">4</div><div><div class="toc-text">Object, Interface & Type Alias</div><span class="toc-level">🔵 Junior</span></div></a>
+        <a href="#ch5" class="toc-item"><div class="toc-number" style="background:var(--gradient-3)">5</div><div><div class="toc-text">Array, Tuple & Enum</div><span class="toc-level">🔵 Junior</span></div></a>
+        <a href="#ch6" class="toc-item"><div class="toc-number" style="background:var(--gradient-3)">6</div><div><div class="toc-text">Union, Intersection & Literal Types</div><span class="toc-level">🔵 Junior</span></div></a>
+        <a href="#ch7" class="toc-item"><div class="toc-number" style="background:var(--gradient-1)">7</div><div><div class="toc-text">Type Narrowing & Type Guards</div><span class="toc-level">🟣 Mid-level</span></div></a>
+        <a href="#ch8" class="toc-item"><div class="toc-number" style="background:var(--gradient-1)">8</div><div><div class="toc-text">Generics — Sức mạnh cốt lõi</div><span class="toc-level">🟣 Mid-level</span></div></a>
+        <a href="#ch9" class="toc-item"><div class="toc-number" style="background:var(--gradient-1)">9</div><div><div class="toc-text">Class & OOP trong TypeScript</div><span class="toc-level">🟣 Mid-level</span></div></a>
+        <a href="#ch10" class="toc-item"><div class="toc-number" style="background:var(--gradient-5)">10</div><div><div class="toc-text">Module & Import/Export</div><span class="toc-level">🟡 Senior</span></div></a>
+        <a href="#ch11" class="toc-item"><div class="toc-number" style="background:var(--gradient-5)">11</div><div><div class="toc-text">Async/Await & Promise</div><span class="toc-level">🟡 Senior</span></div></a>
+        <a href="#ch12" class="toc-item"><div class="toc-number" style="background:var(--gradient-5)">12</div><div><div class="toc-text">Utility Types (Built-in)</div><span class="toc-level">🟡 Senior</span></div></a>
+        <a href="#ch13" class="toc-item"><div class="toc-number" style="background:var(--gradient-2)">13</div><div><div class="toc-text">Advanced Patterns & Tricks</div><span class="toc-level">🔴 Pro</span></div></a>
+        <a href="#ch14" class="toc-item"><div class="toc-number" style="background:var(--gradient-2)">14</div><div><div class="toc-text">TypeScript trong React (TSX)</div><span class="toc-level">🔴 Pro</span></div></a>
+        <a href="#ch15" class="toc-item"><div class="toc-number" style="background:var(--gradient-2)">15</div><div><div class="toc-text">Best Practices & Anti-Patterns</div><span class="toc-level">🔴 Pro</span></div></a>
+    </div>
+</nav>
+
+<main class="content">
+
+<!-- CHAPTER 1 -->
+<section class="section" id="ch1">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-4)">1</div>
+        <div><h2>TypeScript là gì? Tại sao cần học?</h2><span class="level newbie">🟢 NEWBIE</span></div>
+    </div>
+    <p><strong style="color:var(--text-primary);font-size:1.05rem">TypeScript = JavaScript + Hệ thống kiểu dữ liệu (Type System)</strong></p>
+    <p>TypeScript là ngôn ngữ do Microsoft tạo ra năm 2012 bằng cách thêm "lớp áo giáp" kiểu dữ liệu lên trên JavaScript. Mọi code JavaScript hợp lệ đều là code TypeScript hợp lệ.</p>
+
+    <h3>So sánh JavaScript vs TypeScript</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">javascript — Không có kiểu dữ liệu</span></div>
+        <div class="code-body"><pre><span class="cm">// JavaScript: Mọi thứ tự do, không ai kiểm soát</span>
+<span class="kw">let</span> studentName = <span class="str">"Nguyễn Văn A"</span>
+studentName = <span class="num">12345</span>        <span class="cm">// CHẠY ĐƯỢC! Nhưng là BUG tiềm ẩn!</span>
+studentName = <span class="bool">true</span>         <span class="cm">// CHẠY ĐƯỢC! Biến đang là chuỗi lại thành boolean</span>
+
+<span class="kw">function</span> <span class="fn">add</span>(a, b) {
+    <span class="kw">return</span> a + b
+}
+<span class="fn">add</span>(<span class="str">"1"</span>, <span class="num">2</span>)   <span class="cm">// Kết quả: "12" (NỐI CHUỖI chứ không phải phép cộng!)</span>
+<span class="fn">add</span>()          <span class="cm">// Kết quả: NaN (Not a Number — Lỗi ngầm!)</span></pre></div>
+    </div>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">typescript — Có kiểu dữ liệu bảo vệ</span></div>
+        <div class="code-body"><pre><span class="cm">// TypeScript: Mọi thứ được kiểm soát chặt chẽ</span>
+<span class="kw">let</span> studentName<span class="op">:</span> <span class="type">string</span> = <span class="str">"Nguyễn Văn A"</span>
+studentName = <span class="num">12345</span>        <span class="cm">// ❌ LỖI NGAY! Type 'number' không gán được cho type 'string'</span>
+
+<span class="kw">function</span> <span class="fn">add</span>(a<span class="op">:</span> <span class="type">number</span>, b<span class="op">:</span> <span class="type">number</span>)<span class="op">:</span> <span class="type">number</span> {
+    <span class="kw">return</span> a + b
+}
+<span class="fn">add</span>(<span class="str">"1"</span>, <span class="num">2</span>)   <span class="cm">// ❌ LỖI NGAY! Argument '"1"' không phải number</span>
+<span class="fn">add</span>()          <span class="cm">// ❌ LỖI NGAY! Thiếu 2 tham số bắt buộc</span>
+<span class="fn">add</span>(<span class="num">1</span>, <span class="num">2</span>)      <span class="cm">// ✅ 3 — Chính xác!</span></pre></div>
+    </div>
+    <div class="callout tip">
+        <div class="callout-icon">💡</div>
+        <div class="callout-content">
+            <strong>Ghi nhớ cốt lõi:</strong>
+            TypeScript báo lỗi <strong>LÚC BẠN GÕ CODE</strong> (trong VS Code, gạch đỏ ngay trước mắt). JavaScript chỉ báo lỗi <strong>LÚC CHẠY</strong> (mở trình duyệt lên mới thấy lỗi, hoặc tệ hơn là chạy bình thường nhưng ra kết quả sai bét).
+        </div>
+    </div>
+
+    <h3>TypeScript hoạt động thế nào?</h3>
+    <p>Trình duyệt web KHÔNG hiểu TypeScript. Trước khi chạy, TypeScript phải được dịch (compile) sang JavaScript thuần:</p>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">Quy trình biên dịch</span></div>
+        <div class="code-body"><pre><span class="cm">// Bạn viết (TypeScript):</span>
+<span class="kw">const</span> age<span class="op">:</span> <span class="type">number</span> = <span class="num">25</span>
+
+<span class="cm">// Sau khi compile, trình duyệt nhận được (JavaScript):</span>
+<span class="kw">const</span> age = <span class="num">25</span>
+
+<span class="cm">// Phần ": number" bị XÓA SẠCH sau khi compile!</span>
+<span class="cm">// TypeScript chỉ tồn tại lúc bạn ngồi gõ code,</span>
+<span class="cm">// khi chạy thật nó biến mất hoàn toàn.</span></pre></div>
+    </div>
+</section>
+
+<!-- CHAPTER 2 -->
+<section class="section" id="ch2">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-4)">2</div>
+        <div><h2>Các kiểu dữ liệu cơ bản</h2><span class="level newbie">🟢 NEWBIE</span></div>
+    </div>
+    <p>TypeScript có <strong>7 kiểu dữ liệu nguyên thủy (Primitive Types)</strong> mà bạn cần nắm vững:</p>
+    <table class="compare-table">
+        <thead><tr><th>Kiểu</th><th>Ý nghĩa</th><th>Ví dụ</th></tr></thead>
+        <tbody>
+            <tr><td><code>string</code></td><td>Chuỗi ký tự (văn bản)</td><td><code>"Xin chào"</code>, <code>'Hello'</code></td></tr>
+            <tr><td><code>number</code></td><td>Số (nguyên + thập phân)</td><td><code>42</code>, <code>3.14</code>, <code>-7</code></td></tr>
+            <tr><td><code>boolean</code></td><td>Đúng hoặc Sai</td><td><code>true</code>, <code>false</code></td></tr>
+            <tr><td><code>null</code></td><td>Giá trị rỗng (có chủ đích)</td><td><code>null</code></td></tr>
+            <tr><td><code>undefined</code></td><td>Chưa được gán giá trị</td><td><code>undefined</code></td></tr>
+            <tr><td><code>bigint</code></td><td>Số cực lớn</td><td><code>9007199254740991n</code></td></tr>
+            <tr><td><code>symbol</code></td><td>Giá trị duy nhất (hiếm dùng)</td><td><code>Symbol("id")</code></td></tr>
+        </tbody>
+    </table>
+
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">basics.ts — Khai báo biến với kiểu dữ liệu</span></div>
+        <div class="code-body"><pre><span class="cm">// ====== CÁCH 1: Khai báo tường minh (Explicit) ======</span>
+<span class="kw">let</span> fullName<span class="op">:</span> <span class="type">string</span> = <span class="str">"Nguyễn Văn A"</span>
+<span class="kw">let</span> age<span class="op">:</span> <span class="type">number</span> = <span class="num">20</span>
+<span class="kw">let</span> isStudent<span class="op">:</span> <span class="type">boolean</span> = <span class="bool">true</span>
+<span class="kw">let</span> score<span class="op">:</span> <span class="type">number</span> | <span class="type">null</span> = <span class="bool">null</span>   <span class="cm">// Có thể là số HOẶC null</span>
+
+<span class="cm">// ====== CÁCH 2: TypeScript tự suy luận (Type Inference) ======</span>
+<span class="kw">let</span> city = <span class="str">"Hà Nội"</span>              <span class="cm">// TS tự hiểu: city là string</span>
+<span class="kw">let</span> year = <span class="num">2024</span>                 <span class="cm">// TS tự hiểu: year là number</span>
+<span class="kw">let</span> isActive = <span class="bool">false</span>            <span class="cm">// TS tự hiểu: isActive là boolean</span>
+
+<span class="cm">// ====== const vs let ======</span>
+<span class="kw">const</span> PI = <span class="num">3.14</span>                 <span class="cm">// const: Không thể gán lại (hằng số)</span>
+<span class="kw">let</span> counter = <span class="num">0</span>                <span class="cm">// let: Có thể thay đổi giá trị</span>
+counter = <span class="num">1</span>                    <span class="cm">// ✅ OK</span>
+<span class="cm">// PI = 3.15                   // ❌ LỖI! const không được gán lại</span>
+
+<span class="cm">// ====== any — "Tắt" TypeScript (TRÁNH DÙNG!) ======</span>
+<span class="kw">let</span> data<span class="op">:</span> <span class="type">any</span> = <span class="str">"hello"</span>
+data = <span class="num">42</span>                      <span class="cm">// ✅ Nhưng mất hết sự bảo vệ!</span>
+data = <span class="bool">true</span>                    <span class="cm">// ✅ Nguy hiểm: giống viết JavaScript thuần</span></pre></div>
+    </div>
+    <div class="callout warning">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-content">
+            <strong>Tránh dùng <code>any</code> bằng mọi giá!</strong>
+            Khi bạn khai báo <code>any</code>, TypeScript sẽ "nhắm mắt làm ngơ" và không kiểm tra kiểu dữ liệu nữa. Nếu không biết kiểu gì, hãy dùng <code>unknown</code> thay thế.
+        </div>
+    </div>
+
+    <h3>Type Inference (Suy luận tự động)</h3>
+    <p>TypeScript rất thông minh, nó có thể tự đoán kiểu dữ liệu. Bạn <strong>KHÔNG CẦN</strong> phải ghi kiểu ở mọi nơi:</p>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">inference.ts</span></div>
+        <div class="code-body"><pre><span class="cm">// TypeScript tự suy luận — BẠN KHÔNG CẦN GHI KIỂU</span>
+<span class="kw">let</span> message = <span class="str">"Xin chào"</span>    <span class="cm">// TS tự biết: string</span>
+<span class="kw">let</span> count = <span class="num">0</span>              <span class="cm">// TS tự biết: number</span>
+<span class="kw">let</span> items = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]     <span class="cm">// TS tự biết: number[]</span>
+
+<span class="cm">// CHỈ ghi kiểu khi TypeScript KHÔNG THỂ TỰ ĐOÁN được:</span>
+<span class="kw">let</span> result<span class="op">:</span> <span class="type">string</span> | <span class="type">number</span>   <span class="cm">// Biến có thể là string HOẶC number</span>
+<span class="kw">let</span> user<span class="op">:</span> <span class="type">User</span> | <span class="type">null</span> = <span class="bool">null</span>  <span class="cm">// Khởi tạo null, sau này sẽ gán User</span></pre></div>
+    </div>
+</section>
+
+<!-- CHAPTER 3 -->
+<section class="section" id="ch3">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-4)">3</div>
+        <div><h2>Hàm (Function) trong TypeScript</h2><span class="level newbie">🟢 NEWBIE</span></div>
+    </div>
+    <p>Hàm là nơi bạn sẽ <strong>ghi kiểu dữ liệu nhiều nhất</strong>. Bạn cần chỉ rõ: tham số đầu vào là gì, và hàm trả về cái gì.</p>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">functions.ts — Các cách viết hàm</span></div>
+        <div class="code-body"><pre><span class="cm">// ====== 1. Function Declaration ======</span>
+<span class="kw">function</span> <span class="fn">greet</span>(<span class="param">name</span><span class="op">:</span> <span class="type">string</span>)<span class="op">:</span> <span class="type">string</span> {
+    <span class="kw">return</span> <span class="str">`Xin chào, </span><span class="op">${</span><span class="param">name</span><span class="op">}</span><span class="str">!`</span>
+}
+<span class="cm">//           ↑ tham số    ↑ kiểu trả về</span>
+
+<span class="cm">// ====== 2. Arrow Function (phổ biến trong React) ======</span>
+<span class="kw">const</span> <span class="fn">add</span> = (<span class="param">a</span><span class="op">:</span> <span class="type">number</span>, <span class="param">b</span><span class="op">:</span> <span class="type">number</span>)<span class="op">:</span> <span class="type">number</span> <span class="op">=></span> {
+    <span class="kw">return</span> a + b
+}
+<span class="cm">// Viết gọn (1 dòng return):</span>
+<span class="kw">const</span> <span class="fn">multiply</span> = (<span class="param">a</span><span class="op">:</span> <span class="type">number</span>, <span class="param">b</span><span class="op">:</span> <span class="type">number</span>)<span class="op">:</span> <span class="type">number</span> <span class="op">=></span> a * b
+
+<span class="cm">// ====== 3. Tham số tùy chọn (dấu ?) ======</span>
+<span class="kw">function</span> <span class="fn">createUser</span>(<span class="param">name</span><span class="op">:</span> <span class="type">string</span>, <span class="param">age</span><span class="op">?:</span> <span class="type">number</span>)<span class="op">:</span> <span class="type">string</span> {
+    <span class="kw">if</span> (age) { <span class="kw">return</span> <span class="str">`</span><span class="op">${</span><span class="param">name</span><span class="op">}</span><span class="str"> - </span><span class="op">${</span><span class="param">age</span><span class="op">}</span><span class="str"> tuổi`</span> }
+    <span class="kw">return</span> name
+}
+<span class="fn">createUser</span>(<span class="str">"An"</span>)       <span class="cm">// ✅ OK — age là tùy chọn</span>
+<span class="fn">createUser</span>(<span class="str">"An"</span>, <span class="num">20</span>)  <span class="cm">// ✅ OK</span>
+
+<span class="cm">// ====== 4. Giá trị mặc định ======</span>
+<span class="kw">function</span> <span class="fn">welcome</span>(<span class="param">name</span><span class="op">:</span> <span class="type">string</span>, <span class="param">role</span><span class="op">:</span> <span class="type">string</span> = <span class="str">"student"</span>)<span class="op">:</span> <span class="type">string</span> {
+    <span class="kw">return</span> <span class="str">`</span><span class="op">${</span><span class="param">name</span><span class="op">}</span><span class="str"> (</span><span class="op">${</span><span class="param">role</span><span class="op">}</span><span class="str">)`</span>
+}
+
+<span class="cm">// ====== 5. Hàm không trả về gì (void) ======</span>
+<span class="kw">function</span> <span class="fn">logMessage</span>(<span class="param">msg</span><span class="op">:</span> <span class="type">string</span>)<span class="op">:</span> <span class="type">void</span> {
+    console.<span class="fn">log</span>(msg)
+}</pre></div>
+    </div>
+    <div class="callout info">
+        <div class="callout-icon">📌</div>
+        <div class="callout-content">
+            <strong>Quy tắc vàng:</strong>
+            <ul style="margin-top:0.5rem">
+                <li><strong>Tham số:</strong> LUÔN ghi kiểu (vì TS không thể tự suy luận).</li>
+                <li><strong>Kiểu trả về:</strong> TS thường tự suy luận được, nhưng ghi ra thì code sẽ rõ ràng hơn.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- CHAPTER 4 -->
+<section class="section" id="ch4">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-3)">4</div>
+        <div><h2>Object, Interface & Type Alias</h2><span class="level junior">🔵 JUNIOR</span></div>
+    </div>
+    <p>Đây là <strong>chương quan trọng nhất</strong> của TypeScript! Trong dự án thực tế, bạn sẽ làm việc với object hầu hết thời gian.</p>
+
+    <h3>Interface — Bản thiết kế cho Object</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">interfaces.ts — Khai báo interface</span></div>
+        <div class="code-body"><pre><span class="cm">// Khai báo "bản thiết kế" cho một Học sinh</span>
+<span class="kw">interface</span> <span class="iface">Student</span> {
+    id<span class="op">:</span> <span class="type">number</span>
+    fullName<span class="op">:</span> <span class="type">string</span>
+    phoneNumber<span class="op">:</span> <span class="type">string</span>
+    grade<span class="op">:</span> <span class="type">number</span>
+    isActive<span class="op">:</span> <span class="type">boolean</span>
+    email<span class="op">?:</span> <span class="type">string</span>           <span class="cm">// Dấu ? = tùy chọn (có thể không có)</span>
+}
+
+<span class="cm">// Sử dụng interface để tạo object</span>
+<span class="kw">const</span> student1<span class="op">:</span> <span class="iface">Student</span> = {
+    id: <span class="num">1</span>,
+    fullName: <span class="str">"Trần Văn B"</span>,
+    phoneNumber: <span class="str">"0987654321"</span>,
+    grade: <span class="num">10</span>,
+    isActive: <span class="bool">true</span>
+    <span class="cm">// email không bắt buộc nên bỏ qua được</span>
+}
+
+<span class="cm">// ❌ LỖI! Thiếu thuộc tính bắt buộc 'grade'</span>
+<span class="kw">const</span> student2<span class="op">:</span> <span class="iface">Student</span> = {
+    id: <span class="num">2</span>, fullName: <span class="str">"Lê Thị C"</span>,
+    phoneNumber: <span class="str">"0912345678"</span>, isActive: <span class="bool">true</span>
+}</pre></div>
+    </div>
+
+    <h3>Type Alias — Cách thứ 2 để định nghĩa kiểu</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">types.ts — type vs interface</span></div>
+        <div class="code-body"><pre><span class="cm">// Dùng "type" — Cú pháp hơi khác nhưng tác dụng tương tự</span>
+<span class="kw">type</span> <span class="iface">LoginFormData</span> = {
+    phoneNumber<span class="op">:</span> <span class="type">string</span>
+    password<span class="op">:</span> <span class="type">string</span>
+}
+
+<span class="cm">// type còn làm được những thứ interface KHÔNG LÀM ĐƯỢC:</span>
+<span class="kw">type</span> <span class="iface">UserRole</span> = <span class="str">"student"</span> | <span class="str">"teacher"</span> | <span class="str">"admin"</span>   <span class="cm">// Union of literals</span>
+<span class="kw">type</span> <span class="iface">ID</span> = <span class="type">string</span> | <span class="type">number</span>                                <span class="cm">// Union type</span>
+<span class="kw">type</span> <span class="iface">Coordinate</span> = [<span class="type">number</span>, <span class="type">number</span>]                     <span class="cm">// Tuple</span></pre></div>
+    </div>
+
+    <h3>Khi nào dùng interface, khi nào dùng type?</h3>
+    <table class="compare-table">
+        <thead><tr><th>Tiêu chí</th><th><code>interface</code></th><th><code>type</code></th></tr></thead>
+        <tbody>
+            <tr><td>Mô tả hình dạng object</td><td>✅ Chuẩn bài</td><td>✅ Được</td></tr>
+            <tr><td>Kế thừa / mở rộng (extends)</td><td>✅ Dễ dàng</td><td>✅ Dùng <code>&</code></td></tr>
+            <tr><td>Union type (<code>A | B</code>)</td><td>❌ Không được</td><td>✅ Chuẩn bài</td></tr>
+            <tr><td>Tuple, Literal, Mapped type</td><td>❌ Không được</td><td>✅ Chuẩn bài</td></tr>
+            <tr><td>Dùng trong React (Props, State)</td><td>✅ Phổ biến nhất</td><td>✅ Cũng phổ biến</td></tr>
+        </tbody>
+    </table>
+    <div class="callout purple">
+        <div class="callout-icon">🎯</div>
+        <div class="callout-content"><strong>Quy tắc đơn giản nhất:</strong> Dùng <code>interface</code> khi mô tả hình dạng của object (Props, API response...). Dùng <code>type</code> cho mọi thứ còn lại (union, tuple, computed type...).</div>
+    </div>
+
+    <h3>Kế thừa Interface (extends)</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">extends.ts</span></div>
+        <div class="code-body"><pre><span class="kw">interface</span> <span class="iface">BaseUser</span> {
+    id<span class="op">:</span> <span class="type">number</span>
+    fullName<span class="op">:</span> <span class="type">string</span>
+    phoneNumber<span class="op">:</span> <span class="type">string</span>
+}
+
+<span class="kw">interface</span> <span class="iface">Student</span> <span class="kw">extends</span> <span class="iface">BaseUser</span> {
+    grade<span class="op">:</span> <span class="type">number</span>
+    classRoom<span class="op">:</span> <span class="type">string</span>
+}
+
+<span class="kw">interface</span> <span class="iface">Teacher</span> <span class="kw">extends</span> <span class="iface">BaseUser</span> {
+    subject<span class="op">:</span> <span class="type">string</span>
+    yearsOfExperience<span class="op">:</span> <span class="type">number</span>
+}
+
+<span class="cm">// Student sẽ có: id, fullName, phoneNumber + grade, classRoom</span>
+<span class="kw">const</span> student<span class="op">:</span> <span class="iface">Student</span> = {
+    id: <span class="num">1</span>, fullName: <span class="str">"Nguyễn Văn A"</span>,
+    phoneNumber: <span class="str">"0987654321"</span>, grade: <span class="num">10</span>, classRoom: <span class="str">"10A1"</span>
+}</pre></div>
+    </div>
+</section>
+
+<!-- CHAPTER 5 -->
+<section class="section" id="ch5">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-3)">5</div>
+        <div><h2>Array, Tuple & Enum</h2><span class="level junior">🔵 JUNIOR</span></div>
+    </div>
+    <h3>Array — Mảng</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">arrays.ts</span></div>
+        <div class="code-body"><pre><span class="kw">const</span> scores<span class="op">:</span> <span class="type">number</span>[] = [<span class="num">8</span>, <span class="num">9</span>, <span class="num">7.5</span>, <span class="num">10</span>]
+<span class="kw">const</span> names<span class="op">:</span> <span class="type">string</span>[] = [<span class="str">"An"</span>, <span class="str">"Bình"</span>, <span class="str">"Cường"</span>]
+
+<span class="cm">// Mảng object (dùng CỰC NHIỀU khi gọi API)</span>
+<span class="kw">interface</span> <span class="iface">Student</span> { id<span class="op">:</span> <span class="type">number</span>; name<span class="op">:</span> <span class="type">string</span> }
+<span class="kw">const</span> students<span class="op">:</span> <span class="iface">Student</span>[] = [
+    { id: <span class="num">1</span>, name: <span class="str">"An"</span> },
+    { id: <span class="num">2</span>, name: <span class="str">"Bình"</span> }
+]
+
+<span class="cm">// Các hàm phổ biến của mảng (dùng hàng ngày)</span>
+<span class="kw">const</span> doubled = scores.<span class="fn">map</span>(s <span class="op">=></span> s * <span class="num">2</span>)         <span class="cm">// [16, 18, 15, 20]</span>
+<span class="kw">const</span> passed = scores.<span class="fn">filter</span>(s <span class="op">=></span> s >= <span class="num">8</span>)       <span class="cm">// [8, 9, 10]</span>
+<span class="kw">const</span> total = scores.<span class="fn">reduce</span>((a, b) <span class="op">=></span> a + b, <span class="num">0</span>) <span class="cm">// 34.5</span>
+<span class="kw">const</span> found = students.<span class="fn">find</span>(s <span class="op">=></span> s.id === <span class="num">1</span>)   <span class="cm">// { id: 1, name: "An" }</span></pre></div>
+    </div>
+
+    <h3>Tuple — Mảng cố định kiểu theo vị trí</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">tuple.ts</span></div>
+        <div class="code-body"><pre><span class="kw">type</span> <span class="iface">Coordinate</span> = [<span class="type">number</span>, <span class="type">number</span>]
+<span class="kw">const</span> point<span class="op">:</span> <span class="iface">Coordinate</span> = [<span class="num">10.5</span>, <span class="num">20.3</span>]    <span class="cm">// ✅</span>
+
+<span class="cm">// React Hook useState trả về Tuple!</span>
+<span class="cm">// const [count, setCount] = useState(0)</span>
+<span class="cm">//        ↑number  ↑function</span></pre></div>
+    </div>
+
+    <h3>Enum — Tập hợp hằng số có tên</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">enum.ts</span></div>
+        <div class="code-body"><pre><span class="kw">enum</span> <span class="iface">UserRole</span> {
+    Student = <span class="str">"student"</span>,
+    Teacher = <span class="str">"teacher"</span>,
+    Admin = <span class="str">"admin"</span>
+}
+
+<span class="kw">function</span> <span class="fn">checkRole</span>(<span class="param">role</span><span class="op">:</span> <span class="iface">UserRole</span>) {
+    <span class="kw">if</span> (role === <span class="iface">UserRole</span>.Admin) {
+        console.<span class="fn">log</span>(<span class="str">"Bạn là quản trị viên!"</span>)
+    }
+}
+
+<span class="cm">// 💡 Trong React, nhiều người thích Union Literal thay Enum vì nhẹ hơn:</span>
+<span class="kw">type</span> <span class="iface">Role</span> = <span class="str">"student"</span> | <span class="str">"teacher"</span> | <span class="str">"admin"</span></pre></div>
+    </div>
+</section>
+
+<!-- CHAPTER 6 -->
+<section class="section" id="ch6">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-3)">6</div>
+        <div><h2>Union, Intersection & Literal Types</h2><span class="level junior">🔵 JUNIOR</span></div>
+    </div>
+    <h3>Union Type — "HOẶC"</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">union.ts</span></div>
+        <div class="code-body"><pre><span class="kw">type</span> <span class="iface">ID</span> = <span class="type">string</span> | <span class="type">number</span>
+<span class="kw">let</span> userId<span class="op">:</span> <span class="iface">ID</span> = <span class="num">123</span>       <span class="cm">// ✅ number</span>
+userId = <span class="str">"abc-xyz"</span>         <span class="cm">// ✅ string</span>
+
+<span class="cm">// Ứng dụng thực tế:</span>
+<span class="kw">type</span> <span class="iface">ApiResponse</span> = {
+    status<span class="op">:</span> <span class="str">"success"</span> | <span class="str">"error"</span>
+    data<span class="op">:</span> <span class="type">string</span> | <span class="type">null</span>
+    code<span class="op">:</span> <span class="type">number</span>
+}
+
+<span class="cm">// Ví dụ trong dự án LMS:</span>
+<span class="kw">type</span> <span class="iface">Score</span> = <span class="type">number</span> | <span class="str">"Chưa có điểm"</span> | <span class="str">"Vắng"</span></pre></div>
+    </div>
+
+    <h3>Intersection Type — "VÀ"</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">intersection.ts</span></div>
+        <div class="code-body"><pre><span class="kw">type</span> <span class="iface">HasName</span> = { name<span class="op">:</span> <span class="type">string</span> }
+<span class="kw">type</span> <span class="iface">HasAge</span> = { age<span class="op">:</span> <span class="type">number</span> }
+<span class="kw">type</span> <span class="iface">HasRole</span> = { role<span class="op">:</span> <span class="str">"student"</span> | <span class="str">"teacher"</span> }
+
+<span class="cm">// Person = phải có CẢ name, CẢ age, CẢ role</span>
+<span class="kw">type</span> <span class="iface">Person</span> = <span class="iface">HasName</span> & <span class="iface">HasAge</span> & <span class="iface">HasRole</span>
+
+<span class="kw">const</span> person<span class="op">:</span> <span class="iface">Person</span> = { name: <span class="str">"An"</span>, age: <span class="num">20</span>, role: <span class="str">"student"</span> }</pre></div>
+    </div>
+
+    <h3>Literal Types — Giá trị cụ thể làm kiểu</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">literal.ts</span></div>
+        <div class="code-body"><pre><span class="kw">type</span> <span class="iface">Direction</span> = <span class="str">"up"</span> | <span class="str">"down"</span> | <span class="str">"left"</span> | <span class="str">"right"</span>
+<span class="kw">type</span> <span class="iface">HttpMethod</span> = <span class="str">"GET"</span> | <span class="str">"POST"</span> | <span class="str">"PUT"</span> | <span class="str">"DELETE"</span>
+<span class="kw">type</span> <span class="iface">Grade</span> = <span class="num">10</span> | <span class="num">11</span> | <span class="num">12</span>
+
+<span class="kw">function</span> <span class="fn">move</span>(<span class="param">dir</span><span class="op">:</span> <span class="iface">Direction</span>) { <span class="cm">/* ... */</span> }
+<span class="fn">move</span>(<span class="str">"up"</span>)     <span class="cm">// ✅</span>
+<span class="cm">// move("diagonal")  // ❌ "diagonal" không phải giá trị hợp lệ!</span></pre></div>
+    </div>
+</section>
+
+<!-- CHAPTER 7 -->
+<section class="section" id="ch7">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-1)">7</div>
+        <div><h2>Type Narrowing & Type Guards</h2><span class="level mid">🟣 MID-LEVEL</span></div>
+    </div>
+    <p>Khi biến có Union Type, bạn phải <strong>"thu hẹp" (narrow)</strong> kiểu để xử lý đúng.</p>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">narrowing.ts</span></div>
+        <div class="code-body"><pre><span class="cm">// ====== typeof Guard ======</span>
+<span class="kw">function</span> <span class="fn">display</span>(<span class="param">value</span><span class="op">:</span> <span class="type">string</span> | <span class="type">number</span>) {
+    <span class="kw">if</span> (<span class="kw">typeof</span> value === <span class="str">"string"</span>) {
+        console.<span class="fn">log</span>(value.<span class="fn">toUpperCase</span>())  <span class="cm">// TS biết chắc: string</span>
+    } <span class="kw">else</span> {
+        console.<span class="fn">log</span>(value.<span class="fn">toFixed</span>(<span class="num">2</span>))     <span class="cm">// TS biết chắc: number</span>
+    }
+}
+
+<span class="cm">// ====== Truthiness Guard (Kiểm tra null/undefined) ======</span>
+<span class="kw">function</span> <span class="fn">printName</span>(<span class="param">name</span><span class="op">:</span> <span class="type">string</span> | <span class="type">null</span>) {
+    <span class="kw">if</span> (name) {
+        console.<span class="fn">log</span>(name.<span class="fn">toUpperCase</span>())
+    }
+}
+
+<span class="cm">// ====== "in" Guard ======</span>
+<span class="kw">interface</span> <span class="iface">Student</span> { grade<span class="op">:</span> <span class="type">number</span> }
+<span class="kw">interface</span> <span class="iface">Teacher</span> { subject<span class="op">:</span> <span class="type">string</span> }
+
+<span class="kw">function</span> <span class="fn">getInfo</span>(<span class="param">person</span><span class="op">:</span> <span class="iface">Student</span> | <span class="iface">Teacher</span>) {
+    <span class="kw">if</span> (<span class="str">"grade"</span> <span class="kw">in</span> person) {
+        console.<span class="fn">log</span>(<span class="str">`Học sinh lớp </span><span class="op">${</span>person.grade<span class="op">}</span><span class="str">`</span>)
+    } <span class="kw">else</span> {
+        console.<span class="fn">log</span>(<span class="str">`Giáo viên môn </span><span class="op">${</span>person.subject<span class="op">}</span><span class="str">`</span>)
+    }
+}
+
+<span class="cm">// ====== Discriminated Union (Pattern cực mạnh!) ======</span>
+<span class="kw">interface</span> <span class="iface">SuccessResponse</span> { status<span class="op">:</span> <span class="str">"success"</span>; data<span class="op">:</span> <span class="type">string</span> }
+<span class="kw">interface</span> <span class="iface">ErrorResponse</span> { status<span class="op">:</span> <span class="str">"error"</span>; message<span class="op">:</span> <span class="type">string</span> }
+<span class="kw">type</span> <span class="iface">ApiResponse</span> = <span class="iface">SuccessResponse</span> | <span class="iface">ErrorResponse</span>
+
+<span class="kw">function</span> <span class="fn">handleResponse</span>(<span class="param">res</span><span class="op">:</span> <span class="iface">ApiResponse</span>) {
+    <span class="kw">if</span> (res.status === <span class="str">"success"</span>) {
+        console.<span class="fn">log</span>(res.data)     <span class="cm">// TS biết chắc: SuccessResponse</span>
+    } <span class="kw">else</span> {
+        console.<span class="fn">log</span>(res.message)  <span class="cm">// TS biết chắc: ErrorResponse</span>
+    }
+}</pre></div>
+    </div>
+    <div class="callout tip">
+        <div class="callout-icon">💡</div>
+        <div class="callout-content"><strong>Bạn đã dùng pattern này trong AuthGuard!</strong> Khi viết <code>if (!token)</code>, bạn đang narrow biến <code>token</code> từ <code>string | null</code> thành <code>null</code> trong if, và <code>string</code> bên ngoài!</div>
+    </div>
+</section>
+
+<!-- CHAPTER 8 -->
+<section class="section" id="ch8">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-1)">8</div>
+        <div><h2>Generics — Sức mạnh cốt lõi</h2><span class="level mid">🟣 MID-LEVEL</span></div>
+    </div>
+    <p>Generics cho phép viết code <strong>linh hoạt</strong> nhưng vẫn <strong>an toàn kiểu dữ liệu</strong>. Hãy nghĩ Generics giống "biến cho kiểu dữ liệu".</p>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">generics.ts</span></div>
+        <div class="code-body"><pre><span class="cm">// VẤN ĐỀ: Phải viết lặp lại cho từng kiểu</span>
+<span class="kw">function</span> <span class="fn">getFirstNumber</span>(<span class="param">arr</span><span class="op">:</span> <span class="type">number</span>[])<span class="op">:</span> <span class="type">number</span> { <span class="kw">return</span> arr[<span class="num">0</span>] }
+<span class="kw">function</span> <span class="fn">getFirstString</span>(<span class="param">arr</span><span class="op">:</span> <span class="type">string</span>[])<span class="op">:</span> <span class="type">string</span> { <span class="kw">return</span> arr[<span class="num">0</span>] }
+
+<span class="cm">// GIẢI PHÁP: Dùng Generic</span>
+<span class="kw">function</span> <span class="fn">getFirst</span><span class="generic">&lt;T&gt;</span>(<span class="param">arr</span><span class="op">:</span> <span class="generic">T</span>[])<span class="op">:</span> <span class="generic">T</span> {
+    <span class="kw">return</span> arr[<span class="num">0</span>]
+}
+
+<span class="kw">const</span> num = <span class="fn">getFirst</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>])       <span class="cm">// T = number → num là number</span>
+<span class="kw">const</span> str = <span class="fn">getFirst</span>([<span class="str">"a"</span>, <span class="str">"b"</span>])     <span class="cm">// T = string → str là string</span>
+
+<span class="cm">// ====== Generic với Interface ======</span>
+<span class="kw">interface</span> <span class="iface">ApiResponse</span><span class="generic">&lt;T&gt;</span> {
+    status<span class="op">:</span> <span class="type">number</span>
+    message<span class="op">:</span> <span class="type">string</span>
+    data<span class="op">:</span> <span class="generic">T</span>          <span class="cm">// T sẽ thay đổi tùy API</span>
+}
+
+<span class="cm">// Dùng cho API login:</span>
+<span class="kw">type</span> <span class="iface">LoginData</span> = { access_token<span class="op">:</span> <span class="type">string</span> }
+<span class="kw">const</span> loginRes<span class="op">:</span> <span class="iface">ApiResponse</span><span class="generic">&lt;<span class="iface">LoginData</span>&gt;</span> = {
+    status: <span class="num">200</span>, message: <span class="str">"OK"</span>,
+    data: { access_token: <span class="str">"eyJ..."</span> }
+}
+
+<span class="cm">// Dùng cho API lấy danh sách học sinh:</span>
+<span class="kw">const</span> studentsRes<span class="op">:</span> <span class="iface">ApiResponse</span><span class="generic">&lt;<span class="iface">Student</span>[]&gt;</span> = {
+    status: <span class="num">200</span>, message: <span class="str">"OK"</span>,
+    data: [{ id: <span class="num">1</span>, name: <span class="str">"An"</span> }]
+}</pre></div>
+    </div>
+    <div class="callout info">
+        <div class="callout-icon">📌</div>
+        <div class="callout-content"><strong>Bạn đã gặp Generics trong dự án rồi!</strong> Trong <code>loginService.ts</code>: <code>api.post&lt;LoginResponse&gt;('/login', ...)</code> — Cái <code>&lt;LoginResponse&gt;</code> chính là Generic, nó bảo TypeScript: "API này trả về kiểu LoginResponse nhé!"</div>
+    </div>
+</section>
+
+<!-- CHAPTER 9 -->
+<section class="section" id="ch9">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-1)">9</div>
+        <div><h2>Class & OOP trong TypeScript</h2><span class="level mid">🟣 MID-LEVEL</span></div>
+    </div>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">class.ts</span></div>
+        <div class="code-body"><pre><span class="kw">class</span> <span class="iface">Student</span> {
+    <span class="kw">public</span> fullName<span class="op">:</span> <span class="type">string</span>        <span class="cm">// Ai cũng truy cập được</span>
+    <span class="kw">private</span> password<span class="op">:</span> <span class="type">string</span>      <span class="cm">// Chỉ dùng trong class này</span>
+    <span class="kw">protected</span> grade<span class="op">:</span> <span class="type">number</span>      <span class="cm">// Dùng trong class này + class con</span>
+    <span class="kw">readonly</span> id<span class="op">:</span> <span class="type">number</span>          <span class="cm">// Chỉ đọc, không sửa được</span>
+
+    <span class="kw">constructor</span>(<span class="param">id</span><span class="op">:</span> <span class="type">number</span>, <span class="param">fullName</span><span class="op">:</span> <span class="type">string</span>, <span class="param">grade</span><span class="op">:</span> <span class="type">number</span>) {
+        <span class="kw">this</span>.id = id
+        <span class="kw">this</span>.fullName = fullName
+        <span class="kw">this</span>.grade = grade
+        <span class="kw">this</span>.password = <span class="str">"123456"</span>
+    }
+
+    <span class="fn">getInfo</span>()<span class="op">:</span> <span class="type">string</span> {
+        <span class="kw">return</span> <span class="str">`</span><span class="op">${</span><span class="kw">this</span>.fullName<span class="op">}</span><span class="str"> - Lớp </span><span class="op">${</span><span class="kw">this</span>.grade<span class="op">}</span><span class="str">`</span>
+    }
+}
+
+<span class="cm">// Kế thừa</span>
+<span class="kw">class</span> <span class="iface">HonorStudent</span> <span class="kw">extends</span> <span class="iface">Student</span> {
+    <span class="fn">getInfo</span>()<span class="op">:</span> <span class="type">string</span> {
+        <span class="kw">return</span> <span class="str">`⭐ </span><span class="op">${</span><span class="kw">super</span>.<span class="fn">getInfo</span>()<span class="op">}</span><span class="str"> (Học sinh giỏi)`</span>
+    }
+}
+
+<span class="cm">// Viết tắt constructor (TypeScript exclusive!)</span>
+<span class="kw">class</span> <span class="iface">Course</span> {
+    <span class="kw">constructor</span>(
+        <span class="kw">public</span> <span class="kw">readonly</span> <span class="param">id</span><span class="op">:</span> <span class="type">number</span>,
+        <span class="kw">public</span> <span class="param">name</span><span class="op">:</span> <span class="type">string</span>,
+        <span class="kw">private</span> <span class="param">maxStudents</span><span class="op">:</span> <span class="type">number</span> = <span class="num">30</span>
+    ) {}
+    <span class="cm">// Không cần viết this.id = id... TS tự làm!</span>
+}</pre></div>
+    </div>
+    <div class="callout tip">
+        <div class="callout-icon">💡</div>
+        <div class="callout-content"><strong>Lưu ý cho React dev:</strong> Trong React hiện đại (2024+), gần như <strong>KHÔNG dùng Class</strong>. Thay vào đó dùng <strong>Function Component + Hooks</strong>. Nhưng biết OOP vẫn rất quan trọng để hiểu các thư viện bên dưới.</div>
+    </div>
+</section>
+
+<!-- CHAPTER 10 -->
+<section class="section" id="ch10">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-5)">10</div>
+        <div><h2>Module & Import/Export</h2><span class="level senior">🟡 SENIOR</span></div>
+    </div>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">Cấu trúc module trong dự án LMS</span></div>
+        <div class="code-body"><pre><span class="cm">// ====== FILE: types/loginTypes.ts (XUẤT) ======</span>
+<span class="kw">export</span> <span class="kw">type</span> <span class="iface">LoginFormData</span> = {
+    phoneNumber<span class="op">:</span> <span class="type">string</span>
+    password<span class="op">:</span> <span class="type">string</span>
+}
+
+<span class="cm">// ====== FILE: services/loginService.ts (NHẬP và DÙNG) ======</span>
+<span class="kw">import</span> <span class="kw">type</span> { <span class="iface">LoginFormData</span> } <span class="kw">from</span> <span class="str">'../types/loginTypes'</span>
+<span class="cm">//      ↑ import type: Chỉ nhập kiểu (bị xóa sau compile)</span>
+
+<span class="cm">// 1. Named export — Nhập phải đúng tên</span>
+<span class="kw">export</span> <span class="kw">function</span> <span class="fn">AuthGuard</span>() { <span class="cm">/* ... */</span> }
+<span class="cm">// Nhập: import { AuthGuard } from '...'</span>
+
+<span class="cm">// 2. Default export — Nhập tên gì cũng được</span>
+<span class="kw">export</span> <span class="kw">default</span> <span class="kw">function</span> <span class="fn">App</span>() { <span class="cm">/* ... */</span> }
+<span class="cm">// Nhập: import App from '...'</span>
+<span class="cm">// Hoặc: import MyApp from '...'</span></pre></div>
+    </div>
+    <div class="callout warning">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-content"><strong><code>import type</code> vs <code>import</code>:</strong> Khi chỉ nhập kiểu dữ liệu (interface, type) mà không nhập giá trị hay hàm, hãy dùng <code>import type { ... }</code>. Nó sẽ bị <strong>xóa sạch</strong> khi build thành JS.</div>
+    </div>
+</section>
+
+<!-- CHAPTER 11 -->
+<section class="section" id="ch11">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-5)">11</div>
+        <div><h2>Async/Await & Promise</h2><span class="level senior">🟡 SENIOR</span></div>
+    </div>
+    <p>Nền tảng để <strong>gọi API</strong>. Mỗi lần giao tiếp với Backend đều dùng async/await.</p>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">async.ts</span></div>
+        <div class="code-body"><pre><span class="cm">// Promise = "Tôi hứa sẽ trả kết quả cho bạn... nhưng chưa biết bao giờ."</span>
+
+<span class="cm">// ====== async/await — LUÔN DÙNG CÁI NÀY! ======</span>
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">login</span>(<span class="param">phone</span><span class="op">:</span> <span class="type">string</span>, <span class="param">pass</span><span class="op">:</span> <span class="type">string</span>)<span class="op">:</span> <span class="type">Promise</span><span class="generic">&lt;<span class="iface">LoginResponse</span>&gt;</span> {
+    <span class="kw">try</span> {
+        <span class="kw">const</span> res = <span class="kw">await</span> api.<span class="fn">post</span><span class="generic">&lt;<span class="iface">LoginResponse</span>&gt;</span>(<span class="str">'/login'</span>, {
+            phone_number: phone,
+            password: pass
+        })
+        <span class="kw">return</span> res.data
+    } <span class="kw">catch</span> (error) {
+        console.<span class="fn">log</span>(<span class="str">"Đăng nhập thất bại!"</span>, error)
+        <span class="kw">throw</span> error
+    }
+}
+<span class="cm">//  ↑ async: Hàm này chứa thao tác BẤT ĐỒNG BỘ</span>
+<span class="cm">//  ↑ await: ĐỢI cho xong rồi mới chạy dòng tiếp</span>
+<span class="cm">//  ↑ Promise&lt;LoginResponse&gt;: Hứa trả về kiểu LoginResponse</span>
+<span class="cm">//  ↑ try/catch: Bắt lỗi nếu API fail</span></pre></div>
+    </div>
+    <div class="callout tip">
+        <div class="callout-icon">💡</div>
+        <div class="callout-content">
+            <strong>Giải thích bằng đời thực:</strong>
+            <ul style="margin-top:0.5rem">
+                <li><code>async</code> = "Nhà bếp nấu nhiều món cùng lúc" (bất đồng bộ).</li>
+                <li><code>await</code> = "Đợi món này xong rồi hãy bày ra bàn" (chờ kết quả).</li>
+                <li><code>try/catch</code> = "Nếu món bị cháy thì xử lý thế nào" (bắt lỗi).</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- CHAPTER 12 -->
+<section class="section" id="ch12">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-5)">12</div>
+        <div><h2>Utility Types (Built-in)</h2><span class="level senior">🟡 SENIOR</span></div>
+    </div>
+    <p>TypeScript cung cấp sẵn nhiều <strong>"công cụ biến hình kiểu dữ liệu"</strong>. Tạo kiểu mới từ kiểu đã có mà không cần viết lại.</p>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">utility-types.ts</span></div>
+        <div class="code-body"><pre><span class="kw">interface</span> <span class="iface">User</span> {
+    id<span class="op">:</span> <span class="type">number</span>; fullName<span class="op">:</span> <span class="type">string</span>; phone<span class="op">:</span> <span class="type">string</span>;
+    role<span class="op">:</span> <span class="type">string</span>; isActive<span class="op">:</span> <span class="type">boolean</span>
+}
+
+<span class="cm">// Partial&lt;T&gt; — Tất cả thuộc tính thành TÙY CHỌN</span>
+<span class="kw">type</span> <span class="iface">UpdateUser</span> = <span class="type">Partial</span><span class="generic">&lt;<span class="iface">User</span>&gt;</span>
+<span class="cm">// Dùng khi: Cập nhật user, chỉ gửi field thay đổi</span>
+
+<span class="cm">// Required&lt;T&gt; — Tất cả thành BẮT BUỘC</span>
+<span class="kw">type</span> <span class="iface">CompleteUser</span> = <span class="type">Required</span><span class="generic">&lt;<span class="iface">User</span>&gt;</span>
+
+<span class="cm">// Pick&lt;T, Keys&gt; — CHỌN LẤY một vài thuộc tính</span>
+<span class="kw">type</span> <span class="iface">UserPreview</span> = <span class="type">Pick</span><span class="generic">&lt;<span class="iface">User</span>, <span class="str">"id"</span> | <span class="str">"fullName"</span>&gt;</span>
+<span class="cm">// = { id: number; fullName: string }</span>
+
+<span class="cm">// Omit&lt;T, Keys&gt; — BỎ ĐI một vài thuộc tính</span>
+<span class="kw">type</span> <span class="iface">CreateUser</span> = <span class="type">Omit</span><span class="generic">&lt;<span class="iface">User</span>, <span class="str">"id"</span>&gt;</span>
+<span class="cm">// Dùng khi: Tạo user mới (chưa có id)</span>
+
+<span class="cm">// Record&lt;K, V&gt; — Tạo object với key/value cố định kiểu</span>
+<span class="kw">type</span> <span class="iface">ScoreBoard</span> = <span class="type">Record</span><span class="generic">&lt;<span class="type">string</span>, <span class="type">number</span>&gt;</span>
+<span class="kw">const</span> scores<span class="op">:</span> <span class="iface">ScoreBoard</span> = { <span class="str">"Toán"</span>: <span class="num">9</span>, <span class="str">"Lý"</span>: <span class="num">8.5</span> }
+
+<span class="cm">// Readonly&lt;T&gt; — Không cho sửa bất kỳ thuộc tính nào</span>
+<span class="kw">type</span> <span class="iface">FrozenUser</span> = <span class="type">Readonly</span><span class="generic">&lt;<span class="iface">User</span>&gt;</span></pre></div>
+    </div>
+</section>
+
+<!-- CHAPTER 13 -->
+<section class="section" id="ch13">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-2)">13</div>
+        <div><h2>Advanced Patterns & Tricks</h2><span class="level pro">🔴 PRO</span></div>
+    </div>
+    <h3>Conditional Types, Mapped Types & More</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">advanced.ts</span></div>
+        <div class="code-body"><pre><span class="cm">// Conditional Type</span>
+<span class="kw">type</span> <span class="iface">IsString</span><span class="generic">&lt;T&gt;</span> = T <span class="kw">extends</span> <span class="type">string</span> ? <span class="str">"Yes"</span> : <span class="str">"No"</span>
+<span class="kw">type</span> A = <span class="iface">IsString</span><span class="generic">&lt;<span class="type">string</span>&gt;</span>    <span class="cm">// "Yes"</span>
+<span class="kw">type</span> B = <span class="iface">IsString</span><span class="generic">&lt;<span class="type">number</span>&gt;</span>    <span class="cm">// "No"</span>
+
+<span class="cm">// Mapped Types — Biến hình hàng loạt</span>
+<span class="kw">type</span> <span class="iface">Nullable</span><span class="generic">&lt;T&gt;</span> = {
+    [<span class="param">K</span> <span class="kw">in</span> <span class="kw">keyof</span> T]: T[<span class="param">K</span>] | <span class="type">null</span>
+}
+<span class="kw">interface</span> <span class="iface">Form</span> { name<span class="op">:</span> <span class="type">string</span>; age<span class="op">:</span> <span class="type">number</span> }
+<span class="kw">type</span> <span class="iface">NullableForm</span> = <span class="iface">Nullable</span><span class="generic">&lt;<span class="iface">Form</span>&gt;</span>
+<span class="cm">// = { name: string | null; age: number | null }</span>
+
+<span class="cm">// Template Literal Types</span>
+<span class="kw">type</span> <span class="iface">EventName</span> = <span class="str">`on</span><span class="op">${</span><span class="str">"Click"</span> | <span class="str">"Hover"</span> | <span class="str">"Focus"</span><span class="op">}</span><span class="str">`</span>
+<span class="cm">// = "onClick" | "onHover" | "onFocus"</span>
+
+<span class="cm">// satisfies — Kiểm tra kiểu mà KHÔNG mất inference</span>
+<span class="kw">type</span> <span class="iface">Color</span> = <span class="str">"red"</span> | <span class="str">"green"</span> | <span class="str">"blue"</span>
+<span class="kw">const</span> colors = {
+    primary: <span class="str">"red"</span>,
+    secondary: [<span class="str">"green"</span>, <span class="str">"blue"</span>]
+} <span class="kw">satisfies</span> <span class="type">Record</span><span class="generic">&lt;<span class="type">string</span>, <span class="iface">Color</span> | <span class="iface">Color</span>[]&gt;</span></pre></div>
+    </div>
+
+    <h3>Type Assertion — "Tôi biết rõ hơn TypeScript"</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">assertion.ts</span></div>
+        <div class="code-body"><pre><span class="kw">const</span> input = document.<span class="fn">getElementById</span>(<span class="str">"phone"</span>) <span class="kw">as</span> <span class="type">HTMLInputElement</span>
+input.value = <span class="str">"0987654321"</span>  <span class="cm">// ✅ TS biết đây là input element</span>
+
+<span class="cm">// Dấu ! (Non-null assertion)</span>
+<span class="kw">const</span> el = document.<span class="fn">querySelector</span>(<span class="str">".btn"</span>)<span class="op">!</span>
+<span class="cm">// Cẩn thận: Nếu .btn không tồn tại, code sẽ lỗi lúc chạy!</span></pre></div>
+    </div>
+    <div class="callout danger">
+        <div class="callout-icon">🚨</div>
+        <div class="callout-content"><strong>Dùng Type Assertion ít nhất có thể!</strong> Mỗi lần viết <code>as</code> hoặc <code>!</code>, bạn đang nói "Im đi, tôi biết mà!" — Nhưng nếu SAI, TypeScript không cứu được bạn.</div>
+    </div>
+</section>
+
+<!-- CHAPTER 14 -->
+<section class="section" id="ch14">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-2)">14</div>
+        <div><h2>TypeScript trong React (TSX)</h2><span class="level pro">🔴 PRO</span></div>
+    </div>
+    <p>Chương <strong>THỰC CHIẾN NHẤT</strong> — Mọi thứ bạn code hàng ngày trong dự án LMS!</p>
+
+    <h3>Khai báo Props cho Component</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">Component.tsx</span></div>
+        <div class="code-body"><pre><span class="kw">interface</span> <span class="iface">ButtonProps</span> {
+    label<span class="op">:</span> <span class="type">string</span>                 <span class="cm">// Bắt buộc</span>
+    onClick<span class="op">:</span> () <span class="op">=></span> <span class="type">void</span>           <span class="cm">// Bắt buộc: hàm callback</span>
+    variant<span class="op">?:</span> <span class="str">"primary"</span> | <span class="str">"danger"</span> <span class="cm">// Tùy chọn</span>
+    disabled<span class="op">?:</span> <span class="type">boolean</span>             <span class="cm">// Tùy chọn</span>
+}
+
+<span class="kw">function</span> <span class="fn">Button</span>({ <span class="param">label</span>, <span class="param">onClick</span>, <span class="param">variant</span> = <span class="str">"primary"</span>, <span class="param">disabled</span> }<span class="op">:</span> <span class="iface">ButtonProps</span>) {
+    <span class="kw">return</span> (
+        &lt;<span class="kw">button</span> <span class="pr">onClick</span>={onClick} <span class="pr">disabled</span>={disabled}
+            <span class="pr">className</span>={<span class="str">`btn btn-</span><span class="op">${</span>variant<span class="op">}</span><span class="str">`</span>}&gt;
+            {label}
+        &lt;/<span class="kw">button</span>&gt;
+    )
+}
+
+<span class="cm">// Component với Children</span>
+<span class="kw">interface</span> <span class="iface">CardProps</span> {
+    title<span class="op">:</span> <span class="type">string</span>
+    children<span class="op">:</span> <span class="type">React.ReactNode</span>  <span class="cm">// Nhận bất kỳ thứ gì bọc bên trong</span>
+}
+
+<span class="kw">function</span> <span class="fn">Card</span>({ <span class="param">title</span>, <span class="param">children</span> }<span class="op">:</span> <span class="iface">CardProps</span>) {
+    <span class="kw">return</span> (
+        &lt;<span class="kw">div</span> <span class="pr">className</span>=<span class="str">"card"</span>&gt;
+            &lt;<span class="kw">h3</span>&gt;{title}&lt;/<span class="kw">h3</span>&gt;
+            {children}
+        &lt;/<span class="kw">div</span>&gt;
+    )
+}</pre></div>
+    </div>
+
+    <h3>Hooks với TypeScript</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">hooks.tsx</span></div>
+        <div class="code-body"><pre><span class="kw">import</span> { <span class="fn">useState</span>, <span class="fn">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="cm">// TS tự suy luận:</span>
+<span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>)       <span class="cm">// count: number</span>
+<span class="kw">const</span> [name, setName] = <span class="fn">useState</span>(<span class="str">""</span>)       <span class="cm">// name: string</span>
+
+<span class="cm">// Khi cần kiểu phức tạp:</span>
+<span class="kw">interface</span> <span class="iface">User</span> { id<span class="op">:</span> <span class="type">number</span>; name<span class="op">:</span> <span class="type">string</span> }
+<span class="kw">const</span> [user, setUser] = <span class="fn">useState</span><span class="generic">&lt;<span class="iface">User</span> | <span class="type">null</span>&gt;</span>(<span class="bool">null</span>)
+
+<span class="cm">// Event Handler</span>
+<span class="kw">function</span> <span class="fn">handleChange</span>(<span class="param">e</span><span class="op">:</span> <span class="type">React.ChangeEvent</span><span class="generic">&lt;<span class="type">HTMLInputElement</span>&gt;</span>) {
+    <span class="fn">setName</span>(e.target.value)
+}
+
+<span class="kw">function</span> <span class="fn">handleSubmit</span>(<span class="param">e</span><span class="op">:</span> <span class="type">React.FormEvent</span><span class="generic">&lt;<span class="type">HTMLFormElement</span>&gt;</span>) {
+    e.<span class="fn">preventDefault</span>()
+}</pre></div>
+    </div>
+
+    <h3>Gọi API với Type Safety</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">api-service.ts — Ví dụ thực tế từ dự án LMS</span></div>
+        <div class="code-body"><pre><span class="kw">import</span> { api } <span class="kw">from</span> <span class="str">'../../lib/axios'</span>
+
+<span class="cm">// Bước 1: Kiểu cho Request</span>
+<span class="kw">type</span> <span class="iface">LoginFormData</span> = { phoneNumber<span class="op">:</span> <span class="type">string</span>; password<span class="op">:</span> <span class="type">string</span> }
+
+<span class="cm">// Bước 2: Kiểu cho Response</span>
+<span class="kw">type</span> <span class="iface">LoginResponse</span> = {
+    access_token<span class="op">:</span> <span class="type">string</span>
+    token_type<span class="op">:</span> <span class="type">string</span>
+    must_change_password<span class="op">:</span> <span class="type">boolean</span>
+}
+
+<span class="cm">// Bước 3: Viết hàm gọi API</span>
+<span class="kw">export</span> <span class="kw">const</span> authService = {
+    <span class="kw">async</span> <span class="fn">login</span>(<span class="param">data</span><span class="op">:</span> <span class="iface">LoginFormData</span>)<span class="op">:</span> <span class="type">Promise</span><span class="generic">&lt;<span class="iface">LoginResponse</span>&gt;</span> {
+        <span class="kw">const</span> res = <span class="kw">await</span> api.<span class="fn">post</span><span class="generic">&lt;<span class="iface">LoginResponse</span>&gt;</span>(<span class="str">'/login'</span>, {
+            phone_number: data.phoneNumber,
+            password: data.password
+        })
+        <span class="kw">return</span> res.data
+        <span class="cm">// res.data.access_token  ✅ (TS biết là string)</span>
+        <span class="cm">// res.data.xyz           ❌ (TS báo lỗi ngay!)</span>
+    }
+}</pre></div>
+    </div>
+</section>
+
+<!-- CHAPTER 15 -->
+<section class="section" id="ch15">
+    <div class="section-header">
+        <div class="section-icon" style="background:var(--gradient-2)">15</div>
+        <div><h2>Best Practices & Anti-Patterns</h2><span class="level pro">🔴 PRO</span></div>
+    </div>
+    <h3>✅ NÊN LÀM (Best Practices)</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">best-practices.ts</span></div>
+        <div class="code-body"><pre><span class="cm">// 1. ✅ Dùng "const" thay "let" khi giá trị không thay đổi</span>
+<span class="kw">const</span> MAX_STUDENTS = <span class="num">30</span>
+
+<span class="cm">// 2. ✅ Dùng "unknown" thay "any"</span>
+<span class="kw">function</span> <span class="fn">processInput</span>(<span class="param">input</span><span class="op">:</span> <span class="type">unknown</span>) {
+    <span class="kw">if</span> (<span class="kw">typeof</span> input === <span class="str">"string"</span>) {
+        console.<span class="fn">log</span>(input.<span class="fn">toUpperCase</span>())
+    }
+}
+
+<span class="cm">// 3. ✅ Dùng "as const" cho object/array cố định</span>
+<span class="kw">const</span> ROLES = [<span class="str">"student"</span>, <span class="str">"teacher"</span>, <span class="str">"admin"</span>] <span class="kw">as</span> <span class="kw">const</span>
+
+<span class="cm">// 4. ✅ Discriminated Union cho state phức tạp</span>
+<span class="kw">type</span> <span class="iface">LoadingState</span> =
+    | { status<span class="op">:</span> <span class="str">"idle"</span> }
+    | { status<span class="op">:</span> <span class="str">"loading"</span> }
+    | { status<span class="op">:</span> <span class="str">"success"</span>; data<span class="op">:</span> <span class="type">string</span> }
+    | { status<span class="op">:</span> <span class="str">"error"</span>; error<span class="op">:</span> <span class="type">string</span> }
+
+<span class="cm">// 5. ✅ Tách type ra file riêng (types/xxx.ts)</span>
+<span class="cm">// Giống cách bạn đã tổ chức trong dự án LMS!</span></pre></div>
+    </div>
+
+    <h3>❌ ĐỪNG LÀM (Anti-Patterns)</h3>
+    <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div><span class="code-filename">anti-patterns.ts</span></div>
+        <div class="code-body"><pre><span class="cm">// 1. ❌ ĐỪNG dùng "any"</span>
+<span class="kw">let</span> data<span class="op">:</span> <span class="type">any</span> = <span class="fn">fetchData</span>()  <span class="cm">// BAD! Mất hết bảo vệ</span>
+
+<span class="cm">// 2. ❌ ĐỪNG ép kiểu bừa bãi</span>
+<span class="kw">const</span> user = {} <span class="kw">as</span> <span class="iface">User</span>     <span class="cm">// BAD! Object rỗng không phải User</span>
+
+<span class="cm">// 3. ❌ ĐỪNG dùng "!" khi không chắc chắn 100%</span>
+<span class="kw">const</span> el = document.<span class="fn">querySelector</span>(<span class="str">".maybe"</span>)<span class="op">!</span>
+
+<span class="cm">// 4. ❌ ĐỪNG viết function trả kiểu any</span>
+<span class="kw">function</span> <span class="fn">getData</span>()<span class="op">:</span> <span class="type">any</span> { <span class="cm">/* ... */</span> }
+
+<span class="cm">// 5. ❌ ĐỪNG bỏ qua lỗi bằng @ts-ignore</span>
+<span class="cm">// @ts-ignore</span>
+<span class="kw">const</span> broken = <span class="str">"hello"</span> * <span class="num">5</span>
+
+<span class="cm">// 6. ❌ ĐỪNG ghi kiểu thừa khi TS đã tự suy luận</span>
+<span class="kw">const</span> name<span class="op">:</span> <span class="type">string</span> = <span class="str">"An"</span>   <span class="cm">// THỪA!</span>
+<span class="kw">const</span> name = <span class="str">"An"</span>             <span class="cm">// ✅ Gọn hơn</span></pre></div>
+    </div>
+
+    <div class="callout purple">
+        <div class="callout-icon">🏆</div>
+        <div class="callout-content">
+            <strong>Chúc mừng bạn đã đọc xong toàn bộ TypeScript Mastery Guide!</strong>
+            <br>Bạn giờ đã có đủ kiến thức nền tảng vững chắc để:
+            <ul style="margin-top:0.5rem">
+                <li>✅ Tự tin code toàn bộ Frontend cho dự án LMS.</li>
+                <li>✅ Đọc hiểu bất kỳ codebase TypeScript/React nào.</li>
+                <li>✅ Tự tin trả lời câu hỏi phỏng vấn về TypeScript.</li>
+                <li>✅ Viết code an toàn, ít bug, dễ bảo trì.</li>
+            </ul>
+            <br><strong>Lời khuyên cuối cùng:</strong> Đừng cố nhớ hết! Hãy quay lại tra cứu khi cần. Cách học tốt nhất là <strong>vừa code dự án thật, vừa tra cứu</strong>. Chúc bạn code vui vẻ! 🚀
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer class="footer">
+    <p>TypeScript Mastery Guide — Được tạo cho dự án <strong>Vision Education LMS</strong></p>
+    <p style="margin-top:0.5rem">Từ Newbie 🟢 → Junior 🔵 → Mid-level 🟣 → Senior 🟡 → Pro 🔴</p>
+</footer>
+
+</body>
+</html>

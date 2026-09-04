@@ -2,7 +2,8 @@ from .exceptions import (
     UserNotFoundException,
     WrongPasswordException,
     InvalidPhoneNumberException,
-    EmptyPasswordException
+    EmptyPasswordException,
+    UserLockedException
 )
 from .schemas import LoginRequest, LoginResponse
 from .repository import LoginRepository
@@ -36,6 +37,9 @@ class LoginService:
         if not verify_password(request.password, user.hashed_password):
             logger.warning("Đăng nhập thất bại: Mật khẩu sai")
             raise WrongPasswordException()
+        if not user.is_active:
+            logger.warning(f"Đăng nhập thất bại: Tài khoản ID {user.id} đã bị khóa")
+            raise UserLockedException()
         logger.info(f"Đăng nhập thành công: ID {user.id}, Sdt {request.phone_number}")
         return create_login_response(user)
     def get_user_by_id(self, user_id: int):

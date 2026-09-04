@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from .schemas import LoginRequest
 from .service import LoginService, get_auth_service, create_token_payload, create_login_response
-from .exceptions import UserNotFoundException, WrongPasswordException, InvalidPhoneNumberException, EmptyPasswordException
+from .exceptions import UserNotFoundException, WrongPasswordException, InvalidPhoneNumberException, EmptyPasswordException, UserLockedException
 from app.core.security import create_access_token
 from app.core.logger import logger
 login_router = APIRouter()
@@ -33,5 +33,11 @@ def login(login_request: LoginRequest,
         raise HTTPException(
             status_code=400,
             detail="Mật khẩu không được để trống"
+        )
+    except UserLockedException:
+        logger.warning(f"Đăng nhập thất bại: Tài khoản đã bị khóa")
+        raise HTTPException(
+            status_code=403,
+            detail="Tài khoản của bạn đã bị khóa"
         )
 
