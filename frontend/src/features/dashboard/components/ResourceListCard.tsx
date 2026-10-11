@@ -52,17 +52,17 @@ export const ResourceListCard: React.FC<ResourceListCardProps> = ({
                 </div>
               )}
 
-              <p className="text-[13px] font-bold text-slate-900 truncate group-hover:text-[#4F46E5] transition-colors cursor-pointer">
+              <p className="text-[13.5px] font-bold text-slate-900 truncate group-hover:text-[#4F46E5] transition-colors cursor-pointer">
                 {item.title}
               </p>
             </div>
 
             {/* Right: File Size, Time, Download */}
             <div className="flex items-center gap-4 shrink-0">
-              <span className="text-[11px] text-slate-400 whitespace-nowrap">
+              <span className="text-[12px] text-slate-400 whitespace-nowrap">
                 {item.size}
               </span>
-              <span className="text-[11px] text-slate-400 whitespace-nowrap hidden sm:inline">
+              <span className="text-[12px] text-slate-400 whitespace-nowrap hidden sm:inline">
                 {item.timeAgo}
               </span>
               <button

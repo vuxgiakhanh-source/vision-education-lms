@@ -80,13 +80,13 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ initialTasks }) => {
 
               <div className="min-w-0">
                 <p
-                  className={`text-[12px] font-bold text-slate-900 whitespace-nowrap ${
+                  className={`text-[13.5px] font-bold text-slate-900 whitespace-nowrap ${
                     task.isCompleted ? 'line-through text-slate-400' : ''
                   }`}
                 >
                   {task.title}
                 </p>
-                <p className="text-[10.5px] text-slate-400 whitespace-nowrap mt-0.5">
+                <p className="text-[11.5px] text-slate-400 whitespace-nowrap mt-0.5">
                   {task.subjectTopic}
                 </p>
               </div>
@@ -96,7 +96,7 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ initialTasks }) => {
             <div className="flex items-center gap-2 shrink-0">
               {/* Category Tag */}
               <span
-                className={`text-[10.5px] font-semibold px-2 py-0.5 rounded-full ${getTagClasses(
+                className={`text-[11.5px] font-semibold px-2.5 py-0.5 rounded-full ${getTagClasses(
                   task.categoryTagColor
                 )}`}
               >
@@ -104,14 +104,14 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ initialTasks }) => {
               </span>
 
               {/* Deadline */}
-              <div className="hidden sm:flex items-center gap-1 text-[10.5px] text-slate-500">
+              <div className="hidden sm:flex items-center gap-1 text-[11.5px] text-slate-500">
                 <CalendarCheck2 className="w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
                 <span>Hạn: {task.deadline}</span>
               </div>
 
               {/* Countdown badge */}
               <span
-                className={`text-[10.5px] font-semibold px-2 py-0.5 rounded-full ${
+                className={`text-[11.5px] font-semibold px-2.5 py-0.5 rounded-full ${
                   task.isUrgent
                     ? 'bg-[#FEE2E2] text-[#EF4444]'
                     : 'bg-[#EEF2FF] text-[#4F46E5]'

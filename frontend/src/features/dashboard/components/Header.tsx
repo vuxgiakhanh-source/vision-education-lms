@@ -1,6 +1,7 @@
 import React from 'react'
-import { Search, Bell, ChevronDown, User } from 'lucide-react'
+import { Search, Bell } from 'lucide-react'
 import type { UserProfile } from '../types/dashboard.types'
+import { ProfileDropdown } from '../../../components/layout/ProfileDropdown'
 
 interface HeaderProps {
   user: UserProfile
@@ -37,20 +38,8 @@ export const Header: React.FC<HeaderProps> = ({ user }) => {
           <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
         </button>
 
-        {/* User Profile Dropdown Trigger */}
-        <div className="flex items-center gap-2.5 cursor-pointer p-1 rounded-xl hover:bg-white/40 transition-colors">
-          <div className="w-9 h-9 rounded-full bg-[#8B5CF6]/20 text-[#7C3AED] flex items-center justify-center font-bold overflow-hidden shadow-xs">
-            {user.avatarUrl ? (
-              <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
-            ) : (
-              <User className="w-5 h-5 text-[#7C3AED]" strokeWidth={2.2} />
-            )}
-          </div>
-          <span className="text-[14.5px] font-semibold text-slate-800">
-            {user.name}
-          </span>
-          <ChevronDown className="w-4 h-4 text-slate-600" strokeWidth={2} />
-        </div>
+        {/* User Profile Dropdown */}
+        <ProfileDropdown user={user} />
       </div>
     </header>
   )

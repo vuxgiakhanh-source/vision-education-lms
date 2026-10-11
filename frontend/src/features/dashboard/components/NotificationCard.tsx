@@ -73,10 +73,10 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
                 {getNotificationIcon(item.type)}
               </div>
               <div className="min-w-0">
-                <p className="text-[13px] font-bold text-slate-900 truncate">
+                <p className="text-[13.5px] font-bold text-slate-900 truncate">
                   {item.title}
                 </p>
-                <p className="text-[11.5px] text-slate-500 line-clamp-1 mt-0.5">
+                <p className="text-[12px] text-slate-500 line-clamp-1 mt-0.5">
                   {item.description}
                 </p>
               </div>
@@ -84,7 +84,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
 
             {/* Right: Time Ago & Unread indicator */}
             <div className="flex items-center gap-2 shrink-0 pt-1">
-              <span className="text-[11px] text-slate-400">{item.timeAgo}</span>
+              <span className="text-[12px] text-slate-400">{item.timeAgo}</span>
               {item.isUnread && (
                 <span className="w-2 h-2 rounded-full bg-[#4F46E5] shrink-0" />
               )}

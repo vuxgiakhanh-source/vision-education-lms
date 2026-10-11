@@ -41,54 +41,55 @@ export const UpcomingClassesCard: React.FC<UpcomingClassesCardProps> = ({
         {classes.map((item) => (
           <div
             key={item.id}
-            className="flex items-center justify-between py-1.5 px-1 rounded-2xl hover:bg-slate-50/50 transition-all"
+            className="flex items-center justify-between py-2 px-1 rounded-2xl hover:bg-slate-50/60 transition-all"
           >
-            {/* Left: Date block + Class details */}
-            <div className="flex items-center gap-4 min-w-0">
+            {/* Left: Date block + Topic + Teacher */}
+            <div className="flex items-center gap-3.5 min-w-0 pr-2">
               {/* Date Block in soft lavender */}
               <div className="w-14 h-14 rounded-2xl bg-[#EEF2FF] flex flex-col items-center justify-center shrink-0">
                 <span className="text-[11px] font-bold text-[#4F46E5] uppercase">
                   {item.dayOfWeek}
                 </span>
-                <span className="text-[15px] font-extrabold text-slate-900 leading-tight">
+                <span className="text-[16px] font-extrabold text-slate-900 leading-tight">
                   {item.date}
                 </span>
               </div>
 
               {/* Class Info */}
               <div className="min-w-0">
-                <h3 className="text-[13.5px] font-bold text-slate-900 truncate mb-1">
+                <h3 className="text-[14.5px] font-bold text-slate-900 truncate mb-0.5">
                   {item.topic}
                 </h3>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11.5px] text-slate-500">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
-                    {item.time}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
-                    {item.room}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <User className="w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
-                    {item.teacher}
-                  </span>
+                <div className="flex items-center gap-1.5 text-[12px] text-slate-500">
+                  <User className="w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
+                  <span>{item.teacher}</span>
                 </div>
               </div>
             </div>
 
-            {/* Right: CTA button & Menu */}
-            <div className="flex items-center gap-2 shrink-0 pl-2">
+            {/* Right: Time, Room, CTA button & Menu */}
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="hidden sm:flex items-center gap-3 text-[12px] text-slate-500">
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
+                  {item.time}
+                </span>
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
+                  {item.room}
+                </span>
+              </div>
+
               <button
                 type="button"
-                className="px-4 py-2 text-xs font-semibold text-[#4F46E5] bg-[#EEF2FF] hover:bg-[#E0E7FF] rounded-xl transition-colors whitespace-nowrap"
+                className="px-4 py-2 text-[12.5px] font-semibold text-[#4F46E5] bg-[#EEF2FF] hover:bg-[#E0E7FF] rounded-xl transition-colors whitespace-nowrap cursor-pointer"
               >
                 Xem chi tiết
               </button>
               <button
                 type="button"
                 aria-label="Thao tác"
-                className="text-slate-300 hover:text-slate-600 p-1"
+                className="text-slate-300 hover:text-slate-600 p-0.5"
               >
                 <MoreVertical className="w-4 h-4" strokeWidth={2} />
               </button>
