@@ -30,9 +30,10 @@ export function ChangePasswordForm() {
             setTimeout(() => {
                 navigate('/dashboard')
             }, 1500)
-        } catch (error: any) {
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Đổi mật khẩu thất bại. Vui lòng thử lại.'
             setError("root", {
-                message: error.message
+                message
             })
         }
     }

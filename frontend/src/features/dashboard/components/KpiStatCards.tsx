@@ -1,13 +1,5 @@
 import React from 'react'
-import {
-  BarChart2,
-  Flame,
-  FileText,
-  ChevronRight,
-  TrendingUp,
-  Target,
-  CalendarCheck2,
-} from 'lucide-react'
+import { BarChart2, FileText, Flame, ArrowUp } from 'lucide-react'
 import type { KpiStats } from '../types/dashboard.types'
 
 interface KpiStatCardsProps {
@@ -16,122 +8,98 @@ interface KpiStatCardsProps {
 
 export const KpiStatCards: React.FC<KpiStatCardsProps> = ({ stats }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 select-none">
-      {/* Card 1: Điểm trung bình */}
-      <div className="bg-white rounded-[26px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-[#EEF2FF] text-[#4F46E5] flex items-center justify-center shrink-0">
-              <BarChart2 className="w-6 h-6" strokeWidth={2.5} />
-            </div>
-            <div>
-              <span className="text-[12.5px] font-medium text-slate-500 block mb-1">
-                Điểm trung bình
-              </span>
-              <div className="flex items-baseline gap-2">
-                <div className="flex items-baseline">
-                  <span className="text-3xl font-extrabold text-slate-900 tracking-tight">
-                    {stats.averageScore.current}
-                  </span>
-                  <span className="text-lg font-bold text-slate-400">
-                    /{stats.averageScore.max}
-                  </span>
-                </div>
-                {/* Trend Badge */}
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#ECFDF5] text-[#10B981]">
-                  <TrendingUp className="w-3 h-3" strokeWidth={2.5} />
-                  +{stats.averageScore.diff}
-                </span>
-              </div>
-            </div>
-          </div>
-          <button
-            type="button"
-            aria-label="Chi tiết điểm"
-            className="text-slate-400 hover:text-slate-600 p-1"
-          >
-            <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
-          </button>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 select-none">
+      {/* 1. Điểm trung bình - Icon Xanh Tím pastel */}
+      <div
+        className="bg-white rounded-[24px] px-4 py-3.5 xl:px-5 xl:py-4 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#EDF1F8] flex items-center gap-3.5 xl:gap-4 hover:shadow-[0_8px_30px_rgba(0,0,0,0.05)] transition-all min-w-0"
+        style={{ height: 'var(--kpi-h)', paddingTop: 'var(--kpi-pad-y)', paddingBottom: 'var(--kpi-pad-y)' }}
+      >
+        <div
+          className="rounded-2xl bg-[#EEF2FF] text-[#4F46E5] flex items-center justify-center shrink-0 shadow-2xs"
+          style={{ width: 'var(--kpi-icon-size)', height: 'var(--kpi-icon-size)' }}
+        >
+          <BarChart2 className="w-5.5 h-5.5 xl:w-[26px] xl:h-[26px]" strokeWidth={2.2} />
         </div>
-
-        {/* Footer info */}
-        <div className="mt-3.5 pt-1 flex items-center gap-1.5 text-xs text-slate-500">
-          <TrendingUp className="w-3.5 h-3.5 text-[#4F46E5]" strokeWidth={2} />
-          <span>{stats.averageScore.diffLabel}</span>
+        <div className="min-w-0 flex-1">
+          <span className="text-[12.5px] xl:text-[13px] font-semibold text-slate-500 block leading-none mb-1.5 xl:mb-2 truncate">
+            Điểm trung bình
+          </span>
+          <div className="flex items-center gap-2 flex-nowrap">
+            <span
+              className="font-black text-[#1E293B] tracking-tight leading-none whitespace-nowrap"
+              style={{ fontSize: 'var(--kpi-val-size)' }}
+            >
+              {stats.averageScore.current}/{stats.averageScore.max}
+            </span>
+            <span className="inline-flex items-center gap-0.5 h-5 px-2 rounded-full text-[10.5px] xl:text-[11px] font-bold bg-[#ECFDF5] text-[#10B981] whitespace-nowrap shrink-0">
+              <ArrowUp className="w-2.5 h-2.5" strokeWidth={3} />
+              +{stats.averageScore.diff}
+            </span>
+          </div>
+          <span className="text-[12px] xl:text-[12.5px] text-slate-500 font-medium block leading-none mt-1.5 xl:mt-2 truncate">
+            {stats.averageScore.diffLabel || 'Cao hơn tuần trước'}
+          </span>
         </div>
       </div>
 
-      {/* Card 2: Chuỗi học tập */}
-      <div className="bg-white rounded-[26px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-[#FFF7ED] text-[#F97316] flex items-center justify-center shrink-0">
-              <Flame className="w-6 h-6 fill-[#F97316]/20" strokeWidth={2.2} />
-            </div>
-            <div>
-              <span className="text-[12.5px] font-medium text-slate-500 block mb-1">
-                Chuỗi học tập
-              </span>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-extrabold text-slate-900 tracking-tight">
-                  {stats.streak.days} ngày
-                </span>
-              </div>
-            </div>
-          </div>
-          <button
-            type="button"
-            aria-label="Chi tiết chuỗi"
-            className="text-slate-400 hover:text-slate-600 p-1"
-          >
-            <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
-          </button>
+      {/* 2. Chuỗi học tập - Icon Cam Đỏ (Lửa nhiệt huyết / Streak) */}
+      <div
+        className="bg-white rounded-[24px] px-4 py-3.5 xl:px-5 xl:py-4 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#EDF1F8] flex items-center gap-3.5 xl:gap-4 hover:shadow-[0_8px_30px_rgba(0,0,0,0.05)] transition-all min-w-0"
+        style={{ height: 'var(--kpi-h)', paddingTop: 'var(--kpi-pad-y)', paddingBottom: 'var(--kpi-pad-y)' }}
+      >
+        <div
+          className="rounded-2xl bg-[#FFF4EB] text-[#F97316] flex items-center justify-center shrink-0 shadow-2xs"
+          style={{ width: 'var(--kpi-icon-size)', height: 'var(--kpi-icon-size)' }}
+        >
+          <Flame className="w-5.5 h-5.5 xl:w-[26px] xl:h-[26px]" strokeWidth={2.2} />
         </div>
-
-        {/* Footer info */}
-        <div className="mt-3.5 pt-1 flex items-center gap-1.5 text-xs text-slate-500">
-          <Target className="w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
-          <span>{stats.streak.note}</span>
+        <div className="min-w-0 flex-1">
+          <span className="text-[12.5px] xl:text-[13px] font-semibold text-slate-500 block leading-none mb-1.5 xl:mb-2 truncate">
+            Chuỗi học tập
+          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className="font-black text-[#1E293B] tracking-tight leading-none whitespace-nowrap"
+              style={{ fontSize: 'var(--kpi-val-size)' }}
+            >
+              {stats.streak.days} ngày
+            </span>
+          </div>
+          <span className="text-[12px] xl:text-[12.5px] text-slate-500 font-medium block leading-none mt-1.5 xl:mt-2 truncate">
+            {stats.streak.note || 'Giữ vững phong độ!'}
+          </span>
         </div>
       </div>
 
-      {/* Card 3: Bài tập cần nộp */}
-      <div className="bg-white rounded-[26px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-[#F5F3FF] text-[#7C3AED] flex items-center justify-center shrink-0">
-              <FileText className="w-6 h-6" strokeWidth={2.2} />
-            </div>
-            <div>
-              <span className="text-[12.5px] font-medium text-slate-500 block mb-1">
-                Bài tập cần nộp
-              </span>
-              <div className="flex items-center gap-2.5">
-                <span className="text-3xl font-extrabold text-slate-900 tracking-tight">
-                  {stats.pendingAssignments.count} bài
-                </span>
-                {stats.pendingAssignments.isUrgent && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#FEE2E2] text-[#EF4444]">
-                    <span className="w-3.5 h-3.5 rounded-full bg-[#EF4444] text-white text-[10px] font-bold flex items-center justify-center leading-none">!</span>
-                    Cần nộp sớm
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          <button
-            type="button"
-            aria-label="Chi tiết bài tập"
-            className="text-slate-400 hover:text-slate-600 p-1"
-          >
-            <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
-          </button>
+      {/* 3. Bài tập cần nộp - Icon Xanh Lá Mint pastel */}
+      <div
+        className="bg-white rounded-[24px] px-4 py-3.5 xl:px-5 xl:py-4 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#EDF1F8] flex items-center gap-3.5 xl:gap-4 hover:shadow-[0_8px_30px_rgba(0,0,0,0.05)] transition-all min-w-0"
+        style={{ height: 'var(--kpi-h)', paddingTop: 'var(--kpi-pad-y)', paddingBottom: 'var(--kpi-pad-y)' }}
+      >
+        <div
+          className="rounded-2xl bg-[#E6FBF5] text-[#10B981] flex items-center justify-center shrink-0 shadow-2xs"
+          style={{ width: 'var(--kpi-icon-size)', height: 'var(--kpi-icon-size)' }}
+        >
+          <FileText className="w-5.5 h-5.5 xl:w-[26px] xl:h-[26px]" strokeWidth={2.2} />
         </div>
-
-        {/* Footer info */}
-        <div className="mt-3.5 pt-1 flex items-center gap-1.5 text-xs text-slate-500">
-          <CalendarCheck2 className="w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
-          <span>Hạn gần nhất: {stats.pendingAssignments.nearestDeadline}</span>
+        <div className="min-w-0 flex-1">
+          <span className="text-[12.5px] xl:text-[13px] font-semibold text-slate-500 block leading-none mb-1.5 xl:mb-2 truncate">
+            Bài tập cần nộp
+          </span>
+          <div className="flex items-center gap-2 flex-nowrap">
+            <span
+              className="font-black text-[#1E293B] tracking-tight leading-none whitespace-nowrap"
+              style={{ fontSize: 'var(--kpi-val-size)' }}
+            >
+              {stats.pendingAssignments.count} bài
+            </span>
+            <span className="inline-flex items-center h-5 px-2 rounded-full text-[10px] xl:text-[10.5px] font-bold bg-[#FEF2F2] text-[#EF4444] whitespace-nowrap shrink-0">
+              {stats.pendingAssignments.tag}
+            </span>
+          </div>
+          <span className="text-[12px] xl:text-[12.5px] text-slate-500 font-medium block leading-none mt-1.5 xl:mt-2 truncate">
+            {stats.pendingAssignments.nearestDeadline || 'Trong 3 ngày tới'}
+          </span>
         </div>
       </div>
     </div>

@@ -27,10 +27,10 @@ export function LoginForm() {
                 navigate('/dashboard')
             }
         } 
-        catch (error: any) {
-            console.log('Đăng nhập thất bại: ', error)
+        catch (error) {
+            const message = error instanceof Error ? error.message : 'Đăng nhập thất bại. Vui lòng thử lại.'
             setError("root", {
-                message: error.message
+                message
             })
         }
     }

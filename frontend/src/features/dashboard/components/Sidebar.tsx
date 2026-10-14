@@ -2,11 +2,13 @@ import React from 'react'
 import {
   Home,
   FileText,
-  CalendarCheck,
-  UserCheck,
+  Calendar,
+  BookOpen,
+  SquareCheck,
   Lightbulb,
+  Settings,
+  X,
 } from 'lucide-react'
-
 import logoImg from '../../../assets/images/logo.webp'
 
 interface NavItem {
@@ -14,65 +16,106 @@ interface NavItem {
   label: string
   icon: React.ElementType
   active?: boolean
-  opticalOffset?: string
 }
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isOpen?: boolean
+  onClose?: () => void
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
   const navItems: NavItem[] = [
     { id: 'home', label: 'Trang chủ', icon: Home, active: true },
-    { id: 'practice', label: 'Luyện đề', icon: FileText, opticalOffset: '-translate-x-[0.5px]' },
-    { id: 'schedule', label: 'Lịch học', icon: CalendarCheck },
-    { id: 'exercises', label: 'Bài tập', icon: FileText, opticalOffset: '-translate-x-[0.5px]' },
-    { id: 'attendance', label: 'Điểm danh', icon: UserCheck, opticalOffset: 'translate-x-[1px]' },
-    { id: 'summary', label: 'Tóm tắt kiến thức', icon: Lightbulb, opticalOffset: '-translate-x-[3px]' },
+    { id: 'practice', label: 'Luyện đề', icon: FileText },
+    { id: 'schedule', label: 'Lịch học', icon: Calendar },
+    { id: 'exercises', label: 'Bài tập', icon: BookOpen },
+    { id: 'attendance', label: 'Điểm danh', icon: SquareCheck },
+    { id: 'summary', label: 'Tóm tắt kiến thức', icon: Lightbulb },
+    { id: 'settings', label: 'Cài đặt', icon: Settings },
   ]
 
-  return (
-    <aside className="w-[218px] min-w-[218px] bg-white rounded-[26px] shadow-[0_4px_24px_rgba(0,0,0,0.02)] flex flex-col justify-between px-3.5 py-4 select-none shrink-0 h-full z-20">
-      <div className="space-y-5">
-        {/* Logo & Brand - Centered and aligned */}
-        <div className="flex flex-col items-center justify-center pt-1">
-          <div className="relative flex items-center justify-center">
+  const sidebarContent = (
+    <div className="flex flex-col h-full justify-between select-none py-1">
+      <div>
+        {/* Brand Logo: Cân đối, nhận diện thương hiệu Vision Education sắc nét */}
+        <div className="flex items-center justify-between px-2 pt-3 pb-2">
+          <div className="flex items-center gap-3">
             <img
               src={logoImg}
               alt="Vision Education"
-              className="h-8 w-auto object-contain"
+              className="h-9 sm:h-9.5 w-auto object-contain shrink-0"
             />
+            <div className="flex flex-col">
+              <span className="text-[16px] font-bold text-slate-900 leading-tight tracking-tight">
+                Vision
+              </span>
+              <span className="text-[13.5px] font-semibold text-slate-500 leading-tight tracking-tight">
+                Education
+              </span>
+            </div>
           </div>
-          <span className="mt-1 text-[13px] font-bold text-slate-900 tracking-tight text-center">
-            Vision Education
-          </span>
+
+          {/* Close button for mobile drawer */}
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              aria-label="Đóng menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
-        {/* Navigation List - Left edge optical alignment for all icons */}
-        <nav className="space-y-1">
+        {/* Navigation List: Khoảng cách dọc nhịp nhàng, active state tinh tế */}
+        <nav className="mt-7 space-y-1.5 px-0.5">
           {navItems.map((item) => {
             const Icon = item.icon
             return (
               <button
                 key={item.id}
                 type="button"
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-all ${
+                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] transition-all cursor-pointer text-left ${
                   item.active
-                    ? 'bg-[#EEF2FF] text-[#4F46E5] font-semibold'
-                    : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                    ? 'bg-[#EEF0FD] text-[#5553E6] font-semibold shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/70 font-medium'
                 }`}
               >
-                {/* Fixed-width icon slot with precise left-edge optical offset */}
-                <span className="w-5 h-5 flex items-center justify-center shrink-0">
-                  <Icon
-                    className={`w-[18px] h-[18px] ${item.opticalOffset || ''} ${
-                      item.active ? 'text-[#4F46E5] fill-[#4F46E5]' : 'text-slate-700'
-                    }`}
-                    strokeWidth={1.8}
-                  />
-                </span>
-                <span className="whitespace-nowrap">{item.label}</span>
+                <Icon
+                  className={`w-[19px] h-[19px] shrink-0 ${
+                    item.active ? 'text-[#5553E6]' : 'text-slate-400'
+                  }`}
+                  strokeWidth={item.active ? 2.2 : 1.8}
+                />
+                <span className="whitespace-nowrap tracking-tight">{item.label}</span>
               </button>
             )
           })}
         </nav>
       </div>
-    </aside>
+    </div>
+  )
+
+  return (
+    <>
+      {/* 1. Desktop Sidebar - Thanh thoát, tỷ lệ hài hòa */}
+      <aside className="hidden lg:flex w-[215px] xl:w-[235px] 2xl:w-[255px] bg-[#FAFBFD] h-screen border-r border-[#EAEFF5] flex-col p-3.5 xl:p-4 shrink-0 sticky top-0 z-30 transition-all">
+        {sidebarContent}
+      </aside>
+
+      {/* 2. Mobile Drawer */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity"
+            onClick={onClose}
+          />
+          <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl p-4.5 flex flex-col z-50 animate-in slide-in-from-left duration-200">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+    </>
   )
 }

@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
 import type { UserProfile } from '../types/dashboard.types'
-import dashboardBg from '../../../assets/images/dashboard-bg.png'
 
 interface DashboardLayoutProps {
   user: UserProfile
@@ -13,24 +12,37 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   user,
   children,
 }) => {
-  return (
-    <div
-      className="h-screen w-screen relative overflow-hidden flex p-3.5 gap-4 font-sans antialiased text-slate-800 selection:bg-indigo-100 selection:text-indigo-800 bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${dashboardBg})` }}
-    >
-      {/* 1. Floating Sidebar Card on Left */}
-      <Sidebar />
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-      {/* 2. Main Content Area */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden relative z-10">
-        {/* Top Header */}
-        <div className="pt-1 pb-3 shrink-0">
-          <Header user={user} />
+  return (
+    <div className="h-screen w-full bg-[#F8FAFD] flex font-sans antialiased text-[#1E293B] overflow-hidden selection:bg-[#EEF0FD] selection:text-[#5553E6]">
+      {/* 1. Sidebar cố định bên trái */}
+      <Sidebar
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+      />
+
+      {/* 2. Khung Viewport chính kéo dãn toàn bộ màn hình */}
+      <div className="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto overflow-x-hidden">
+        {/* Header trên cùng cố định với backdrop blur tinh tế */}
+        <div
+          className="w-full bg-[#F8FAFD]/90 backdrop-blur-md px-3 sm:px-6 xl:px-7 sticky top-0 z-20 shrink-0 transition-all"
+          style={{ paddingTop: 'var(--header-pt)', paddingBottom: 'var(--header-pb)' }}
+        >
+          <div className="w-full min-w-0">
+            <Header
+              user={user}
+              onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+            />
+          </div>
         </div>
 
-        {/* Scrollable Viewport */}
-        <main className="flex-1 overflow-y-auto space-y-4 pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="max-w-[1360px] mx-auto">
+        {/* Nội dung trang */}
+        <main
+          className="flex-1 min-w-0 flex flex-col px-3 sm:px-6 xl:px-7 overflow-x-hidden"
+          style={{ paddingTop: 'var(--main-pt)', paddingBottom: 'var(--main-pb)' }}
+        >
+          <div className="flex-1 min-w-0 flex flex-col w-full">
             {children}
           </div>
         </main>

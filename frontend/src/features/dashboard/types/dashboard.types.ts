@@ -9,55 +9,44 @@ export interface KpiStats {
     current: number
     max: number
     diff: number
-    diffLabel: string
-  }
-  streak: {
-    days: number
-    note: string
+    diffLabel?: string
   }
   pendingAssignments: {
     count: number
-    isUrgent: boolean
-    nearestDeadline: string
+    tag: string
+    isUrgent?: boolean
+    nearestDeadline?: string
+  }
+  streak: {
+    days: number
+    note?: string
   }
 }
 
-export interface DashboardTask {
+export interface TaskItem {
   id: string
   title: string
   subjectTopic: string
-  categoryTag: string
-  categoryTagColor: 'blue' | 'cyan' | 'pink'
-  deadline: string
-  remainingDays: number
-  isUrgent?: boolean
+  dueDate: string
+  statusType: 'urgent' | 'due' | 'pending'
+  statusLabel: string
   isCompleted: boolean
 }
 
-export interface DashboardNotification {
-  id: string
-  type: 'exam' | 'calendar' | 'material' | 'achievement'
-  title: string
-  description: string
-  timeAgo: string
-  isUnread: boolean
-}
-
-export interface UpcomingClassItem {
-  id: string
-  dayOfWeek: string
-  date: string
-  topic: string
-  time: string
-  room: string
-  teacher: string
-}
-
-export interface ResourceItem {
+export interface DocumentItem {
   id: string
   title: string
   format: 'PDF' | 'PPT' | 'DOC'
   size: string
-  timeAgo: string
-  downloadUrl?: string
+  date: string
 }
+
+export interface CalendarDayItem {
+  day: number
+  isCurrentMonth: boolean
+  isSelected?: boolean
+  isHighlighted?: boolean
+  hasEventDot?: boolean
+}
+
+
