@@ -31,6 +31,7 @@ export interface TaskItem {
   statusType: 'urgent' | 'due' | 'pending'
   statusLabel: string
   isCompleted: boolean
+  actionLabel?: string
 }
 
 export interface DocumentItem {

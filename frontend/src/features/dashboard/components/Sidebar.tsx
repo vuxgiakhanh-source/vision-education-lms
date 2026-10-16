@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
               <button
                 key={item.id}
                 type="button"
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] transition-all cursor-pointer text-left ${
+                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] wide:text-[15px] wide:py-3 transition-all cursor-pointer text-left ${
                   item.active
                     ? 'bg-[#EEF0FD] text-[#5553E6] font-semibold shadow-2xs'
                     : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/70 font-medium'
@@ -100,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
   return (
     <>
       {/* 1. Desktop Sidebar - Thanh thoát, tỷ lệ hài hòa */}
-      <aside className="hidden lg:flex w-[215px] xl:w-[235px] 2xl:w-[255px] bg-[#FAFBFD] h-screen border-r border-[#EAEFF5] flex-col p-3.5 xl:p-4 shrink-0 sticky top-0 z-30 transition-all">
+      <aside className="hidden lg:flex w-[220px] wide:w-[248px] wide:px-[18px] wide:py-5 bg-[#FAFBFD] h-dvh border-r border-[#EAEFF5] flex-col p-3.5 shrink-0 sticky top-0 z-30">
         {sidebarContent}
       </aside>
 

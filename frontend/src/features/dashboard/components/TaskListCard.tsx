@@ -1,29 +1,19 @@
-import React, { useState } from 'react'
-import { Calendar, MoreHorizontal, ArrowRight, Check } from 'lucide-react'
+import React from 'react'
+import { Calendar, ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { TaskItem } from '../types/dashboard.types'
 
 interface TaskListCardProps {
-  initialTasks: TaskItem[]
+  tasks: TaskItem[]
+  onOpenTask?: (task: TaskItem) => void
 }
 
-export const TaskListCard: React.FC<TaskListCardProps> = ({ initialTasks }) => {
-  const [tasks, setTasks] = useState<TaskItem[]>(initialTasks)
-
-  const toggleTask = (id: string) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, isCompleted: !task.isCompleted } : task
-      )
-    )
-  }
-
+export const TaskListCard: React.FC<TaskListCardProps> = ({ tasks, onOpenTask }) => {
   const getTagClasses = (statusType: TaskItem['statusType']) => {
     switch (statusType) {
       case 'urgent':
         return 'bg-[#FEF2F2] text-[#EF4444]'
       case 'due':
         return 'bg-[#FFF7ED] text-[#EA580C]'
-      case 'pending':
       default:
         return 'bg-[#F1F5F9] text-[#64748B]'
     }
@@ -35,106 +25,60 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ initialTasks }) => {
         return 'bg-[#F87171]'
       case 'due':
         return 'bg-[#FB923C]'
-      case 'pending':
       default:
         return 'bg-slate-200'
     }
   }
 
   return (
-    <div className="flex-1 flex flex-col space-y-3.5 select-none min-w-0">
-      {/* Tiêu đề Việc cần làm */}
-      <div className="flex items-center justify-between px-1">
-        <h2 className="text-[18px] sm:text-[19px] xl:text-[20px] font-bold text-[#1E293B] tracking-tight">
+    <section className="flex flex-col gap-3.5 ultrawide:gap-5 min-w-0">
+      <div className="flex items-center justify-between px-1 ultrawide:min-h-8">
+        <h2 className="text-[18px] wide:text-[22px] ultrawide:text-[24px] font-bold text-[#1E293B] tracking-tight">
           Việc cần làm
         </h2>
-        <button
-          type="button"
-          className="text-[13px] font-bold text-[#4F46E5] hover:text-[#4338CA] flex items-center gap-1 transition-colors cursor-pointer"
-        >
+        <button type="button" className="text-[11px] wide:text-[13px] font-semibold text-[#5553E6] hover:text-[#4338CA] flex items-center gap-1.5 cursor-pointer">
           <span>Xem tất cả</span>
-          <ArrowRight className="w-3.5 h-3.5" strokeWidth={2.4} />
+          <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* Thẻ trắng chứa danh sách nhiệm vụ: 4 hàng chia bằng divider mảnh */}
-      <div
-        className="bg-white rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#EDF1F8] divide-y divide-[#F1F5F9] flex flex-col justify-around overflow-hidden"
-        style={{ minHeight: 'var(--task-h)' }}
-      >
+      <div className="bg-white rounded-[20px] shadow-[0_3px_16px_rgba(30,41,59,0.02)] border border-[#EAEFF5] divide-y divide-[#F1F5F9] overflow-hidden">
         {tasks.map((task) => (
           <div
             key={task.id}
-            className={`flex-1 flex items-center justify-between gap-2.5 sm:gap-3 px-3.5 sm:px-6 xl:px-7 hover:bg-slate-50/60 transition-colors ${
-              task.isCompleted ? 'opacity-50' : ''
-            }`}
-            style={{ paddingTop: 'var(--task-row-py)', paddingBottom: 'var(--task-row-py)' }}
+            className={`grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_116px_104px_72px] wide:grid-cols-[minmax(0,1fr)_136px_112px_96px] items-center gap-x-3 gap-y-3 min-h-[72px] px-4 sm:px-5 py-3.5 wide:min-h-[84px] wide:px-6 wide:py-[18px] wide:gap-x-[18px] ultrawide:min-h-28 ultrawide:px-7 ultrawide:py-6 hover:bg-slate-50/60 transition-colors ${task.isCompleted ? 'opacity-50' : ''}`}
           >
-            {/* Cột trái: Vạch màu chỉ thị + Checkbox + Tiêu đề & Môn học */}
-            <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1 pr-1 sm:pr-2">
-              {/* Vạch màu chỉ thị trạng thái thanh lịch ở mép trái */}
-              <div
-                className={`w-1 h-7 rounded-full shrink-0 ${getIndicatorColor(task.statusType)}`}
-              />
-
-              <button
-                type="button"
-                onClick={() => toggleTask(task.id)}
-                aria-label={`Đánh dấu hoàn thành ${task.title}`}
-                className={`w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all cursor-pointer ${
-                  task.isCompleted
-                    ? 'bg-[#4F46E5] border-[#4F46E5] text-white shadow-xs'
-                    : 'border-[#CBD5E1] hover:border-[#4F46E5] bg-white'
-                }`}
-              >
-                {task.isCompleted && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3.2} />}
-              </button>
-
-              <div className="min-w-0 flex-1">
-                <h3
-                  className={`text-[13px] sm:text-[14px] font-bold text-[#1E293B] truncate leading-tight ${
-                    task.isCompleted ? 'line-through text-slate-400' : ''
-                  }`}
-                >
+            <div className="col-span-2 sm:col-span-1 flex items-center gap-3.5 min-w-0">
+              <span className={`w-[3px] h-7 rounded-full shrink-0 ${getIndicatorColor(task.statusType)}`} />
+              <div className="min-w-0">
+                <h3 className={`text-[13px] sm:text-[14px] wide:text-[16px] ultrawide:text-[18px] wide:leading-normal font-semibold text-[#1E293B] leading-relaxed break-words ${task.isCompleted ? 'line-through' : ''}`}>
                   {task.title}
                 </h3>
-                <p className="text-[11.5px] sm:text-[12.5px] text-slate-500 truncate mt-0.5 font-medium">
-                  {task.subjectTopic}
-                </p>
+                <p className="text-[12px] wide:text-[13px] ultrawide:text-[14px] text-slate-500 mt-1 leading-relaxed break-words">{task.subjectTopic}</p>
               </div>
             </div>
 
-            {/* Cột phải: Ngày đến hạn + Status Badge + Actions */}
-            <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
-              {/* Ngày đến hạn */}
-              <div className="hidden sm:flex items-center gap-1.5 text-[12.5px] font-medium text-slate-600 w-28 sm:w-32 justify-start whitespace-nowrap shrink-0">
-                <Calendar className="w-4 h-4 text-slate-400" strokeWidth={2} />
-                <span>{task.dueDate}</span>
-              </div>
-
-              {/* Status Badge */}
-              <div className="flex justify-center shrink-0">
-                <span
-                  className={`px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wide whitespace-nowrap ${getTagClasses(
-                    task.statusType
-                  )}`}
-                >
-                  {task.statusLabel}
-                </span>
-              </div>
-
-              {/* Menu ... với vùng nhấn thoải mái */}
-              <button
-                type="button"
-                aria-label="Thao tác"
-                className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
-              >
-                <MoreHorizontal className="w-4 h-4 sm:w-4.5 sm:h-4.5" strokeWidth={2} />
-              </button>
+            <div className="flex items-center gap-1.5 text-[11.5px] wide:text-[13px] ultrawide:text-[14px] text-slate-500 whitespace-nowrap">
+              <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <span>{task.dueDate}</span>
             </div>
+            <div className="flex justify-end sm:justify-center">
+              <span className={`px-2.5 py-1 rounded-full text-[10px] wide:text-[11px] font-semibold whitespace-nowrap ${getTagClasses(task.statusType)}`}>
+                {task.statusLabel}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onOpenTask?.(task)}
+              aria-label={`${task.actionLabel || 'Xem bài'}: ${task.title}`}
+              className="col-span-2 sm:col-span-1 flex items-center justify-end gap-1 min-h-9 text-[11px] wide:text-[12px] ultrawide:text-[13px] font-semibold text-[#635DC4] hover:text-[#4338CA] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5553E6] rounded cursor-pointer whitespace-nowrap"
+            >
+              {task.actionLabel || 'Xem bài'}
+              <ArrowUpRight className="w-3 h-3" />
+            </button>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   )
 }

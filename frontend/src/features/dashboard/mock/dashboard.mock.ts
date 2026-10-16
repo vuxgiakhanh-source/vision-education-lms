@@ -32,6 +32,7 @@ export const mockKpiStats: KpiStats = {
 export const mockTasks: TaskItem[] = [
   {
     id: 'task-1',
+    actionLabel: 'Làm bài',
     title: 'Hoàn thành bài tập Chương 1',
     subjectTopic: 'Đại số - Hàm số',
     dueDate: '24 Thg 9, 2024',
@@ -41,6 +42,7 @@ export const mockTasks: TaskItem[] = [
   },
   {
     id: 'task-2',
+    actionLabel: 'Xem bài',
     title: 'Xem lại video: Phương trình bậc hai',
     subjectTopic: 'Đại số - Phương trình',
     dueDate: '26 Thg 9, 2024',
@@ -50,6 +52,7 @@ export const mockTasks: TaskItem[] = [
   },
   {
     id: 'task-3',
+    actionLabel: 'Làm bài',
     title: 'Làm đề ôn tập số 2',
     subjectTopic: 'Tổng ôn chương 1 + 2',
     dueDate: '28 Thg 9, 2024',
@@ -59,6 +62,7 @@ export const mockTasks: TaskItem[] = [
   },
   {
     id: 'task-4',
+    actionLabel: 'Xem bài',
     title: 'Đọc và tóm tắt lý thuyết tích phân',
     subjectTopic: 'Giải tích - Nguyên hàm, tích phân',
     dueDate: '30 Thg 9, 2024',
@@ -71,21 +75,21 @@ export const mockTasks: TaskItem[] = [
 export const mockDocuments: DocumentItem[] = [
   {
     id: 'doc-1',
-    title: 'Tóm tắt lý thuyết - Tích phân (PDF)',
+    title: 'Tóm tắt lý thuyết - Tích phân',
     format: 'PDF',
     size: '2.4 MB',
     date: '24 Thg 9, 2024',
   },
   {
     id: 'doc-2',
-    title: 'Bộ đề luyện tập - Hàm số mũ (PDF)',
+    title: 'Bộ đề luyện tập - Hàm số mũ',
     format: 'PDF',
     size: '1.8 MB',
     date: '22 Thg 9, 2024',
   },
   {
     id: 'doc-3',
-    title: 'Công thức đạo hàm mở rộng (PPT)',
+    title: 'Công thức đạo hàm mở rộng',
     format: 'PPT',
     size: '3.1 MB',
     date: '20 Thg 9, 2024',

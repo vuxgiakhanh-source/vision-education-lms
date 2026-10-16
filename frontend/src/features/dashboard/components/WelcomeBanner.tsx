@@ -12,15 +12,15 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({
 }) => {
   return (
     <div
-      className="relative w-full rounded-[20px] sm:rounded-[24px] overflow-hidden shadow-[0_8px_28px_rgba(23,26,78,0.12)] flex items-center select-none bg-gradient-to-r from-[#1B1E4E] via-[#22275E] to-[#2B308C] transition-all"
+      className="relative w-full wide:aspect-[1676/286] ultrawide:aspect-auto ultrawide:h-60 wide:shrink-0 rounded-[20px] sm:rounded-[24px] overflow-hidden shadow-[0_6px_18px_rgba(23,26,78,0.06)] flex items-center select-none bg-gradient-to-r from-[#1B1E4E] via-[#22275E] to-[#2B308C]"
       style={{ minHeight: 'var(--banner-h)' }}
     >
       {/* 100% Unified Authentic Background Artwork - Seamless across full width */}
-      <div className="absolute right-0 top-0 bottom-0 pointer-events-none flex items-center justify-end h-full w-full">
+      <div className="absolute right-0 top-0 bottom-0 pointer-events-none flex items-center justify-end h-full w-full ultrawide:after:absolute ultrawide:after:inset-0 ultrawide:after:bg-[linear-gradient(90deg,#1b1e4e_0%,#1b1e4ee6_30%,transparent_65%)]">
         <img
           src={bannerUnified}
           alt=""
-          className="h-full w-full object-cover object-right select-none pointer-events-none opacity-50 sm:opacity-100"
+          className="h-full w-full object-cover wide:object-contain ultrawide:object-cover object-right select-none pointer-events-none opacity-50 sm:opacity-100"
         />
       </div>
 

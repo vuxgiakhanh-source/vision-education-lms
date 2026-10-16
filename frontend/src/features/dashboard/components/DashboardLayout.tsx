@@ -15,7 +15,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
-    <div className="h-screen w-full bg-[#F8FAFD] flex font-sans antialiased text-[#1E293B] overflow-hidden selection:bg-[#EEF0FD] selection:text-[#5553E6]">
+    <div className="dashboard-layout h-dvh w-full wide:max-w-[2000px] ultrawide:max-w-none ultrawide:border-x-0 wide:mx-auto wide:border-x wide:border-[#EAEFF5] bg-[#F8FAFD] flex font-sans antialiased text-[#1E293B] overflow-hidden selection:bg-[#EEF0FD] selection:text-[#5553E6]">
       {/* 1. Sidebar cố định bên trái */}
       <Sidebar
         isOpen={isMobileMenuOpen}
@@ -23,10 +23,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       />
 
       {/* 2. Khung Viewport chính kéo dãn toàn bộ màn hình */}
-      <div className="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto overflow-x-hidden">
+      <div className="flex-1 min-w-0 flex flex-col h-dvh overflow-y-auto overflow-x-hidden">
         {/* Header trên cùng cố định với backdrop blur tinh tế */}
         <div
-          className="w-full bg-[#F8FAFD]/90 backdrop-blur-md px-3 sm:px-6 xl:px-7 sticky top-0 z-20 shrink-0 transition-all"
+          className="w-full bg-[#F8FAFD]/90 backdrop-blur-md px-4 sm:px-6 xl:px-[26px] wide:max-w-[1752px] ultrawide:max-w-none wide:mx-auto wide:px-8 ultrawide:px-[clamp(32px,2vw,64px)] sticky top-0 z-20 shrink-0"
           style={{ paddingTop: 'var(--header-pt)', paddingBottom: 'var(--header-pb)' }}
         >
           <div className="w-full min-w-0">
@@ -39,7 +39,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
         {/* Nội dung trang */}
         <main
-          className="flex-1 min-w-0 flex flex-col px-3 sm:px-6 xl:px-7 overflow-x-hidden"
+          className="flex-1 min-w-0 flex flex-col px-4 sm:px-6 xl:px-[26px] wide:w-full wide:max-w-[1752px] ultrawide:max-w-none wide:mx-auto wide:px-8 ultrawide:px-[clamp(32px,2vw,64px)]"
           style={{ paddingTop: 'var(--main-pt)', paddingBottom: 'var(--main-pb)' }}
         >
           <div className="flex-1 min-w-0 flex flex-col w-full">

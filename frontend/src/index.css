@@ -2,6 +2,8 @@
 
 @theme {
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --breakpoint-wide: 112.5rem;
+  --breakpoint-ultrawide: 150rem;
   --color-brand-primary: #5553E6;
   --color-brand-hover: #4745D4;
   --color-brand-light: #EEF0FD;
@@ -32,190 +34,102 @@ body {
   background: #94A3B8;
 }
 
-/* ============================================================
-   RESPONSIVE VIEWPORT-HEIGHT GEOMETRY SYSTEM
-   Tự động thích ứng theo chiều cao màn hình trình duyệt:
-   - Tier 1: >= 1051px (Màn hình 2048x1152 target / chuẩn tỷ lệ tham chiếu)
-   - Tier 2: 801px - 1050px (Desktop FHD 1920x1080 xem ở 100% zoom)
-   - Tier 3: 681px - 800px (Laptop 14"-15.6" tỉ lệ 125% DPI scale của Windows)
-   - Tier 4: <= 680px (Cửa sổ thu nhỏ hoặc màn hình laptop compact)
-   Đảm bảo 100% hiển thị trọn vẹn 4 nhiệm vụ và 3 tài liệu trên 1 màn hình.
-   ============================================================ */
-
+/* Dashboard spacing follows available width; short windows scroll naturally. */
 :root {
-  /* Default Tier 1: Target Reference (2048x1152) */
-  --banner-h: 286px;
-  --banner-title-size: 38px;
-  --banner-sub-size: 16px;
-  --banner-pad-x: 52px;
-  --banner-pad-y: 28px;
+  --banner-h: 155px;
+  --banner-title-size: 19px;
+  --banner-sub-size: 12.5px;
+  --banner-pad-x: 18px;
+  --banner-pad-y: 16px;
 
-  --kpi-h: 154px;
-  --kpi-icon-size: 52px;
-  --kpi-val-size: 24px;
-  --kpi-pad-y: 16px;
+  --kpi-h: 96px;
+  --kpi-icon-size: 42px;
+  --kpi-val-size: 21px;
+  --kpi-pad-y: 12px;
 
-  --task-h: 409px;
-  --task-row-py: 14px;
+  --cal-cell-h: 28px;
+  --cal-pad: 16px;
+  --doc-icon-size: 34px;
+  --doc-pad: 18px;
 
-  --cal-h: 348px;
-  --cal-cell-h: 30px;
-  --cal-pad: 24px;
-
-  --doc-h: 309px;
-  --doc-icon-size: 40px;
-  --doc-pad: 24px;
-
-  --header-pt: 16px;
-  --header-pb: 6px;
-  --main-pt: 10px;
-  --main-pb: 32px;
-  --gap-main: 23px;
-  --gap-left-col: 36px;
-  --left-col-mt: 11px;
-  --gap-right-col: 20px;
+  --header-pt: 8px;
+  --header-pb: 4px;
+  --main-pt: 6px;
+  --main-pb: 28px;
+  --gap-main: 22px;
+  --gap-left-col: 24px;
+  --gap-right-col: 18px;
 }
 
-/* Tier 2: Desktop FHD 1080p (Viewport height 801px - 1050px on screens >= 641px) */
-@media (min-width: 641px) and (max-height: 1050px) and (min-height: 801px) {
-  :root {
-    --banner-h: 215px;
-    --banner-title-size: 31px;
-    --banner-sub-size: 14.5px;
-    --banner-pad-x: 36px;
-    --banner-pad-y: 20px;
-
-    --kpi-h: 120px;
-    --kpi-icon-size: 48px;
-    --kpi-val-size: 21px;
-    --kpi-pad-y: 12px;
-
-    --task-h: 310px;
-    --task-row-py: 10px;
-
-    --cal-h: 270px;
-    --cal-cell-h: 24px;
-    --cal-pad: 18px;
-
-    --doc-h: 228px;
-    --doc-icon-size: 36px;
-    --doc-pad: 18px;
-
-    --header-pt: 12px;
-    --header-pb: 4px;
-    --main-pt: 8px;
-    --main-pb: 28px;
-    --gap-main: 16px;
-    --gap-left-col: 20px;
-    --left-col-mt: 6px;
-    --gap-right-col: 16px;
-  }
-}
-
-/* Tier 3: Compact laptops / 1080p at 125% Windows DPI (Viewport height 681px - 800px on screens >= 641px) */
-@media (min-width: 641px) and (max-height: 800px) and (min-height: 681px) {
-  :root {
-    --banner-h: 165px;
-    --banner-title-size: 25px;
-    --banner-sub-size: 13px;
-    --banner-pad-x: 28px;
-    --banner-pad-y: 14px;
-
-    --kpi-h: 96px;
-    --kpi-icon-size: 42px;
-    --kpi-val-size: 18px;
-    --kpi-pad-y: 8px;
-
-    --task-h: 270px;
-    --task-row-py: 8px;
-
-    --cal-h: 230px;
-    --cal-cell-h: 22px;
-    --cal-pad: 14px;
-
-    --doc-h: 200px;
-    --doc-icon-size: 34px;
-    --doc-pad: 14px;
-
-    --header-pt: 8px;
-    --header-pb: 3px;
-    --main-pt: 6px;
-    --main-pb: 24px;
-    --gap-main: 12px;
-    --gap-left-col: 16px;
-    --left-col-mt: 4px;
-    --gap-right-col: 12px;
-  }
-}
-
-/* Tier 4: Ultra compact (Viewport height <= 680px on screens >= 641px) */
-@media (min-width: 641px) and (max-height: 680px) {
+@media (min-width: 640px) {
   :root {
     --banner-h: 140px;
-    --banner-title-size: 21px;
-    --banner-sub-size: 12px;
-    --banner-pad-x: 22px;
-    --banner-pad-y: 10px;
-
-    --kpi-h: 86px;
-    --kpi-icon-size: 38px;
-    --kpi-val-size: 16.5px;
-    --kpi-pad-y: 6px;
-
-    --task-h: 220px;
-    --task-row-py: 5px;
-
-    --cal-h: 195px;
-    --cal-cell-h: 19px;
+    --banner-title-size: 25px;
+    --banner-sub-size: 13px;
+    --banner-pad-x: 29px;
+    --banner-pad-y: 20px;
+    --cal-cell-h: 24px;
     --cal-pad: 12px;
-
-    --doc-h: 165px;
-    --doc-icon-size: 28px;
-    --doc-pad: 12px;
-
-    --header-pt: 6px;
-    --header-pb: 2px;
-    --main-pt: 4px;
-    --main-pb: 20px;
-    --gap-main: 10px;
-    --gap-left-col: 10px;
-    --left-col-mt: 2px;
-    --gap-right-col: 10px;
   }
 }
 
-/* Mobile Devices (Screen width <= 640px: natural scrolling & comfortable spacing) */
-@media (max-width: 640px) {
-  :root {
-    --banner-h: 155px;
-    --banner-title-size: 19px;
-    --banner-sub-size: 12.5px;
-    --banner-pad-x: 18px;
-    --banner-pad-y: 16px;
+/* Wide desktop only; smaller viewport layouts keep their existing values. */
+@media (min-width: 112.5rem) {
+  .dashboard-layout {
+    --header-pt: 14px;
+    --header-pb: 8px;
+    --gap-main: 26px;
+    --gap-left-col: 28px;
+    --gap-right-col: 22px;
+    --banner-title-size: 32px;
+    --banner-sub-size: 15px;
+    --banner-pad-x: 36px;
+    --banner-pad-y: 28px;
+    --kpi-h: 116px;
+    --kpi-val-size: 26px;
+    --kpi-icon-size: 48px;
+    --cal-cell-h: 30px;
+    --cal-pad: 20px;
+    --doc-pad: 22px;
+  }
+}
 
-    --kpi-h: auto;
-    --kpi-icon-size: 44px;
-    --kpi-val-size: 20px;
-    --kpi-pad-y: 12px;
+/* The two rows share named grid lines so each can use its own proportions.
+   Below this breakpoint the existing flex and two-column layouts stay in place. */
+@media (min-width: 150rem) {
+  .dashboard-layout {
+    --gap-main: 32px;
+    --gap-right-col: 24px;
+    --kpi-h: 124px;
+    --kpi-val-size: 36px;
+    --kpi-icon-size: 52px;
+    --kpi-pad-y: 28px;
+    --banner-h: 240px;
+    --banner-title-size: 26px;
+    --cal-pad: 24px;
+    --cal-cell-h: 34px;
+    --doc-pad: 24px;
+  }
 
-    --task-h: auto;
-    --task-row-py: 12px;
+  .student-dashboard {
+    display: grid;
+    grid-template-columns:
+      [content-start] minmax(0, 1.15fr)
+      [banner-end] 28px [stats-start] minmax(0, 0.95fr)
+      [tasks-end] 32px [resources-start] minmax(420px, 0.9fr)
+      [content-end];
+    grid-template-rows: 240px auto;
+    column-gap: 0;
+    align-items: start;
+    align-content: start;
+    padding-top: 12px;
+  }
 
-    --cal-h: auto;
-    --cal-cell-h: 32px;
-    --cal-pad: 16px;
-
-    --doc-h: auto;
-    --doc-icon-size: 38px;
-    --doc-pad: 16px;
-
-    --header-pt: 10px;
-    --header-pb: 6px;
-    --main-pt: 8px;
-    --main-pb: 32px;
-    --gap-main: 16px;
-    --gap-left-col: 16px;
-    --left-col-mt: 0px;
-    --gap-right-col: 16px;
+  .dashboard-banner { grid-area: 1 / content-start / 2 / banner-end; }
+  .dashboard-stats { grid-area: 1 / stats-start / 2 / content-end; height: 100%; }
+  .dashboard-tasks { grid-area: 2 / content-start / 3 / tasks-end; }
+  .dashboard-resources {
+    grid-area: 2 / resources-start / 3 / content-end;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
