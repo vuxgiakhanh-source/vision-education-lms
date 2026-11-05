@@ -1,5 +1,7 @@
 # 03 — HTML, CSS, responsive và khả năng sử dụng
 
+> Chuyên đề đào sâu sau [F1](F1-html-css-tu-dau.md) và từng bước card → toolbar → danh sách ở [G1](G1-trang-web-tu-thu-muc-trong.md). Tra từng mục khi cần; bài dashboard cuối chương dành cho lần tự làm sau các ví dụ nhỏ.
+
 Mục tiêu: giải thích được bố cục mình viết, không sửa bằng thử số ngẫu nhiên.
 
 ## Bài 03.1 — HTML có nghĩa và form đúng
@@ -118,3 +120,100 @@ Qua chương khi tự dựng được layout và giải thích computed styles. 
 
 Tham khảo: [MDN CSS](https://developer.mozilla.org/en-US/docs/Web/CSS),
 [Tailwind responsive design](https://tailwindcss.com/docs/responsive-design).
+
+## Xưởng — Dựng màn đầu tiên từ HTML rồi giải thích CSS
+
+```html
+<main class="study-page">
+  <header><h1>Bài tập của tôi</h1><p>Chọn một bài để tiếp tục.</p></header>
+  <form>
+    <label for="query">Tìm theo tên bài</label>
+    <input id="query" name="query" type="search">
+    <button type="submit">Tìm</button>
+  </form>
+  <section aria-labelledby="task-heading">
+    <h2 id="task-heading">Việc cần làm</h2>
+    <ul><li><a href="/tasks/1">Ôn hàm số</a></li></ul>
+  </section>
+</main>
+```
+
+Thẻ mở/đóng tạo cây DOM. Attribute mô tả phần tử. Label liên kết input bằng
+id; name là tên khi serialize form; id phải duy nhất. Link điều hướng, button
+thực hiện hành động. Form có ngữ nghĩa submit khi Enter; button phụ như hiện
+mật khẩu cần type button. Heading biểu diễn cấu trúc nội dung, không chỉ cỡ chữ.
+
+```css
+* { box-sizing: border-box; }
+.study-page { max-width: 76rem; margin-inline: auto; padding: 1.5rem; }
+.study-layout { display: grid; grid-template-columns: minmax(0, 1fr) 18rem; gap: 1.5rem; }
+.study-main { min-width: 0; }
+button:focus-visible, a:focus-visible { outline: 3px solid #1b6552; outline-offset: 3px; }
+@media (max-width: 56rem) { .study-layout { grid-template-columns: minmax(0, 1fr); } }
+```
+
+Selector chọn phần tử; property:value đặt khai báo. Với border-box, width tính
+cả padding/border. Margin là khoảng ngoài; gap là khoảng giữa phần tử layout.
+Rem theo font gốc; % tùy containing block; viewport units theo viewport với
+khác biệt mobile cần thử. Không trộn tùy tiện fixed height, min-height và
+overflow rồi không biết thứ gì đang cắt nội dung.
+
+Flex phù hợp phân bố một chiều: trục chính/trục chéo, gap, wrap, grow/shrink.
+Grid biểu diễn cột/hàng; minmax(0,1fr) cho track co, nhưng con vẫn cần wrap
+đúng. `position:absolute` ra khỏi normal flow, dễ chồng chữ nếu dùng để dựng
+mọi card. Sticky cần xét scroll container và offset; z-index phụ thuộc stacking context.
+
+## Xưởng — Cascade và Tailwind
+
+Rule thắng phụ thuộc nguồn, importance, layer, specificity và thứ tự phù hợp;
+không chỉ “class nào viết cuối trong attribute”. Dùng Computed để lần ngược
+rule. Với Tailwind, học utility như `p-6`, `flex`, `gap-4`, `md:grid-cols-2`
+bằng cách đọc CSS được tạo. Không đoán mọi token spacing luôn cùng số px khi
+theme của dự án có thể đổi. Trong Tailwind4 cấu hình/plugin khác v3; dùng
+file hiện tại của repo, không chép config tutorial cũ.
+
+`md:` là điều kiện breakpoint cấu hình, không nhận diện chắc chắn một thiết bị.
+CSS viewport không suy ra chỉ từ inch. Test 320/390/768/1024/1366/1920 và màn
+rộng theo nhu cầu, với chữ dài, dữ liệu rỗng/nhiều, zoom và scrollbar thực tế.
+
+Ảnh banner: chốt vùng an toàn cho chữ, aspect ratio, max/min size và breakpoint.
+Cover có thể crop, contain có thể để khoảng trống. Nếu chi tiết chính luôn cần
+đủ, tách hình trang trí khỏi nền/khung chữ hoặc dùng asset theo breakpoint.
+Không kéo giãn hình sai tỉ lệ để lấp một khung bất kỳ.
+
+## Xưởng — Form có trạng thái và khả năng sử dụng
+
+Thiết kế default/focus/invalid/submitting/success/error/disabled. Error phải
+liên kết field hoặc có thông báo rõ; không chỉ đổi màu. Loading dài nên có
+phản hồi phù hợp; keyboard focus không tự mất khi list cập nhật. Icon-only
+button cần accessible name, ảnh trang trí dùng alt rỗng, ảnh nội dung có alt
+có nghĩa. Kiểm contrast với công cụ và thử keyboard; nhìn đẹp không thay test.
+
+**Điền:** dựng form tên lớp bằng HTML/CSS với label/error.
+
+**Tự viết:** dashboard hai cột có sidebar, header, card; tự chọn breakpoint từ
+content, không từ tên laptop. Giữ các cột thẳng hàng mà không absolute toàn trang.
+
+**Sửa lỗi:** title rất dài đẩy lịch ra ngoài; tìm min-content/width/nowrap;
+sửa và thử lại keyboard,320px và zoom200%. Chụp trước/sau cùng viewport.
+
+## Cầu nối sang React — DOM và event bằng JavaScript thường
+
+```html
+<button id="counter" type="button">0</button>
+<script type="module">
+  const button = document.querySelector('#counter');
+  let count = 0;
+  button.addEventListener('click', () => {
+    count += 1;
+    button.textContent = String(count);
+  });
+</script>
+```
+
+QuerySelector tìm node DOM,addEventListener đăng ký callback cho sự kiện;
+callback chưa chạy khi đăng ký. Mỗi click đổi count rồi sửa textContent.
+Trong React, state và render mô tả text thay cho việc tự query/sửa cùng DOM
+mà React sở hữu. Hiểu cách cơ bản để biết framework giúp quản lý điều gì.
+Event có target/currentTarget và có thể bubble; form submit cần xử lý hành vi
+mặc định đúng. Không dùng innerHTML cho chuỗi người dùng để làm demo nhanh.

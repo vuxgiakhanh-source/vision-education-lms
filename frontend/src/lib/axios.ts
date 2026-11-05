@@ -22,10 +22,16 @@ api.interceptors.request.use(
     }
 )
 
-// Xử lý response / bắt lỗi tập trung
+// Xử lý response / bắt lỗi tập trung (401 tự động logout)
 api.interceptors.response.use(
     (response) => response,
     (error) => {
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem('access_token')
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login'
+            }
+        }
         return Promise.reject(error)
     }
 )

@@ -1,0 +1,44 @@
+{
+  "lessons": [{
+    "id": "zero", "number": "S0", "short": "Chưa biết cú pháp",
+    "title": "Bắt đầu từ một dòng, hiểu từng ký hiệu",
+    "source": "START-TU-SO-0.md", "lab": "syntax", "group": "Bắt đầu tại đây nếu chưa biết code",
+    "goal": "Tự gõ, giải thích và sửa vài dòng về số, chữ, biến và dấu gán trước khi học project.",
+    "question": "Trong let diem = 7;, từng phần đang bảo máy làm gì?",
+    "core": "Code là chỉ dẫn viết theo quy tắc gọi là cú pháp. Học một ý mỗi lần: hiển thị một số, tính một phép cộng, đặt tên giữ giá trị rồi đổi giá trị. Gõ lại, đổi một chỗ và theo dõi từng dòng. Chưa cần hiểu hàm đăng nhập, React hoặc database.",
+    "steps": ["Đọc thành tiếng từng ký hiệu trong một dòng, chưa đoán bằng tên project.", "Dự đoán kết quả, tự gõ rồi xem output và bảng biến.", "Đóng mẫu, tự viết một biến thể và giải thích vì sao kết quả đổi."],
+    "trap": "Dấu = là gán, không phải câu hỏi so sánh. Tạo biến không tự hiển thị; tên diem khác chuỗi 'diem'.",
+    "terms": [["cú pháp", "Quy tắc viết chỉ dẫn để chương trình đọc được, gồm từ khóa, tên và dấu."], ["biến", "Tên gắn với một giá trị để đọc lại và, với let, gán giá trị khác."], ["biểu thức", "Phần code tính ra một giá trị, như 2 + 3 hoặc diem === 7."]],
+    "practice": ["Tự gõ console.log(2); rồi chỉ đổi số muốn hiển thị.", "Tạo let soBai = 2; tăng thêm 1 và hiển thị kết quả.", "Đổi số ban đầu, dự đoán lại và tự sửa một lỗi nháy hoặc tên biến."],
+    "prerequisites": [], "deliverable": "Một đoạn 3–4 dòng tự gõ, bảng giá trị và lời giải thích từng ký hiệu.",
+    "quiz": [
+      {"q":"let diem = 7; đang yêu cầu gì?", "choices":["Hỏi diem có bằng 7 không", "Tạo biến diem và gán số 7", "Tự hiển thị số 7"], "correct":1, "why":"let khai báo biến; = gán giá trị. Muốn hiển thị cần thao tác như console.log(diem)."},
+      {"q":"diem đang bằng 7. Sau diem = diem + 1; nó bằng bao nhiêu?", "choices":["8", "7", "Máy phải giải phương trình"], "correct":0, "why":"Đọc giá trị cũ bên phải là 7, cộng 1 được 8 rồi gán lại vào diem bên trái."},
+      {"q":"console.log('diem'); hiển thị gì?", "choices":["Giá trị của biến diem", "Chữ diem", "Luôn là số 0"], "correct":1, "why":"Dấu nháy biến phần bên trong thành chuỗi văn bản. Không nháy mới đọc tên biến đã khai báo."},
+      {"q":"Bài đầu chỉ tạo let soBai = 2; nhưng chưa log. Output trống có chắc là lỗi không?", "choices":["Có, mọi dòng đều phải in", "Không; biến có thể đã được tạo mà chưa hiển thị", "Chắc chắn cần cài React"], "correct":1, "why":"Thay đổi giá trị và hiển thị là hai việc khác nhau. Bảng theo dõi biến giúp nhìn việc đã xảy ra."}
+    ]
+  }],
+  "worked": {
+    "zero": {
+      "title": "Ba dòng đầu: tạo, đổi, hiển thị",
+      "language": "javascript", "section": "7. Đọc vế phải trước",
+      "intro": "Bấm từng dòng. Chỉ có một biến diem; hãy xem số nó đang giữ sau mỗi câu lệnh.",
+      "code": "let diem = 7;\ndiem = diem + 1;\nconsole.log(diem);",
+      "lines": [
+        {"title": "Tạo tên diem và gắn số 7", "explanation": "let tạo biến; diem là tên mình đặt; = gán giá trị bên phải; 7 là số; ; kết thúc câu lệnh. Dòng này chưa hiển thị gì.", "value": "diem giữ 7. Output chưa có."},
+        {"title": "Lấy giá trị cũ, cộng rồi gán lại", "explanation": "Đọc diem bên phải được 7. Tính 7 + 1 được 8. Gán 8 vào diem bên trái. Không viết lại let vì biến đã được tạo. Đây là cập nhật, không phải phương trình toán.", "value": "diem đổi từ 7 thành 8. Output vẫn chưa có."},
+        {"title": "Hiển thị giá trị hiện tại", "explanation": "console là công cụ hiển thị; dấu . chọn thao tác log; (...) gọi thao tác với giá trị đọc từ diem. Không đặt nháy quanh diem vì muốn đọc biến. ; kết thúc câu lệnh.", "value": "Output là 8. diem vẫn giữ 8."}
+      ],
+      "trace": {"headers": ["Sau dòng", "diem", "Output"], "rows": [["1", "7", "chưa có"], ["2", "8", "chưa có"], ["3", "8", "8"]]},
+      "predict": {"question": "Đổi dòng đầu thành let diem = 4; thì dòng cuối hiển thị mấy?", "answer": "5. Dòng cập nhật đọc 4, cộng 1 được 5 rồi gán lại. Log đọc giá trị mới."},
+      "practice": ["Đổi số ban đầu và dự đoán trước khi chạy.", "Tự tạo soBai bằng 2, tăng 1 rồi hiển thị.", "Gây một lỗi tên biến hoặc dấu nháy, đọc báo lỗi rồi tự sửa."]
+    }
+  },
+  "milestones": [{
+    "id": "syntax-start", "name": "S0 · Hiểu và tự viết vài dòng đầu", "lessons": ["zero"],
+    "task": "Tự gõ số/chữ, tạo một biến, cập nhật và hiển thị mà không nhìn lời giải.",
+    "checks": ["Giải thích let, tên biến, =, dấu nháy, +, (...) và ; bằng lời của mình.", "Đọc vế phải trước khi gán; đoán đúng biến qua từng dòng.", "Tự viết đoạn 3–4 dòng với số khác và sửa một lỗi cú pháp nhỏ."],
+    "change": "Đổi giá trị đầu từ 2 thành 5; dự đoán cả số sau tăng và phép so sánh với 3.",
+    "artifact": "Code tự gõ, dự đoán, bảng vết và một lỗi đã tự sửa."
+  }]
+}

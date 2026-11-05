@@ -1,5 +1,10 @@
 # Lộ trình học để tự phát triển Vision Education LMS
 
+Đây là bản đồ chuyên đề tổng quan. Với nền Python cơ bản đã xác nhận, bắt đầu
+[G0 của giáo án xây lại](course/G0-cach-hoc-de-tu-xay.md), rồi theo đường chính
+trong [sách HTML](course/GIAO-AN-LMS.html). Các chặng bên dưới dùng để đào sâu
+và đối chiếu phạm vi sau bài hướng dẫn tương ứng.
+
 Ngày lập: 17/10/2026. Mục tiêu: đọc hiểu code hiện có, tự làm được một chức năng
 đi qua frontend, backend và database, rồi mở rộng thành hệ thống học toán.
 

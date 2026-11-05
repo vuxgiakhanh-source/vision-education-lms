@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sổ lớp học · JavaScript</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <p class="eyebrow">Xưởng tự viết · JavaScript thường</p>
+        <h1>Sổ lớp học</h1>
+        <p>Dữ liệu ở bộ nhớ của tab. Tải lại trang sẽ bắt đầu lại.</p>
+      </header>
+      <section class="panel" aria-labelledby="create-heading">
+        <h2 id="create-heading">Thêm lớp</h2>
+        <form id="create-form" novalidate>
+          <label for="class-title">Tên lớp</label>
+          <div class="toolbar">
+            <input id="class-title" name="title" aria-describedby="title-help title-error">
+            <button type="submit">Thêm lớp</button>
+          </div>
+          <p id="title-help" class="help">Tên sau khi bỏ khoảng trắng hai đầu phải có 1–100 ký tự JS.</p>
+          <p id="title-error" class="error" role="alert"></p>
+        </form>
+        <p id="notice" role="status"></p>
+      </section>
+      <section class="panel" aria-labelledby="list-heading">
+        <h2 id="list-heading">Các lớp của mình</h2>
+        <label for="class-query">Tìm theo tên lớp</label>
+        <input id="class-query" type="search" name="query">
+        <p id="summary" role="status"></p>
+        <ul id="class-list" class="class-list"></ul>
+        <p id="empty-message"></p>
+      </section>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

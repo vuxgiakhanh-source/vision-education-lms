@@ -7,3 +7,5 @@ python-dotenv
 alembic
 python-jose
 loguru
+pytest
+httpx

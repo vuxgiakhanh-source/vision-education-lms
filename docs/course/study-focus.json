@@ -1,0 +1,1428 @@
+{
+  "studio-start": {
+    "syntax": {
+      "language": "typescript",
+      "code": "type ClassInput = { title: string };",
+      "parts": [
+        [
+          "type ClassInput",
+          "Đặt tên cho một kiểu; chưa tạo dữ liệu lớp."
+        ],
+        [
+          "{ title: string }",
+          "Object phải có thuộc tính title mang giá trị chuỗi."
+        ],
+        [
+          ";",
+          "Kết thúc khai báo; không phải lệnh gửi request."
+        ]
+      ],
+      "rule": "Đọc hình dạng dữ liệu trước khi chọn tên file hoặc thư viện.",
+      "trap": "Kiểu title: string vẫn cho phép chuỗi trắng; quy tắc nghiệp vụ cần kiểm khi chạy.",
+      "task": "Viết năm ví dụ cho Sổ lớp trước khi mở source mẫu.",
+      "check": "Giải thích kết quả của tên trắng, tên trùng và tìm không khớp; chốt quy tắc còn thiếu."
+    },
+    "architecture": {
+      "nodes": [
+        "Người dùng",
+        "Ví dụ hành vi",
+        "Hợp đồng đầu vào",
+        "Code tự viết"
+      ],
+      "decision": "Chốt title rỗng/trùng trước. Tên thư viện không quyết định quy tắc lớp.",
+      "question": "Nếu cho phép hai lớp trùng tên theo năm học, hợp đồng nào phải đổi?"
+    }
+  },
+  "bridge": {
+    "syntax": {
+      "language": "javascript",
+      "code": "const isPassing = (score) => score >= 5;\nconst result = isPassing(5);",
+      "parts": [
+        [
+          "const isPassing",
+          "Tên biến giữ một hàm. Khai báo chưa gọi hàm."
+        ],
+        [
+          "(score) =>",
+          "Một tham số; dấu mũi tên bắt đầu thân hàm."
+        ],
+        [
+          "score >= 5",
+          "Biểu thức boolean; thân không có khối nên trả kết quả ngầm."
+        ],
+        [
+          "isPassing(5)",
+          "Lời gọi: đưa 5 vào score, nhận true."
+        ]
+      ],
+      "rule": "Tách định nghĩa, truyền hàm và gọi hàm. Thân { ... } cần return nếu muốn trả kết quả.",
+      "trap": "score => { score >= 5; } trả undefined; thêm ngoặc nhọn làm thay đổi cách return.",
+      "task": "Chuyển một hàm lọc điểm Python sang JS bằng for/if, rồi thêm type.",
+      "check": "Thử list rỗng, điểm 0 và đúng 5; giải thích được từng chỗ đổi cú pháp."
+    },
+    "architecture": {
+      "nodes": [
+        "Input JS",
+        "Hàm thuần",
+        "Kết quả",
+        "UI dùng kết quả"
+      ],
+      "decision": "Giữ hàm lọc độc lập DOM để chạy test trước khi nối giao diện.",
+      "question": "Nếu thay array đầu vào, hàm có sửa dữ liệu bên ngoài không?"
+    }
+  },
+  "api-reading": {
+    "syntax": {
+      "language": "javascript",
+      "code": "const title = '  Toán  '.trim();",
+      "parts": [
+        [
+          "'  Toán  '",
+          "Giá trị chuỗi, có hai khoảng trắng ở hai đầu."
+        ],
+        [
+          ".trim",
+          "Đọc method trim của chuỗi."
+        ],
+        [
+          "()",
+          "Gọi method không có đối số."
+        ],
+        [
+          "const title =",
+          "Giữ kết quả mới là Toán."
+        ]
+      ],
+      "rule": "Một tên API phải được đọc với nơi nó đến, tham số, kết quả, tác dụng và lỗi.",
+      "trap": "trim không sửa chuỗi gốc; dùng title.trim mà thiếu () chỉ lấy hàm.",
+      "task": "Chọn một hàm lạ, điền phiếu API và tự chạy một ví dụ nhỏ.",
+      "check": "Đổi input, dự đoán kết quả rồi đối chiếu; lần được import hoặc tài liệu gốc."
+    },
+    "architecture": {
+      "nodes": [
+        "Import",
+        "Hợp đồng API",
+        "Lời gọi",
+        "Giá trị hoặc lỗi"
+      ],
+      "decision": "Đọc nguồn và signature trước; method có dấu chấm không luôn thuộc ngôn ngữ.",
+      "question": "Nếu API trả Promise thay vì dữ liệu ngay, caller phải đổi gì?"
+    }
+  },
+  "markup": {
+    "syntax": {
+      "language": "css",
+      "code": ".card {\n  padding: 16px;\n}",
+      "parts": [
+        [
+          ".card",
+          "Selector chọn phần tử có class card; dấu chấm không nằm trong class HTML."
+        ],
+        [
+          "{ ... }",
+          "Khối khai báo áp vào các phần tử được chọn."
+        ],
+        [
+          "padding: 16px;",
+          "Tên thuộc tính : giá trị có đơn vị ; kết thúc khai báo."
+        ]
+      ],
+      "rule": "Một luật CSS gồm selector và các khai báo. Phân biệt chọn đúng hộp với đặt đúng thuộc tính.",
+      "trap": "padding là đệm trong hộp; gap tạo khoảng cách giữa item của flex/grid.",
+      "task": "Tự dựng một card, nối style.css rồi đổi padding, gap và display từng cái.",
+      "check": "Chỉ được hộp cha/con và luật đang áp; sửa được selector sai bằng DevTools."
+    },
+    "architecture": {
+      "nodes": [
+        "HTML element",
+        "Selector",
+        "Luật CSS",
+        "Bố cục hộp"
+      ],
+      "decision": "Chọn cấu trúc semantic trước; sửa selector trước khi chồng thêm luật.",
+      "question": "Nếu màn hình hẹp, hộp nào cần co/đổi hướng và tại sao?"
+    }
+  },
+  "studio-web": {
+    "syntax": {
+      "language": "javascript",
+      "code": "button.addEventListener('click', handleClick);",
+      "parts": [
+        [
+          "button",
+          "Một DOM element đã tìm được từ trang."
+        ],
+        [
+          ".addEventListener(...)",
+          "API trình duyệt đăng ký lắng nghe sự kiện."
+        ],
+        [
+          "'click'",
+          "Tên loại sự kiện dưới dạng chuỗi."
+        ],
+        [
+          "handleClick",
+          "Truyền giá trị hàm để trình duyệt gọi sau; chưa có ()."
+        ]
+      ],
+      "rule": "Đăng ký handler xảy ra bây giờ; handler chạy khi sự kiện tương ứng xảy ra.",
+      "trap": "handleClick() gọi ngay khi đăng ký rồi truyền kết quả trả về làm listener.",
+      "task": "Từ thư mục trống, dựng trang thêm/tìm lớp bằng HTML, CSS và JS.",
+      "check": "Tên trắng bị từ chối; tìm rồi xóa query hiện lại đủ lớp; tự lần được handler."
+    },
+    "architecture": {
+      "nodes": [
+        "DOM event",
+        "Handler",
+        "Dữ liệu gốc",
+        "Render danh sách"
+      ],
+      "decision": "Handler điều phối; render đọc state. Giữ query riêng để tìm không phá dữ liệu.",
+      "question": "Nếu thêm nút xóa, nơi nào cập nhật dữ liệu, nơi nào vẽ lại?"
+    }
+  },
+  "studio-react": {
+    "syntax": {
+      "language": "tsx",
+      "code": "const [query, setQuery] = useState('');",
+      "parts": [
+        [
+          "const [query, setQuery]",
+          "Array destructuring: lấy hai phần tử theo thứ tự, đặt hai tên."
+        ],
+        [
+          "useState('')",
+          "Gọi hook React với state ban đầu là chuỗi rỗng."
+        ],
+        [
+          "query",
+          "Snapshot state của lần render hiện tại."
+        ],
+        [
+          "setQuery",
+          "Hàm yêu cầu cập nhật state và render lại; truyền callback được."
+        ]
+      ],
+      "rule": "Cú pháp destructuring thuộc JS; useState thuộc React. Phân biệt luật ngôn ngữ và hợp đồng thư viện.",
+      "trap": "Gán lại query hoặc dùng state cũ sau setter không thay thế một lần cập nhật đúng.",
+      "task": "Chuyển Sổ lớp đã hiểu sang TS/React, tự tạo entry và tách danh sách.",
+      "check": "Thêm/tìm vẫn đúng; chỉ được state ở đâu, ai cập nhật và file nào được nạp đầu."
+    },
+    "architecture": {
+      "nodes": [
+        "App giữ state",
+        "Props xuống con",
+        "Callback lên cha",
+        "Render tiếp"
+      ],
+      "decision": "Đặt state ở tổ tiên chung thấp nhất cần nó; không nhân bản cùng state ở hai component.",
+      "question": "Nếu thêm bộ lọc và bộ đếm, state nào gốc, giá trị nào suy ra?"
+    }
+  },
+  "studio-python": {
+    "syntax": {
+      "language": "python",
+      "code": "from .domain import normalize_title",
+      "parts": [
+        [
+          "from .domain",
+          "Module domain trong cùng package; dấu chấm là relative import."
+        ],
+        [
+          "import normalize_title",
+          "Đưa tên hàm vào module đang đọc."
+        ],
+        [
+          "normalize_title",
+          "Lấy hàm chưa gọi; cần (...) mới thực hiện."
+        ]
+      ],
+      "rule": "File/module là đơn vị import. Tách trách nhiệm rồi mới chuyển hàm, giữ chiều phụ thuộc rõ.",
+      "trap": "Chạy file trực tiếp có thể mất ngữ cảnh package; sửa entry chạy thay vì xóa relative import.",
+      "task": "Viết create/list một file rồi tách domain, storage, use case và entry.",
+      "check": "Cây import không vòng; test trước/sau qua; giải thích vì sao mỗi hàm ở file đó."
+    },
+    "architecture": {
+      "nodes": [
+        "Entry ghép thành phần",
+        "Use case gọi domain",
+        "Use case gọi storage",
+        "Kết quả về entry"
+      ],
+      "decision": "Module có lý do thay đổi riêng; domain không import HTTP hay DB driver.",
+      "question": "Đổi kho RAM sang SQL, file nghiệp vụ nào cần giữ nguyên?"
+    }
+  },
+  "studio-feature": {
+    "syntax": {
+      "language": "python",
+      "code": "def handler(service: ClassService = Depends(get_service)):\n    return service.list_classes()",
+      "parts": [
+        [
+          "service: ClassService",
+          "Annotation mô tả kiểu tham số."
+        ],
+        [
+          "= Depends(get_service)",
+          "Khai báo dependency cho FastAPI; truyền hàm cung cấp service."
+        ],
+        [
+          "service.list_classes()",
+          "Gọi method trên instance được cung cấp."
+        ],
+        [
+          "return",
+          "Trả kết quả về caller/framework."
+        ]
+      ],
+      "rule": "FastAPI xử lý dependency khi dispatch request. Khi tự gọi handler trong Python, giá trị mặc định không tự biến thành service.",
+      "trap": "Depends(get_service()) gọi provider ngay khi định nghĩa; không tương đương truyền provider.",
+      "task": "Tự thiết kế lưu trữ lớp, rồi đối chiếu các patch sau khi đã thử.",
+      "check": "Giữ lịch sử, chặn đúng đường ghi, kiểm quyền chéo lớp và retry theo policy."
+    },
+    "architecture": {
+      "nodes": [
+        "HTTP router",
+        "Service kiểm policy",
+        "Repository",
+        "Transaction / DB"
+      ],
+      "decision": "Router hiểu HTTP; service hiểu hành động; repository hiểu truy vấn. Chốt ranh giới commit theo một use case.",
+      "question": "Lưu trữ lớp xong, đường tạo bài và nộp bài nào phải bị chặn?"
+    }
+  },
+  "studio-modules": {
+    "syntax": {
+      "language": "sql",
+      "code": "UNIQUE (session_id, student_id)",
+      "parts": [
+        [
+          "UNIQUE",
+          "Ràng buộc duy nhất do DB kiểm khi ghi."
+        ],
+        [
+          "(session_id, student_id)",
+          "Một cặp khóa; mỗi cột riêng vẫn được lặp ở các hàng khác."
+        ]
+      ],
+      "rule": "Một bản ghi điểm danh gắn một học sinh với một buổi. Dùng NOT NULL trên hai khóa nếu yêu cầu luôn phải có giá trị.",
+      "trap": "SELECT kiểm trước rồi INSERT vẫn có race; constraint mới chặn hai lần ghi cùng cặp.",
+      "task": "Làm điểm danh có hướng dẫn; tự điền thiết kế tài liệu rồi tự làm thông báo.",
+      "check": "Kiểm ghi thiếu, revision cũ và retry; giải thích được tác dụng ngoài DB."
+    },
+    "architecture": {
+      "nodes": [
+        "Buổi học",
+        "Membership",
+        "Điểm danh",
+        "Thông báo hậu commit"
+      ],
+      "decision": "Quan hệ và constraint giữ dữ liệu đúng; tác dụng ngoài DB cần cơ chế retry riêng.",
+      "question": "Gửi thông báo lỗi sau commit thì hoàn tác điểm danh hay retry gửi?"
+    }
+  },
+  "studio-transfer": {
+    "syntax": {
+      "language": "python",
+      "code": "assert result == expected",
+      "parts": [
+        [
+          "assert",
+          "Kiểm một điều kiện trong test; sai thì raise AssertionError."
+        ],
+        [
+          "result == expected",
+          "So kết quả thực tế với giá trị đã chốt trước khi chạy."
+        ]
+      ],
+      "rule": "Ca kiểm có giá trị khi expected đến từ quy tắc độc lập, không tính lại bằng cùng thuật toán đang kiểm.",
+      "trap": "Không dùng assert cho validation/quyền sản phẩm vì Python có thể bỏ assert với -O.",
+      "task": "Nộp code tự viết, sửa sau review rồi xử lý một biến thể chưa xem mẫu.",
+      "check": "Tái hiện lỗi trước sửa, chạy lại sau sửa và giải thích được lựa chọn cấu trúc."
+    },
+    "architecture": {
+      "nodes": [
+        "Yêu cầu mới",
+        "Bài tự viết",
+        "Review có bằng chứng",
+        "Sửa và kiểm lại"
+      ],
+      "decision": "Review hành vi và ranh giới trước tên file. Giữ test tái hiện lỗi khi refactor.",
+      "question": "Nếu chỉ đổi tên biến mà lỗi retry còn nguyên, đã xử lý review chưa?"
+    }
+  },
+  "performance": {
+    "syntax": {
+      "language": "sql",
+      "code": "CREATE INDEX ix_submission_class_time\nON submissions (class_id, submitted_at);",
+      "parts": [
+        [
+          "CREATE INDEX ...",
+          "Tạo cấu trúc giúp một số truy vấn truy cập dữ liệu hiệu quả hơn."
+        ],
+        [
+          "ON submissions",
+          "Bảng giữ dữ liệu gốc."
+        ],
+        [
+          "(class_id, submitted_at)",
+          "Thứ tự cột quan trọng với điều kiện lọc và sắp xếp."
+        ]
+      ],
+      "rule": "Đây là đề xuất index cho bảng bài nộp sẽ thiết kế; phải kiểm EXPLAIN và đo với query, dữ liệu thật của lab.",
+      "trap": "Index có chi phí ghi và bộ nhớ; có index chưa chứng minh query dùng nó hoặc đủ sức tải.",
+      "task": "Đo một luồng nghiệp vụ, tìm một điểm nghẽn rồi so trước/sau.",
+      "check": "Ghi latency, lỗi, rate đạt được và dữ liệu sau tải; nêu giới hạn của phép đo."
+    },
+    "architecture": {
+      "nodes": [
+        "Workload",
+        "API / worker",
+        "Pool DB",
+        "Query / index"
+      ],
+      "decision": "Đo từng tầng để tìm bottleneck. Worker, connection và request là ba số khác nhau.",
+      "question": "Nếu DB pool đã đầy, thêm API worker có thể làm tình hình xấu hơn thế nào?"
+    }
+  },
+  "release": {
+    "syntax": {
+      "language": "python",
+      "code": "op.add_column('classes', sa.Column('archived_at', sa.DateTime(), nullable=True))",
+      "parts": [
+        [
+          "op.add_column(...)",
+          "API Alembic tạo thao tác thay đổi schema."
+        ],
+        [
+          "'classes'",
+          "Tên bảng của bài học, cần tồn tại ở revision trước."
+        ],
+        [
+          "sa.Column(...)",
+          "Định nghĩa cột bằng SQLAlchemy; ở đây cho phép NULL."
+        ]
+      ],
+      "rule": "Migration là chương trình chuyển schema giữa revision; kiểm upgrade và tác động lên dữ liệu cũ trước phát hành.",
+      "trap": "Thêm nullable giữ được hàng cũ; ứng dụng vẫn phải hiểu NULL nghĩa là chưa lưu trữ.",
+      "task": "Dựng lab, đọc migration và thực hiện một lần quay bản có kế hoạch.",
+      "check": "Người khác dựng được từ hướng dẫn; biết rollback code khác restore dữ liệu thế nào."
+    },
+    "architecture": {
+      "nodes": [
+        "Commit + lockfile",
+        "Build artifact",
+        "Migration",
+        "Deploy / health"
+      ],
+      "decision": "Tách build với config môi trường; schema cần tương thích code trong giai đoạn chuyển phiên bản.",
+      "question": "Nếu rollback code mà migration đã xóa dữ liệu, bản cũ có cứu dữ liệu được không?"
+    }
+  },
+  "operations": {
+    "syntax": {
+      "language": "python",
+      "code": "try:\n    save_changes()\nexcept StorageError:\n    rollback_changes()\n    raise",
+      "parts": [
+        [
+          "try",
+          "Khối công việc có thể thất bại."
+        ],
+        [
+          "except StorageError",
+          "Chỉ bắt loại lỗi phù hợp; tên lỗi trong ví dụ cần được định nghĩa."
+        ],
+        [
+          "raise",
+          "Ném lại lỗi hiện tại sau dọn dẹp, caller vẫn biết thất bại."
+        ]
+      ],
+      "rule": "Tên hàm ở đây mô tả hợp đồng. Đọc đường thành công và đường lỗi, không chỉ các dòng chạy bình thường.",
+      "trap": "Bắt Exception rồi return thành công sẽ giấu mất lỗi; rollback không tự hoàn tác email đã gửi.",
+      "task": "Viết policy phiên và diễn tập một lỗi cùng một lần restore trên môi trường học.",
+      "check": "Chỉ được nơi phát hiện lỗi, dữ liệu cần đối chiếu và bước khôi phục đã thử."
+    },
+    "architecture": {
+      "nodes": [
+        "Phát hiện / log",
+        "Khoanh vùng",
+        "Khôi phục",
+        "Kiểm dữ liệu"
+      ],
+      "decision": "Mỗi lỗi cần tín hiệu, người xử lý và cách xác nhận phục hồi. Log phải giúp lần request và không lộ secret.",
+      "question": "Restore xong phải đối chiếu dữ liệu nào trước khi mở lại ghi?"
+    }
+  },
+  "capstone": {
+    "syntax": {
+      "language": "python",
+      "code": "with pytest.raises(PermissionDenied):\n    service.create(actor=student, title=\"Toán\")",
+      "parts": [
+        [
+          "with pytest.raises(...)",
+          "Context manager của pytest chờ đúng loại exception."
+        ],
+        [
+          "service.create(...)",
+          "Hành động thực đang kiểm trong scope."
+        ],
+        [
+          "actor=student",
+          "Keyword argument truyền actor học sinh đã có trong fixture."
+        ]
+      ],
+      "rule": "Test chặn quyền phải đi qua đường kiểm quyền thật và khẳng định DB không có lần ghi trái phép.",
+      "trap": "Chỉ kiểm hàm mock có bị gọi không chưa chứng minh policy hoặc transaction đúng.",
+      "task": "Bàn giao một luồng hoàn chỉnh và tự sửa một yêu cầu mới trong buổi bảo vệ.",
+      "check": "Người khác chạy được; quyền/dữ liệu đúng; giải thích được cấu trúc và giới hạn."
+    },
+    "architecture": {
+      "nodes": [
+        "Luồng người dùng",
+        "Policy / transaction",
+        "Kiểm tải",
+        "Bàn giao"
+      ],
+      "decision": "Mỗi tuyên bố chất lượng cần bằng chứng đúng môi trường và giới hạn. Không suy năng lực từ số dòng code.",
+      "question": "Nếu yêu cầu mới xuất hiện trong buổi bảo vệ, tầng nào thay đổi và test nào giữ hành vi cũ?"
+    }
+  },
+  "zero": {
+    "syntax": {
+      "language": "javascript",
+      "code": "let score = 7;\nscore = score + 1;",
+      "parts": [
+        [
+          "let",
+          "Khai báo tên có thể gán lại."
+        ],
+        [
+          "score = 7",
+          "Gắn số 7 vào tên. Dấu = là gán."
+        ],
+        [
+          "score + 1",
+          "Đọc giá trị cũ bên phải trước, tính ra 8."
+        ],
+        [
+          "score = ...",
+          "Gán kết quả mới vào tên bên trái; không khai báo lại."
+        ]
+      ],
+      "rule": "Biến, giá trị và thao tác hiển thị là ba việc khác nhau.",
+      "trap": "console.log('score') in chữ score; console.log(score) đọc biến.",
+      "task": "Tự gõ bốn dòng: tạo soBai = 2, tăng 1, hiển thị số mới và so sánh với 3.",
+      "check": "Kết quả là 3 và true; đổi số đầu thành 5 phải tự dự đoán lại được."
+    },
+    "architecture": {
+      "nodes": [
+        "Giá trị ban đầu",
+        "Biểu thức",
+        "Gán lại",
+        "Quan sát"
+      ],
+      "decision": "Theo vết dữ liệu trước khi đặt nhiều file/framework lên trên. Đây là một mô hình nhỏ để hiểu hành vi code.",
+      "question": "Nếu chỉ khai báo biến, vì sao chưa có output dù chương trình đã chạy?"
+    }
+  },
+  "map": {
+    "syntax": {
+      "language": "typescript",
+      "code": "type ClassInput = { title: string };",
+      "parts": [
+        [
+          "type ClassInput",
+          "Đặt tên cho một kiểu; chưa tạo dữ liệu lớp."
+        ],
+        [
+          "{ title: string }",
+          "Object phải có thuộc tính title mang giá trị chuỗi."
+        ],
+        [
+          ";",
+          "Kết thúc khai báo; không phải lệnh gửi request."
+        ]
+      ],
+      "rule": "Đọc hình dạng dữ liệu trước khi chọn tên file hoặc thư viện.",
+      "trap": "Kiểu title: string vẫn cho phép chuỗi trắng; quy tắc nghiệp vụ cần kiểm khi chạy.",
+      "task": "Vẽ bản đồ một luồng LMS rồi đánh dấu phần đã chạy, phần chỉ có giao diện.",
+      "check": "Lần được từ thao tác tới dữ liệu và nêu rõ bằng chứng cho từng phần."
+    },
+    "architecture": {
+      "nodes": [
+        "Người học",
+        "Frontend",
+        "Backend",
+        "Cơ sở dữ liệu"
+      ],
+      "decision": "Bản đồ phải ghi ranh giới process và trạng thái thực. Thiết kế module chưa phải module đã được hiện thực.",
+      "question": "Phần nào hiện có trong repo, phần nào là mock và phần nào mới là đích LMS?"
+    }
+  },
+  "tools": {
+    "syntax": {
+      "language": "json",
+      "code": "{ \"scripts\": { \"build\": \"tsc -b && vite build\" } }",
+      "parts": [
+        [
+          "scripts",
+          "Nhóm tác vụ npm trong package.json."
+        ],
+        [
+          "build",
+          "Tên tác vụ, được gọi bằng npm run build."
+        ],
+        [
+          "tsc -b && vite build",
+          "Shell chạy kiểm/build TS trước; chỉ khi thành công mới build Vite."
+        ]
+      ],
+      "rule": "Manifest mô tả cách chạy công cụ. Đọc script và cwd trước khi chạy lệnh; JSON không có comment hoặc dấu phẩy cuối.",
+      "trap": "Cài thành công dependency chưa chứng minh app build hay chạy đúng.",
+      "task": "Tự chạy một process học, đọc một lỗi và quan sát một request.",
+      "check": "Nói rõ lệnh đứng ở đâu, dùng Python/Node nào và xem kết quả ở cửa sổ nào."
+    },
+    "architecture": {
+      "nodes": [
+        "Terminal / cwd",
+        "Manifest",
+        "Process",
+        "Cổng / request"
+      ],
+      "decision": "Lệnh thuộc một công cụ chạy trong một thư mục, không phải cú pháp của React hoặc Python.",
+      "question": "Nếu chạy npm ở gốc repo thay vì frontend, manifest nào được tìm?"
+    }
+  },
+  "00": {
+    "syntax": {
+      "language": "python",
+      "code": "assert result == expected",
+      "parts": [
+        [
+          "assert",
+          "Kiểm một điều kiện trong test; sai thì raise AssertionError."
+        ],
+        [
+          "result == expected",
+          "So kết quả thực tế với giá trị đã chốt trước khi chạy."
+        ]
+      ],
+      "rule": "Ca kiểm có giá trị khi expected đến từ quy tắc độc lập, không tính lại bằng cùng thuật toán đang kiểm.",
+      "trap": "Không dùng assert cho validation/quyền sản phẩm vì Python có thể bỏ assert với -O.",
+      "task": "Lần một request và ghi báo cáo lỗi với expected/actual.",
+      "check": "Chỉ được bước đầu tiên khác dự kiến và ca kiểm xác nhận nguyên nhân."
+    },
+    "architecture": {
+      "nodes": [
+        "Giả thuyết",
+        "Phép thử nhỏ",
+        "Quan sát",
+        "Kết luận"
+      ],
+      "decision": "Đổi một nguyên nhân mỗi lần; tìm bước đầu tiên lệch dự kiến.",
+      "question": "UI sai dữ liệu: bằng chứng nào khiến mày chọn sửa API thay vì CSS?"
+    }
+  },
+  "01": {
+    "syntax": {
+      "language": "javascript",
+      "code": "const passed = scores.filter(score => score >= 5);",
+      "parts": [
+        [
+          "scores.filter(...)",
+          "Method array tạo array mới từ các phần tử được giữ lại."
+        ],
+        [
+          "score => score >= 5",
+          "Callback nhận từng phần tử và trả điều kiện giữ."
+        ],
+        [
+          "const passed",
+          "Nhận kết quả của cả filter, không phải kết quả một lượt."
+        ]
+      ],
+      "rule": "Viết được for/if trước rồi đọc filter như một cách diễn đạt cùng thao tác giữ/bỏ.",
+      "trap": "Dùng map với callback boolean tạo danh sách true/false, không lọc phần tử.",
+      "task": "Tự viết lọc, đếm và cập nhật danh sách nhiệm vụ.",
+      "check": "Thử rỗng, điểm 0 và trạng thái lạ; chỉ được return và input có bị sửa không."
+    },
+    "architecture": {
+      "nodes": [
+        "Array gốc",
+        "Callback",
+        "Array suy ra",
+        "Người gọi"
+      ],
+      "decision": "Biến đổi dữ liệu thuần giúp test và tái dùng trước khi chạm DOM/React.",
+      "question": "Đổi tìm kiếm nhưng danh sách gốc vẫn đủ: state nào được giữ?"
+    }
+  },
+  "thinking": {
+    "syntax": {
+      "language": "javascript",
+      "code": "for (const score of scores) {\n  total = total + score;\n}",
+      "parts": [
+        [
+          "for (... of scores)",
+          "Duyệt giá trị từng phần tử theo thứ tự."
+        ],
+        [
+          "const score",
+          "Biến vòng lặp của mỗi lượt; không phải index."
+        ],
+        [
+          "total = total + score",
+          "Đọc tổng cũ rồi cập nhật; cần khai báo total trước vòng lặp."
+        ]
+      ],
+      "rule": "Viết bảng lượt với score, total trước/sau. Array rỗng thì không chạy thân.",
+      "trap": "Đặt return trong thân quá sớm sẽ chỉ xử lý phần tử đầu.",
+      "task": "Tự biến đề đếm bài chưa nộp thành thuật toán, code và bảng vết.",
+      "check": "Giải thích đúng từng lượt, cả list rỗng và vị trí return."
+    },
+    "architecture": {
+      "nodes": [
+        "Input",
+        "Bảng vết",
+        "Thuật toán",
+        "Output"
+      ],
+      "decision": "Chọn cách xử lý từ ví dụ, không chọn vòng lặp theo thói quen.",
+      "question": "Return đặt trong vòng lặp làm thay đổi ca nhiều phần tử ra sao?"
+    }
+  },
+  "02": {
+    "syntax": {
+      "language": "typescript",
+      "code": "type Grade = { score: number | null; note?: string };",
+      "parts": [
+        [
+          "score: number | null",
+          "Bắt buộc có score; giá trị là số hoặc null."
+        ],
+        [
+          "note?: string",
+          "Thuộc tính note có thể vắng; đọc nó có thể nhận undefined."
+        ],
+        [
+          "type Grade",
+          "Chỉ tạo kiểu, không tạo một bản ghi điểm."
+        ]
+      ],
+      "rule": "Điểm 0 khác chưa có điểm. Chọn null/vắng thuộc tính theo hợp đồng thay vì kiểm truthy.",
+      "trap": "as Grade là assertion kiểu, không parse hay kiểm JSON ở runtime.",
+      "task": "Viết type, parser và xử lý tải/thành công/rỗng/lỗi cho một response.",
+      "check": "Body sai kiểu bị từ chối; lỗi mạng khác HTTP lỗi; điểm 0 không bị coi là thiếu."
+    },
+    "architecture": {
+      "nodes": [
+        "JSON không tin cậy",
+        "Runtime parser",
+        "Kiểu đã thu hẹp",
+        "UI"
+      ],
+      "decision": "Kiểu TS giúp code caller; parser kiểm dữ liệu thật ở biên HTTP.",
+      "question": "HTTP 200 nhưng score là chuỗi thì lỗi bị chặn ở đâu?"
+    }
+  },
+  "03": {
+    "syntax": {
+      "language": "css",
+      "code": ".card {\n  padding: 16px;\n}",
+      "parts": [
+        [
+          ".card",
+          "Selector chọn phần tử có class card; dấu chấm không nằm trong class HTML."
+        ],
+        [
+          "{ ... }",
+          "Khối khai báo áp vào các phần tử được chọn."
+        ],
+        [
+          "padding: 16px;",
+          "Tên thuộc tính : giá trị có đơn vị ; kết thúc khai báo."
+        ]
+      ],
+      "rule": "Một luật CSS gồm selector và các khai báo. Phân biệt chọn đúng hộp với đặt đúng thuộc tính.",
+      "trap": "padding là đệm trong hộp; gap tạo khoảng cách giữa item của flex/grid.",
+      "task": "Dựng form/list rồi thêm bố cục hai cột và responsive.",
+      "check": "Chữ dài, màn hẹp và bàn phím vẫn dùng được; giải thích box model và trục flex."
+    },
+    "architecture": {
+      "nodes": [
+        "HTML semantic",
+        "Box model",
+        "Flex / grid",
+        "Breakpoint"
+      ],
+      "decision": "Container quyết định quan hệ bố cục; item có giới hạn co và nội dung dài.",
+      "question": "Nếu tên lớp dài gây tràn, phải sửa kích thước hộp nào thay vì cắt mọi chữ?"
+    }
+  },
+  "04": {
+    "syntax": {
+      "language": "tsx",
+      "code": "<ClassList items={classes} onSelect={handleSelect} />",
+      "parts": [
+        [
+          "ClassList",
+          "Tên component viết hoa; định nghĩa phải được import hoặc ở cùng scope."
+        ],
+        [
+          "items={classes}",
+          "JSX lấy giá trị biểu thức JS classes làm prop."
+        ],
+        [
+          "onSelect={handleSelect}",
+          "Truyền hàm; component con quyết định lúc gọi theo hợp đồng."
+        ],
+        [
+          "/>",
+          "Đóng element không có children trong cách viết này."
+        ]
+      ],
+      "rule": "JSX là cú pháp biểu diễn cây UI, được tool build biến đổi; không phải chuỗi HTML.",
+      "trap": "onSelect={handleSelect()} gọi ngay trong render; có thể truyền kết quả sai thay vì callback.",
+      "task": "Làm list/search/create với loading, error, empty và success.",
+      "check": "Một nguồn state; input không mất khi lỗi; response cũ không ghi đè phiên mới."
+    },
+    "architecture": {
+      "nodes": [
+        "Component cha",
+        "Props",
+        "Component con",
+        "Callback / state"
+      ],
+      "decision": "Tách UI theo trách nhiệm; state gốc một nơi, derived data tính từ state đó.",
+      "question": "Chuyển ô tìm kiếm ra component con có cần chuyển cả dữ liệu lớp theo không?"
+    }
+  },
+  "python": {
+    "syntax": {
+      "language": "python",
+      "code": "student = {\"name\": \"An\", \"score\": 0}\nscore = student[\"score\"]",
+      "parts": [
+        [
+          "{...}",
+          "Dict literal chứa key/value."
+        ],
+        [
+          "\"score\": 0",
+          "Key chuỗi score gắn số 0."
+        ],
+        [
+          "student[\"score\"]",
+          "Đọc giá trị theo key; key thiếu gây KeyError."
+        ]
+      ],
+      "rule": "Đọc kiểu và hình dạng dữ liệu trước; 0 là điểm hợp lệ, khác None hoặc key thiếu.",
+      "trap": "if score loại cả 0; cần so với None khi hợp đồng dùng None cho chưa chấm.",
+      "task": "Tự viết hàm, tách module và thêm unittest từ dữ liệu nhỏ.",
+      "check": "Phân biệt print/return, mutable default và nơi bắt lỗi; chạy bằng đúng interpreter."
+    },
+    "architecture": {
+      "nodes": [
+        "Dữ liệu đầu vào",
+        "Hàm Python",
+        "Kết quả",
+        "Caller"
+      ],
+      "decision": "Phân biệt dữ liệu được truyền với tác dụng lên object dùng chung.",
+      "question": "Nếu hai tên cùng trỏ một list, sửa qua tên này ảnh hưởng tên kia ra sao?"
+    }
+  },
+  "05": {
+    "syntax": {
+      "language": "python",
+      "code": "class ClassService:\n    def __init__(self, repository):\n        self.repository = repository",
+      "parts": [
+        [
+          "class ClassService:",
+          "Tạo một lớp Python; chưa có instance."
+        ],
+        [
+          "__init__(self, repository)",
+          "Khởi tạo instance với dependency được đưa từ ngoài."
+        ],
+        [
+          "self.repository",
+          "Thuộc tính của chính instance để method khác dùng lại."
+        ]
+      ],
+      "rule": "Service không buộc phải là class. Chọn class khi cần giữ dependency hoặc trạng thái chung có ý nghĩa.",
+      "trap": "Tạo connection/repository ngay bên trong mọi method làm khó thay kho giả để test.",
+      "task": "Viết một service dùng kho giả rồi đổi adapter.",
+      "check": "Quy tắc giữ nguyên khi đổi kho; từ chối không ghi; giải thích self và object được lắp."
+    },
+    "architecture": {
+      "nodes": [
+        "Composition root",
+        "Service instance",
+        "Repository instance",
+        "DB session"
+      ],
+      "decision": "Lắp dependency ở biên để service dùng kho thật hoặc kho giả theo cùng hợp đồng.",
+      "question": "Nếu test dùng repository RAM, quy tắc nghiệp vụ có phải viết lại không?"
+    }
+  },
+  "06": {
+    "syntax": {
+      "language": "sql",
+      "code": "SELECT id, title FROM classes\nWHERE teacher_id = :teacher_id;",
+      "parts": [
+        [
+          "SELECT id, title",
+          "Chỉ những cột cần trả."
+        ],
+        [
+          "FROM classes",
+          "Bảng lớp của thiết kế bài học."
+        ],
+        [
+          "WHERE teacher_id = :teacher_id",
+          "Placeholder của SQLAlchemy text() giữ giá trị tách khỏi câu SQL."
+        ]
+      ],
+      "rule": "Phải bind tham số bằng API driver/ORM. Cú pháp placeholder phụ thuộc API; SQL này không paste nguyên vào mọi MySQL client.",
+      "trap": "Ghép f-string từ input thành SQL tạo nguy cơ injection; lọc quyền cần lấy actor đã xác minh.",
+      "task": "Thiết kế bảng lớp/bài nộp, viết SQL từ fixture tính tay rồi kiểm transaction.",
+      "check": "PK/FK/UNIQUE có lý do; count không nhân hàng; lỗi bước sau không để nửa nghiệp vụ."
+    },
+    "architecture": {
+      "nodes": [
+        "Actor",
+        "Điều kiện WHERE",
+        "Hàng trong phạm vi",
+        "Response"
+      ],
+      "decision": "Khóa/constraint giữ toàn vẹn; query cần đúng phạm vi người dùng trước khi tối ưu.",
+      "question": "Nếu bỏ điều kiện lớp/teacher, dữ liệu người khác có lọt response không?"
+    }
+  },
+  "07": {
+    "syntax": {
+      "language": "python",
+      "code": "def handler(service: ClassService = Depends(get_service)):\n    return service.list_classes()",
+      "parts": [
+        [
+          "service: ClassService",
+          "Annotation mô tả kiểu tham số."
+        ],
+        [
+          "= Depends(get_service)",
+          "Khai báo dependency cho FastAPI; truyền hàm cung cấp service."
+        ],
+        [
+          "service.list_classes()",
+          "Gọi method trên instance được cung cấp."
+        ],
+        [
+          "return",
+          "Trả kết quả về caller/framework."
+        ]
+      ],
+      "rule": "FastAPI xử lý dependency khi dispatch request. Khi tự gọi handler trong Python, giá trị mặc định không tự biến thành service.",
+      "trap": "Depends(get_service()) gọi provider ngay khi định nghĩa; không tương đương truyền provider.",
+      "task": "Tự dựng một API có schema, phạm vi và lỗi rõ.",
+      "check": "Client không tự quyết owner; payload sai bị chặn; lần được request tới service."
+    },
+    "architecture": {
+      "nodes": [
+        "HTTP JSON",
+        "Schema + dependency",
+        "Service",
+        "HTTP status / body"
+      ],
+      "decision": "FastAPI gọi endpoint, resolve dependency và serialize; nghiệp vụ nên kiểm được ngoài HTTP.",
+      "question": "Hàm nghiệp vụ cần báo từ chối thì router ánh xạ thành status nào?"
+    }
+  },
+  "08": {
+    "syntax": {
+      "language": "python",
+      "code": "user = db.query(User).filter(User.id == user_id).first()",
+      "parts": [
+        [
+          "db.query(User)",
+          "Tạo ORM query theo model User; chưa phải user trả ra."
+        ],
+        [
+          "User.id == user_id",
+          "SQLAlchemy dựng biểu thức so sánh cột, không so hai object User."
+        ],
+        [
+          ".filter(...)",
+          "Thêm điều kiện vào query."
+        ],
+        [
+          ".first()",
+          "Thực hiện truy vấn lấy hàng đầu hoặc None."
+        ]
+      ],
+      "rule": "Đây là Query API đang có trong repo. Hiểu cách nó dựng/trả dữ liệu trước khi học một API truy vấn khác.",
+      "trap": "None cần được xử lý trước user.id; có user chưa chứng minh actor có quyền xem user đó.",
+      "task": "Lưu một nghiệp vụ nhiều bước và cố ý gây lỗi bước hai.",
+      "check": "Đọc bằng Session mới để xác nhận rollback; query có scope và không commit lẻ."
+    },
+    "architecture": {
+      "nodes": [
+        "Session",
+        "ORM query",
+        "DB transaction",
+        "Đối tượng / None"
+      ],
+      "decision": "Session là ranh giới làm việc DB, không chia sẻ tùy tiện giữa request đồng thời.",
+      "question": "Nếu query không có hàng, chỗ nào đổi None thành lỗi nghiệp vụ?"
+    }
+  },
+  "09": {
+    "syntax": {
+      "language": "python",
+      "code": "token = create_access_token(payload, expires)",
+      "parts": [
+        [
+          "create_access_token",
+          "Hàm dự án; lần theo import để đọc signature thật."
+        ],
+        [
+          "payload",
+          "Claims định đưa vào token; không được cho client tự xác nhận quyền."
+        ],
+        [
+          "expires",
+          "Thời hạn trong hợp đồng hàm; kiểu thực tế cần tra source."
+        ],
+        [
+          "token =",
+          "Nhận chuỗi token đã ký, chưa phải mã hóa kín payload."
+        ]
+      ],
+      "rule": "Xác thực danh tính và kiểm quyền trên tài nguyên là hai quyết định riêng. Server kiểm signature, hạn và chính sách tài khoản.",
+      "trap": "Ẩn nút hoặc chỉ kiểm có chuỗi token ở UI không bảo vệ endpoint.",
+      "task": "Kiểm list/detail/write bằng hai tài khoản khác lớp.",
+      "check": "Token hợp lệ vẫn không đọc chéo lớp; UI ẩn nút không thay kiểm quyền ở server."
+    },
+    "architecture": {
+      "nodes": [
+        "Credential",
+        "Actor đã xác minh",
+        "Policy tài nguyên",
+        "Hành động"
+      ],
+      "decision": "Kiểm quyền trên server với tài nguyên cụ thể; role chỉ là một đầu vào của policy.",
+      "question": "Học sinh có token hợp lệ nhưng không thuộc lớp thì bị chặn ở đâu?"
+    }
+  },
+  "first": {
+    "syntax": {
+      "language": "typescript",
+      "code": "const result = await authService.login(input);",
+      "parts": [
+        [
+          "const result",
+          "Giữ kết quả hoàn thành; cần đặt trong async function hoặc context cho phép await."
+        ],
+        [
+          "authService.login(input)",
+          "Hàm thư viện/dự án trả Promise theo hợp đồng."
+        ],
+        [
+          "await",
+          "Tạm dừng hàm async này; nếu Promise reject thì throw tại đây."
+        ]
+      ],
+      "rule": "Trong repo authService.login trả response.data. result là body LoginResponse, không phải toàn bộ Axios response.",
+      "trap": "Bỏ await thì nhận Promise; đọc result.access_token lúc đó sai. await không khóa toàn bộ server/trình duyệt.",
+      "task": "Lần một lượt đăng nhập từ form qua API client tới backend và quay lại.",
+      "check": "Chỉ được res ở từng nơi chứa gì, nhánh thành công/lỗi và dữ liệu nào vẫn là mock."
+    },
+    "architecture": {
+      "nodes": [
+        "Form",
+        "Login service",
+        "HTTP / FastAPI",
+        "Token + điều hướng"
+      ],
+      "decision": "Form quản trạng thái gửi; client service chuyển hợp đồng. Quyền vẫn kiểm ở server.",
+      "question": "Nếu mạng lỗi, vì sao không lưu token và chuyển dashboard như ca thành công?"
+    }
+  },
+  "workshop": {
+    "syntax": {
+      "language": "python",
+      "code": "def handler(service: ClassService = Depends(get_service)):\n    return service.list_classes()",
+      "parts": [
+        [
+          "service: ClassService",
+          "Annotation mô tả kiểu tham số."
+        ],
+        [
+          "= Depends(get_service)",
+          "Khai báo dependency cho FastAPI; truyền hàm cung cấp service."
+        ],
+        [
+          "service.list_classes()",
+          "Gọi method trên instance được cung cấp."
+        ],
+        [
+          "return",
+          "Trả kết quả về caller/framework."
+        ]
+      ],
+      "rule": "FastAPI xử lý dependency khi dispatch request. Khi tự gọi handler trong Python, giá trị mặc định không tự biến thành service.",
+      "trap": "Depends(get_service()) gọi provider ngay khi định nghĩa; không tương đương truyền provider.",
+      "task": "Tự nối UI → API → DB cho lớp học, sau đó giao/nộp/chấm.",
+      "check": "Reload và đổi tài khoản vẫn đúng; phân biệt test SQLite với kiểm engine thật."
+    },
+    "architecture": {
+      "nodes": [
+        "Endpoint lab",
+        "Service",
+        "Repository",
+        "SQLite học"
+      ],
+      "decision": "Xưởng cô lập để thử quy tắc và lỗi. Product dùng MySQL cần kiểm dialect, migration và concurrency riêng.",
+      "question": "Ca test SQLite pass còn thiếu bằng chứng nào trước khi nói sản phẩm chịu tải?"
+    }
+  },
+  "10": {
+    "syntax": {
+      "language": "python",
+      "code": "with pytest.raises(PermissionDenied):\n    service.create(actor=student, title=\"Toán\")",
+      "parts": [
+        [
+          "with pytest.raises(...)",
+          "Context manager của pytest chờ đúng loại exception."
+        ],
+        [
+          "service.create(...)",
+          "Hành động thực đang kiểm trong scope."
+        ],
+        [
+          "actor=student",
+          "Keyword argument truyền actor học sinh đã có trong fixture."
+        ]
+      ],
+      "rule": "Test chặn quyền phải đi qua đường kiểm quyền thật và khẳng định DB không có lần ghi trái phép.",
+      "trap": "Chỉ kiểm hàm mock có bị gọi không chưa chứng minh policy hoặc transaction đúng.",
+      "task": "Làm cô giao → học sinh nộp → cô chấm và công bố.",
+      "check": "Điểm 0 hợp lệ; retry không tạo trùng; điểm chưa công bố không lộ trong response."
+    },
+    "architecture": {
+      "nodes": [
+        "Giao bài",
+        "Nộp bài",
+        "Chấm bài",
+        "Công bố kết quả"
+      ],
+      "decision": "Một luồng xuyên hệ thống cần đúng mọi trạng thái và actor, không chỉ happy path.",
+      "question": "Nộp lại sau chấm có được không, grade cũ cần xử lý thế nào?"
+    }
+  },
+  "11": {
+    "syntax": {
+      "language": "typescript",
+      "code": "type Grade = { score: number | null; note?: string };",
+      "parts": [
+        [
+          "score: number | null",
+          "Bắt buộc có score; giá trị là số hoặc null."
+        ],
+        [
+          "note?: string",
+          "Thuộc tính note có thể vắng; đọc nó có thể nhận undefined."
+        ],
+        [
+          "type Grade",
+          "Chỉ tạo kiểu, không tạo một bản ghi điểm."
+        ]
+      ],
+      "rule": "Điểm 0 khác chưa có điểm. Chọn null/vắng thuộc tính theo hợp đồng thay vì kiểm truthy.",
+      "trap": "as Grade là assertion kiểu, không parse hay kiểm JSON ở runtime.",
+      "task": "Làm một attempt một dạng câu, nộp/chấm và báo cáo từ fixture.",
+      "check": "Đổi câu hỏi không đổi lịch sử; autosave có thứ tự; kết quả khớp phép tính tay."
+    },
+    "architecture": {
+      "nodes": [
+        "Phiên bản câu hỏi",
+        "Attempt",
+        "Câu trả lời",
+        "Điểm tổng hợp"
+      ],
+      "decision": "Giữ dữ liệu lịch sử theo phiên bản để điểm có thể giải thích lại.",
+      "question": "Đổi đáp án câu hỏi hôm nay có được đổi điểm attempt hôm qua không?"
+    }
+  },
+  "14": {
+    "syntax": {
+      "language": "sql",
+      "code": "UPDATE attendance SET status = :status, revision = revision + 1\nWHERE id = :id AND revision = :expected_revision;",
+      "parts": [
+        [
+          "SET ...",
+          "Thay trạng thái và tăng revision trong cùng câu ghi."
+        ],
+        [
+          "AND revision = :expected_revision",
+          "Chỉ ghi nếu phiên bản vẫn khớp lúc đọc."
+        ],
+        [
+          "Số hàng cập nhật",
+          "Caller phải kiểm; 0 có thể là cũ hoặc record không còn trong phạm vi."
+        ]
+      ],
+      "rule": "Đây là mô hình optimistic concurrency cho bài học, placeholder theo SQLAlchemy; cần transaction và xử lý kết quả.",
+      "trap": "Đọc revision ở Python rồi UPDATE không điều kiện vẫn có lost update.",
+      "task": "Chọn một lát cắt của lịch, file, thông báo hoặc quản trị rồi làm trọn luồng.",
+      "check": "Nêu được trạng thái trước/sau và kiểm được lỗi, scope, retry liên quan."
+    },
+    "architecture": {
+      "nodes": [
+        "Module nguồn",
+        "Sự kiện nghiệp vụ",
+        "Module nhận",
+        "Tác dụng ngoài DB"
+      ],
+      "decision": "Module mở rộng cần owner dữ liệu và hợp đồng giao tiếp; không dùng chung mọi bảng tùy tiện.",
+      "question": "Điểm danh lưu thành công nhưng email lỗi: trạng thái nào là thật?"
+    }
+  },
+  "debug": {
+    "syntax": {
+      "language": "python",
+      "code": "try:\n    save_changes()\nexcept StorageError:\n    rollback_changes()\n    raise",
+      "parts": [
+        [
+          "try",
+          "Khối công việc có thể thất bại."
+        ],
+        [
+          "except StorageError",
+          "Chỉ bắt loại lỗi phù hợp; tên lỗi trong ví dụ cần được định nghĩa."
+        ],
+        [
+          "raise",
+          "Ném lại lỗi hiện tại sau dọn dẹp, caller vẫn biết thất bại."
+        ]
+      ],
+      "rule": "Tên hàm ở đây mô tả hợp đồng. Đọc đường thành công và đường lỗi, không chỉ các dòng chạy bình thường.",
+      "trap": "Bắt Exception rồi return thành công sẽ giấu mất lỗi; rollback không tự hoàn tác email đã gửi.",
+      "task": "Điều tra một lỗi do người khác đưa vào bản học.",
+      "check": "Ghi giả thuyết, expected/actual và regression; không che lỗi bằng giá trị mặc định sai."
+    },
+    "architecture": {
+      "nodes": [
+        "Tái hiện",
+        "Trace / log",
+        "Nguyên nhân",
+        "Test hồi quy"
+      ],
+      "decision": "Xác định lỗi thuộc tầng nào, sửa nguyên nhân rồi giữ phép thử xác nhận.",
+      "question": "Vì sao chuyển mọi exception thành thông báo mật khẩu sai làm debug và UX tệ?"
+    }
+  },
+  "12": {
+    "syntax": {
+      "language": "python",
+      "code": "with pytest.raises(PermissionDenied):\n    service.create(actor=student, title=\"Toán\")",
+      "parts": [
+        [
+          "with pytest.raises(...)",
+          "Context manager của pytest chờ đúng loại exception."
+        ],
+        [
+          "service.create(...)",
+          "Hành động thực đang kiểm trong scope."
+        ],
+        [
+          "actor=student",
+          "Keyword argument truyền actor học sinh đã có trong fixture."
+        ]
+      ],
+      "rule": "Test chặn quyền phải đi qua đường kiểm quyền thật và khẳng định DB không có lần ghi trái phép.",
+      "trap": "Chỉ kiểm hàm mock có bị gọi không chưa chứng minh policy hoặc transaction đúng.",
+      "task": "Tạo bộ kiểm cho một tính năng và một hướng dẫn chạy sạch.",
+      "check": "Test bắt được lỗi đã nêu; lệnh/exit code rõ; có bước đối chiếu sau restore."
+    },
+    "architecture": {
+      "nodes": [
+        "Unit policy",
+        "Integration DB",
+        "HTTP / UI",
+        "Diễn tập vận hành"
+      ],
+      "decision": "Mỗi loại kiểm tra có phạm vi; mock không chứng minh SQL thật hay hiệu năng thật.",
+      "question": "Test API pass nhưng backup chưa restore thử thì đã có bằng chứng phục hồi chưa?"
+    }
+  },
+  "13": {
+    "syntax": {
+      "language": "python",
+      "code": "assert result == expected",
+      "parts": [
+        [
+          "assert",
+          "Kiểm một điều kiện trong test; sai thì raise AssertionError."
+        ],
+        [
+          "result == expected",
+          "So kết quả thực tế với giá trị đã chốt trước khi chạy."
+        ]
+      ],
+      "rule": "Ca kiểm có giá trị khi expected đến từ quy tắc độc lập, không tính lại bằng cùng thuật toán đang kiểm.",
+      "trap": "Không dùng assert cho validation/quyền sản phẩm vì Python có thể bỏ assert với -O.",
+      "task": "Tự làm một bài tổng hợp, bảo vệ quyết định và nhận biến thể.",
+      "check": "Có đặc tả, code, test và lý do đặt file; ghi đúng mức hỗ trợ đã dùng."
+    },
+    "architecture": {
+      "nodes": [
+        "Đề bài",
+        "Dự đoán",
+        "Code tự viết",
+        "Đối chiếu và biến thể"
+      ],
+      "decision": "Chỉ mở lời giải sau lần thử có ghi nhận điểm kẹt. Làm biến thể để kiểm hiểu.",
+      "question": "Nếu nhớ nguyên đoạn mẫu nhưng không đổi được quy tắc, cần quay lại bước nào?"
+    }
+  },
+  "delivery": {
+    "syntax": {
+      "language": "json",
+      "code": "{ \"scripts\": { \"build\": \"tsc -b && vite build\" } }",
+      "parts": [
+        [
+          "scripts",
+          "Nhóm tác vụ npm trong package.json."
+        ],
+        [
+          "build",
+          "Tên tác vụ, được gọi bằng npm run build."
+        ],
+        [
+          "tsc -b && vite build",
+          "Shell chạy kiểm/build TS trước; chỉ khi thành công mới build Vite."
+        ]
+      ],
+      "rule": "Manifest mô tả cách chạy công cụ. Đọc script và cwd trước khi chạy lệnh; JSON không có comment hoặc dấu phẩy cuối.",
+      "trap": "Cài thành công dependency chưa chứng minh app build hay chạy đúng.",
+      "task": "Dựng một môi trường học khác và làm đề mượn sách.",
+      "check": "Chạy từ README, phục hồi dữ liệu và xử lý được yêu cầu mới trong miền thư viện."
+    },
+    "architecture": {
+      "nodes": [
+        "Source + config",
+        "Hướng dẫn dựng",
+        "Data migration",
+        "Người nhận chạy thử"
+      ],
+      "decision": "Bàn giao là tái lập được hành vi, không chỉ chuyển thư mục code.",
+      "question": "Máy mới thiếu biến môi trường: hướng dẫn và báo lỗi cần giúp người nhận ra sao?"
+    }
+  },
+  "reference": {
+    "syntax": {
+      "language": "javascript",
+      "code": "const isPassing = (score) => score >= 5;\nconst result = isPassing(5);",
+      "parts": [
+        [
+          "const isPassing",
+          "Tên biến giữ một hàm. Khai báo chưa gọi hàm."
+        ],
+        [
+          "(score) =>",
+          "Một tham số; dấu mũi tên bắt đầu thân hàm."
+        ],
+        [
+          "score >= 5",
+          "Biểu thức boolean; thân không có khối nên trả kết quả ngầm."
+        ],
+        [
+          "isPassing(5)",
+          "Lời gọi: đưa 5 vào score, nhận true."
+        ]
+      ],
+      "rule": "Tách định nghĩa, truyền hàm và gọi hàm. Thân { ... } cần return nếu muốn trả kết quả.",
+      "trap": "score => { score >= 5; } trả undefined; thêm ngoặc nhọn làm thay đổi cách return.",
+      "task": "Chọn một ký hiệu hoặc lỗi đang vướng rồi làm bài nhỏ tương ứng.",
+      "check": "Giải thích trong ngữ cảnh thật và đổi một input để kiểm cách hiểu."
+    },
+    "architecture": {
+      "nodes": [
+        "Ký hiệu",
+        "Ngữ cảnh",
+        "Biểu thức nhỏ",
+        "Toàn bộ luồng"
+      ],
+      "decision": "Một dấu có nhiều nghĩa; xác định đang ở JS, TS, JSX, CSS hay CLI trước.",
+      "question": "Dấu : ở object, annotation và lệnh uvicorn khác nhau như thế nào?"
+    }
+  },
+  "product": {
+    "syntax": {
+      "language": "typescript",
+      "code": "type ClassInput = { title: string };",
+      "parts": [
+        [
+          "type ClassInput",
+          "Đặt tên cho một kiểu; chưa tạo dữ liệu lớp."
+        ],
+        [
+          "{ title: string }",
+          "Object phải có thuộc tính title mang giá trị chuỗi."
+        ],
+        [
+          ";",
+          "Kết thúc khai báo; không phải lệnh gửi request."
+        ]
+      ],
+      "rule": "Đọc hình dạng dữ liệu trước khi chọn tên file hoặc thư viện.",
+      "trap": "Kiểu title: string vẫn cho phép chuỗi trắng; quy tắc nghiệp vụ cần kiểm khi chạy.",
+      "task": "Tự chạy core loop bằng các vai trò khác nhau và đối chiếu ma trận nghiệm thu.",
+      "check": "Reload vẫn đúng, quyền đúng và trạng thái công bố thể hiện cả ở API lẫn UI."
+    },
+    "architecture": {
+      "nodes": [
+        "Vai trò",
+        "Module",
+        "Core loop",
+        "Nghiệm thu"
+      ],
+      "decision": "Phân rã sản phẩm theo hành động có giá trị và ràng buộc, không theo số màn hình.",
+      "question": "Một dashboard đẹp nhưng toàn mock thiếu điều gì để gọi là luồng hoàn chỉnh?"
+    }
+  },
+  "clean": {
+    "syntax": {
+      "language": "python",
+      "code": "from .domain import normalize_title",
+      "parts": [
+        [
+          "from .domain",
+          "Module domain trong cùng package; dấu chấm là relative import."
+        ],
+        [
+          "import normalize_title",
+          "Đưa tên hàm vào module đang đọc."
+        ],
+        [
+          "normalize_title",
+          "Lấy hàm chưa gọi; cần (...) mới thực hiện."
+        ]
+      ],
+      "rule": "File/module là đơn vị import. Tách trách nhiệm rồi mới chuyển hàm, giữ chiều phụ thuộc rõ.",
+      "trap": "Chạy file trực tiếp có thể mất ngữ cảnh package; sửa entry chạy thay vì xóa relative import.",
+      "task": "Tách một trách nhiệm hoặc dependency có vấn đề rồi so diff trước/sau.",
+      "check": "Một thay đổi mới có nơi sửa rõ; test hành vi cũ qua; không tạo tầng chỉ chuyển tiếp."
+    },
+    "architecture": {
+      "nodes": [
+        "Biên giao tiếp",
+        "Use case",
+        "Policy thuần",
+        "Adapter"
+      ],
+      "decision": "Clean code phải giảm chi phí hiểu và sửa; tách file theo lý do thay đổi và kiểm bằng test.",
+      "question": "Nếu một sửa policy phải chạm năm repository, ranh giới nào có thể đang sai?"
+    }
+  }
+}

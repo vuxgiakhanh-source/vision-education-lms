@@ -123,3 +123,54 @@ exception và dữ liệu trả về. Endpoint lưu thật phải có quyền, k
 Tham khảo: [FastAPI tutorial](https://fastapi.tiangolo.com/tutorial/),
 [Dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/),
 [Pydantic validators](https://docs.pydantic.dev/latest/concepts/validators/).
+
+## Xưởng — Một request có những giai đoạn nào?
+
+ASGI server nhận kết nối và đưa request cho app. Route matching chọn endpoint;
+dependency/schema được giải quyết theo đồ thị; endpoint gọi service; kết quả
+được serialize/validate theo response model và gửi về. Middleware bao quanh
+quá trình với vai trò như CORS/logging theo cấu hình. Không dùng thứ tự đoán
+trong đầu để kết luận dependency nào đã chạy; quan sát log/test khi cần.
+
+Dependency yield mở tài nguyên rồi dọn theo lifecycle của framework. Một
+request không được dùng một Session global chia sẻ với mọi request. Dependency
+có cache trong request theo cách dùng; nếu chủ động đổi caching phải hiểu lý do.
+
+## Xưởng — Thiết kế route trước implementation
+
+```text
+POST /classes
+Body: {title: string trim1..200}; extra fields bị từ chối
+Actor: teacher active, lấy từ token + DB
+Success: 201 {id,title,teacher_id}
+Failure: 401 credential;403 không có quyền;422 representation;500 lỗi ngoài dự kiến
+Side effect: tạo đúng một lớp cho mỗi lần tạo thành công; bản đầu chưa có idempotency key
+```
+
+Viết bảng này giúp phát hiện field owner không được gửi từ client và trường
+hợp timeout chưa biết đã commit chưa. ResponseModel chỉ field đã chọn không
+thay service kiểm quyền. Với patch, phân biệt “không gửi field” và “gửi null”;
+dùng model_fields_set/model_dump(exclude_unset=True) khi phù hợp, không ghi
+null vào mọi field do default của schema.
+
+## Xưởng — Ghép ở composition root
+
+Tạo engine/session factory ở chỗ cấu hình; get_db cung cấp Session; provider
+tạo repository(db),service(repository). Router nhận service/current_user qua
+Depends. Trong CLI/unit test, tự truyền dependency; FastAPI không chạy provider
+cho một hàm Python được gọi bình thường.
+
+Các exception nghiệp vụ như NotFound/Forbidden có thể được handler/router đổi
+sang HTTP. Test rằng lỗi nội bộ ngoài dự kiến không bị giả thành thành công.
+OpenAPI thể hiện hợp đồng đã khai báo, không tự biết mọi rule quyền/deadline.
+
+## Xưởng — Tự viết, quan sát và thay yêu cầu
+
+1. Dựng /health và một POST preview độc lập; thử /docs và Network.
+2. Thay preview bằng servicefake; viết test validation và quyền.
+3. Ghép DB thật của lab, kiểm persistence bằng Session/request mới.
+4. Thêm PATCH tên lớp, giữ nguyên id/owner; test student đọc được nhưng sửa bị chặn.
+5. Thêm pagination có giới hạn, thử page 0,size 101 và trang sau rỗng.
+
+Source đối chiếu ở chương Xưởng từ số0, không import module sản phẩm chứa env
+thật để chạy thí nghiệm. Test in-process không chứng minh cấu hình host/TLS.

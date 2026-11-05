@@ -9,9 +9,9 @@ export default function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/dashboard" element={<StudentDashboardPage />} />
                 <Route element={<AuthGuard />}>
                     <Route path="/change-password" element={<ChangePasswordPage />} />
+                    <Route path="/dashboard" element={<StudentDashboardPage />} />
                 </Route>
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />

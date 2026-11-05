@@ -171,3 +171,92 @@ dependency đến từ đâu và vì sao hàm thường đôi khi phù hợp hơ
 
 Tham khảo: [Python Tutorial](https://docs.python.org/3/tutorial/),
 [typing Protocol](https://docs.python.org/3/library/typing.html#typing.Protocol).
+
+## Xưởng — Từ hàm đến object, không tạo class vì tên framework
+
+Một hàm `normalize_title(value)` chỉ biến đổi dữ liệu, có thể giữ dạng hàm.
+Repository có Session cần dùng nhiều method nên giữ dependency đó trong
+instance hợp lý. Service có các quy tắc và dùng repository qua hợp đồng.
+
+```python
+class ClassRepository:
+    def __init__(self, db):
+        self.db = db
+
+    def find(self, class_id):
+        return self.db.get(Classroom, class_id)
+
+class ClassService:
+    def __init__(self, repository):
+        self.repository = repository
+
+    def require(self, class_id):
+        classroom = self.repository.find(class_id)
+        if classroom is None:
+            raise LookupError('Không thấy lớp')
+        return classroom
+```
+
+Đoạn trên là minh họa cần import Classroom/model đúng khi ghép vào project.
+`repo = ClassRepository(db)` tạo instance và gọi __init__; `self.db = db`
+gắn reference, không clone DB. `repo.find(7)` truyền repo làm self và7 làm
+class_id. Hai repo dùng cùng Session có thể theo dõi cùng đơn vị làm việc;
+hai Session khác là hai lifecycle, không mặc nhiên cùng transaction.
+
+## Xưởng — Đóng gói và invariant
+
+Nếu điểm cần0..10, chỉ đổi `submission.score = 99` từ router sẽ bỏ qua rule.
+Đặt hành động chấm ở service/domain với quyền và invariant; response/schema
+cũng kiểm ranh giới phù hợp. Python `_name` là quy ước nội bộ; `__name` name
+mangling không phải hàng rào bảo mật. Đóng gói dựa trên thiết kế public API và
+việc mọi đường ghi đi qua rule, không chỉ đặt dấu gạch dưới.
+
+## Xưởng — Kế thừa và composition
+
+`User(Base)` dùng cơ chế ORM; `ClassInput(BaseModel)` dùng Pydantic.
+Đó là kế thừa có mục đích thư viện. `Service(repository)` là composition:
+service có một repository, không phải một loại repository. Không cho
+Teacher kế thừa Student chỉ để dùng chung trường name; hai vai trò có thể
+chung User và các quan hệ/capability riêng theo nghiệp vụ.
+
+```python
+from typing import Protocol
+
+class UserReader(Protocol):
+    def find(self, user_id: int): ...
+
+class NameService:
+    def __init__(self, reader: UserReader):
+        self.reader = reader
+
+    def label(self, user_id: int):
+        user = self.reader.find(user_id)
+        return None if user is None else user.name
+```
+
+Protocol mô tả thao tác cần có cho static tooling; implementation có method
+phù hợp có thể dùng mà không bắt buộc kế thừa Protocol. Nó không tự chạy query,
+không tự verify mọi method runtime. Test fake và SQL adapter bằng cùng hành
+vi quan sát được, tránh mock quá sâu tới từng lời gọi nội bộ.
+
+## Xưởng — SOLID thành câu hỏi review
+
+| Nguyên tắc | Câu hỏi cụ thể |
+|---|---|
+| S | Class này đổi khi nghiệp vụ đổi hay khi storage đổi, có đang ôm cả hai quá mức? |
+| O | Thêm cách gửi thông báo có buộc sửa mọi router không? Abstraction đã cần chưa? |
+| L | Adapter thay thế có giữ hợp đồng về missing/error và tác dụng không? |
+| I | Service chỉ đọc user có bị ép phụ thuộc interface100 method không? |
+| D | Quy tắc cốt lõi có phụ thuộc một thao tác cần thiết hay chi tiết driver? |
+
+Không cần một abstract factory cho từng object. Dependency injection là đưa
+thứ cần từ ngoài vào; Depends là một cơ chế lắp ráp của FastAPI. Trong unit
+test có thể tạo service(fake) trực tiếp; không cần khởi server.
+
+**Điền:** thêm `find` vào fake repository với dict instance riêng.
+
+**Trắng:** viết service chấm bài từ hợp đồng: active teacher,đúng lớp,điểm 0..10,
+bài tồn tại. Nêu exception và kiểm dữ liệu không đổi khi từ chối.
+
+**Sửa lỗi:** fake của bạn luôn trả success trong khi SQL adapter có thể thiếu
+row; viết cùng test hợp đồng cho missing/exists và sửa abstraction.

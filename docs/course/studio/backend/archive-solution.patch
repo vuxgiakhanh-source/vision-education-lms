@@ -1,0 +1,472 @@
+diff --git a/lms_lab/models.py b/lms_lab/models.py
+--- a/lms_lab/models.py
++++ b/lms_lab/models.py
+@@ -17,6 +17,7 @@
+     id = Column(Integer, primary_key=True)
+     title = Column(String(200), nullable=False)
+     teacher_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
++    archived = Column(Boolean, nullable=False, default=False, server_default='0')
+ 
+ 
+ class Membership(Base):
+diff --git a/lms_lab/schemas.py b/lms_lab/schemas.py
+--- a/lms_lab/schemas.py
++++ b/lms_lab/schemas.py
+@@ -16,3 +16,4 @@
+     id: int
+     title: str
+     teacher_id: int
++    archived: bool
+diff --git a/lms_lab/repository.py b/lms_lab/repository.py
+--- a/lms_lab/repository.py
++++ b/lms_lab/repository.py
+@@ -14,8 +14,11 @@
+             query = query.join(Membership).where(Membership.student_id == actor.id)
+         return list(self.db.scalars(query.order_by(Classroom.id).offset(offset).limit(limit)))
+ 
+-    def find(self, class_id: int):
+-        return self.db.get(Classroom, class_id)
++    def find(self, class_id: int, lock=False):
++        query = select(Classroom).where(Classroom.id == class_id)
++        if lock:
++            query = query.with_for_update().execution_options(populate_existing=True)
++        return self.db.scalar(query)
+ 
+     def is_member(self, class_id: int, actor_id: int) -> bool:
+         query = select(Membership.id).where(
+diff --git a/lms_lab/service.py b/lms_lab/service.py
+--- a/lms_lab/service.py
++++ b/lms_lab/service.py
+@@ -7,6 +7,10 @@
+ 
+ 
+ class NotFound(Exception):
++    pass
++
++
++class Archived(Exception):
+     pass
+ 
+ 
+@@ -57,3 +61,18 @@
+             self.transaction.rollback()
+             raise
+         return classroom
++
++
++    def archive(self, actor, class_id: int):
++        if actor.role != 'teacher':
++            raise Forbidden()
++        try:
++            classroom = self.repository.find(class_id, lock=True)
++            if classroom is None or classroom.teacher_id != actor.id:
++                raise NotFound()
++            classroom.archived = True
++            self.transaction.commit()
++        except Exception:
++            self.transaction.rollback()
++            raise
++        return classroom
+diff --git a/lms_lab/app.py b/lms_lab/app.py
+--- a/lms_lab/app.py
++++ b/lms_lab/app.py
+@@ -78,6 +78,11 @@
+                      actor=Depends(current_user), classes=Depends(service)):
+         return translate(lambda: classes.rename(actor, class_id, payload.title))
+ 
++    @app.put('/classes/{class_id}/archive', response_model=ClassOutput)
++    def archive_class(class_id: int = Path(gt=0),
++                      actor=Depends(current_user), classes=Depends(service)):
++        return translate(lambda: classes.archive(actor, class_id))
++
+     from .workflow import install_workflow
+     install_workflow(app, get_db, current_user)
+     return app
+diff --git a/lms_lab/workflow.py b/lms_lab/workflow.py
+--- a/lms_lab/workflow.py
++++ b/lms_lab/workflow.py
+@@ -4,7 +4,7 @@
+ from pydantic import BaseModel, ConfigDict, Field, field_validator
+ from sqlalchemy import select
+ from .models import Assignment, Classroom, Membership, Submission
+-from .service import Forbidden, NotFound
++from .service import Archived, Forbidden, NotFound
+ from .unit_of_work import SqlTransaction
+ 
+ 
+@@ -86,8 +86,11 @@
+     def __init__(self, db):
+         self.db = db
+ 
+-    def classroom(self, class_id):
+-        return self.db.get(Classroom, class_id)
++    def classroom(self, class_id, lock=False):
++        query = select(Classroom).where(Classroom.id == class_id)
++        if lock:
++            query = query.with_for_update().execution_options(populate_existing=True)
++        return self.db.scalar(query)
+ 
+     def member(self, class_id, user_id):
+         return self.db.scalar(select(Membership.id).where(
+@@ -125,8 +128,8 @@
+         self.transaction = transaction
+         self.now = now or (lambda: datetime.now(timezone.utc).replace(tzinfo=None))
+ 
+-    def scope(self, actor, class_id, write=False):
+-        row = self.repository.classroom(class_id)
++    def scope(self, actor, class_id, write=False, lock=False):
++        row = self.repository.classroom(class_id, lock=lock)
+         if row is None:
+             raise NotFound()
+         if actor.role == 'teacher':
+@@ -146,9 +149,11 @@
+         return row
+ 
+     def create(self, actor, class_id, payload):
+-        self.scope(actor, class_id, write=True)
+-        row = Assignment(class_id=class_id, title=payload.title, due_at=payload.due_at)
+-        try:
++        try:
++            classroom = self.scope(actor, class_id, write=True, lock=True)
++            if classroom.archived:
++                raise Archived()
++            row = Assignment(class_id=class_id, title=payload.title, due_at=payload.due_at)
+             self.repository.add(row)
+             self.transaction.commit()
+         except Exception:
+@@ -161,12 +166,15 @@
+             raise Forbidden()
+         try:
+             assignment = self.require_assignment(actor, assignment_id, lock=True)
++            classroom = self.scope(actor, assignment.class_id, lock=True)
+             existing = self.repository.mine(assignment_id, actor.id, lock=True)
+             if existing is not None:
+                 if existing.answer != answer:
+                     raise Conflict()
+                 result = submission_output(existing)
+             else:
++                if classroom.archived:
++                    raise Archived()
+                 now = self.now()
+                 if assignment.due_at is not None and now > assignment.due_at:
+                     raise TooLate()
+@@ -207,6 +215,8 @@
+             raise HTTPException(403, 'Không đủ quyền') from None
+         except Conflict:
+             raise HTTPException(409, 'Đã có bài khác; không ghi đè bản gốc') from None
++        except Archived:
++            raise HTTPException(409, 'Lớp đã lưu trữ; không tạo bài hoặc nộp mới') from None
+         except TooLate:
+             raise HTTPException(409, 'Đã quá hạn nộp') from None
+ 
+diff --git a/frontend/class-api.ts b/frontend/class-api.ts
+--- a/frontend/class-api.ts
++++ b/frontend/class-api.ts
+@@ -3,7 +3,7 @@
+ 
+ const baseURL = import.meta.env.VITE_LAB_API_URL || 'http://127.0.0.1:8001';
+ const classroomSchema = z.object({
+-  id: z.number().int().positive(), title: z.string().min(1), teacher_id: z.number().int().positive(),
++  id: z.number().int().positive(), title: z.string().min(1), teacher_id: z.number().int().positive(), archived: z.boolean(),
+ });
+ export type Classroom = z.infer<typeof classroomSchema>;
+ const authorization = (token: string) => ({ Authorization: `Bearer ${token}` });
+@@ -24,9 +24,20 @@
+     const messages: Record<number, string> = {
+       401: 'Token không hợp lệ/hết hạn.', 403: 'Tài khoản không có quyền thực hiện.',
+       404: 'Không thấy tài nguyên trong phạm vi được phép.', 422: 'Dữ liệu gửi không hợp lệ.',
+-      409: 'Bài đã có nội dung khác hoặc đã quá hạn. Tải lại để đối chiếu.',
++      409: 'Lớp đã lưu trữ, bài đã có nội dung khác hoặc quá hạn. Tải lại để đối chiếu.',
+     };
+     return messages[error.response.status] ?? `API trả HTTP ${error.response.status}`;
+   }
+   return 'Response sai hợp đồng hoặc có lỗi chưa dự kiến. Xem công cụ phát triển.';
+ }
++
++
++export async function readClass(token: string, id: number, signal?: AbortSignal): Promise<Classroom> {
++  const response = await axios.get<unknown>(`/classes/${id}`, { baseURL, headers: authorization(token), signal });
++  return classroomSchema.parse(response.data);
++}
++
++export async function archiveClass(token: string, id: number): Promise<Classroom> {
++  const response = await axios.put<unknown>(`/classes/${id}/archive`, undefined, { baseURL, headers: authorization(token) });
++  return classroomSchema.parse(response.data);
++}
+diff --git a/frontend/ClassroomPractice.tsx b/frontend/ClassroomPractice.tsx
+--- a/frontend/ClassroomPractice.tsx
++++ b/frontend/ClassroomPractice.tsx
+@@ -2,7 +2,7 @@
+ import { useForm } from 'react-hook-form';
+ import { zodResolver } from '@hookform/resolvers/zod';
+ import { z } from 'zod';
+-import { createClass, describeError, listClasses } from './class-api';
++import { archiveClass, createClass, describeError, listClasses } from './class-api';
+ import type { Classroom } from './class-api';
+ 
+ type State = { kind: 'loading' } | { kind: 'error'; message: string }
+@@ -15,6 +15,8 @@
+   const [state, setState] = useState<State>({ kind: 'loading' });
+   const [reload, setReload] = useState(0);
+   const [query, setQuery] = useState('');
++  const [archivingId, setArchivingId] = useState<number | null>(null);
++  const [archiveError, setArchiveError] = useState('');
+   const { register, handleSubmit, reset, setError, formState: { errors, isSubmitting } } =
+     useForm<Values>({ resolver: zodResolver(formSchema), defaultValues: { title: '' } });
+   useEffect(() => {
+@@ -38,10 +40,18 @@
+     }
+   }
+ 
++  async function archive(id: number) {
++    setArchivingId(id); setArchiveError('');
++    try { await archiveClass(token, id); setReload(value => value + 1); }
++    catch (cause) { setArchiveError(describeError(cause)); }
++    finally { setArchivingId(null); }
++  }
++
+   const items = state.kind === 'success' ? state.items : [];
+   const visible = items.filter(item => item.title.toLowerCase().includes(query.trim().toLowerCase()));
+   return <section>
+     <h2>Lớp trong phạm vi tài khoản</h2>
++    {archiveError && <p role="alert">{archiveError}</p>}
+     <form onSubmit={handleSubmit(submit)}>
+       <label htmlFor="title">Tên lớp mới</label>
+       <input id="title" {...register('title')} aria-invalid={!!errors.title} />
+@@ -57,7 +67,12 @@
+     {state.kind === 'success' && <>
+       <p>{visible.length} lớp trên trang đã tải.</p>
+       {visible.length === 0 ? <p>Chưa có lớp khớp. Kiểm tra bộ lọc và quyền lớp.</p> :
+-        <ul>{visible.map(item => <li key={item.id}><strong>{item.title}</strong> · #{item.id}</li>)}</ul>}
++        <ul>{visible.map(item => <li key={item.id}>
++          <strong>{item.title}</strong> · #{item.id} · {item.archived ? 'Đã lưu trữ' : 'Đang học'}
++          <button type="button" disabled={archivingId !== null || item.archived} onClick={() => void archive(item.id)}>
++            {archivingId === item.id ? 'Đang lưu trữ…' : 'Lưu trữ lớp (quyền cô)'}
++          </button>
++        </li>)}</ul>}
+     </>}
+   </section>;
+ }
+diff --git a/frontend/WorkflowPractice.tsx b/frontend/WorkflowPractice.tsx
+--- a/frontend/WorkflowPractice.tsx
++++ b/frontend/WorkflowPractice.tsx
+@@ -1,5 +1,6 @@
+ import { useEffect, useState } from 'react';
+-import { describeError } from './class-api';
++import { describeError, readClass } from './class-api';
++import type { Classroom } from './class-api';
+ import { createAssignment, readAssignments, readIdentity, readSubmissions, saveGrade, submitAnswer } from './workflow-api';
+ import type { Actor, Assignment, Submission } from './workflow-api';
+ 
+@@ -21,7 +22,7 @@
+   </form>;
+ }
+ 
+-function AssignmentPanel({ token, item, teacher }: { token: string; item: Assignment; teacher: boolean }) {
++function AssignmentPanel({ token, item, teacher, archived }: { token: string; item: Assignment; teacher: boolean; archived: boolean }) {
+   const [rows, setRows] = useState<Submission[]>([]);
+   const [answer, setAnswer] = useState('');
+   const [error, setError] = useState('');
+@@ -43,7 +44,7 @@
+     {loading && <p role="status">Đang tải bài nộp…</p>}
+     {error && <p role="alert">{error}</p>}
+     <button onClick={() => setRevision(value => value + 1)}>Tải lại bài và điểm</button>
+-    {!teacher && <form onSubmit={async event => {
++    {!teacher && !archived && <form onSubmit={async event => {
+       event.preventDefault(); setBusy(true); setError('');
+       try { await submitAnswer(token, item.id, answer); setRevision(value => value + 1); }
+       catch (cause) { setError(describeError(cause)); }
+@@ -64,6 +65,7 @@
+ 
+ export function WorkflowPractice({ token }: { token: string }) {
+   const [actor, setActor] = useState<Actor | null>(null);
++  const [classroom, setClassroom] = useState<Classroom | null>(null);
+   const [classDraft, setClassDraft] = useState('1');
+   const [classId, setClassId] = useState(1);
+   const [items, setItems] = useState<Assignment[]>([]);
+@@ -75,9 +77,9 @@
+   const [revision, setRevision] = useState(0);
+   useEffect(() => {
+     const controller = new AbortController(); let active = true;
+-    setLoading(true); setError(''); setItems([]);
+-    Promise.all([readIdentity(token, controller.signal), readAssignments(token, classId, controller.signal)]).then(
+-      ([identity, rows]) => { if (active) { setActor(identity); setItems(rows); setLoading(false); } },
++    setLoading(true); setError(''); setItems([]); setClassroom(null); setActor(null);
++    Promise.all([readIdentity(token, controller.signal), readAssignments(token, classId, controller.signal), readClass(token, classId, controller.signal)]).then(
++      ([identity, rows, current]) => { if (active) { setActor(identity); setClassroom(current); setItems(rows); setLoading(false); } },
+       cause => { if (active) { setError(describeError(cause)); setLoading(false); } },
+     );
+     return () => { active = false; controller.abort(); };
+@@ -91,7 +93,8 @@
+     {actor && <p>Tài khoản: {actor.name} · {actor.role}</p>}
+     {loading && <p role="status">Đang tải…</p>}
+     {error && <p role="alert">{error}</p>}
+-    {actor?.role === 'teacher' && !loading && <form onSubmit={async event => {
++    {classroom?.archived && <p role="status">Lớp đã lưu trữ: đọc lịch sử và chấm bài cũ; không giao hoặc nộp bài mới.</p>}
++    {actor?.role === 'teacher' && classroom && !classroom.archived && !loading && <form onSubmit={async event => {
+       event.preventDefault(); setBusy(true); setError('');
+       try {
+         await createAssignment(token, classId, title, deadline ? new Date(deadline).toISOString() : null);
+@@ -105,6 +108,6 @@
+     </form>}
+     {!loading && !error && items.length === 0 && <p>Chưa có bài tập.</p>}
+     <p>Lab tải 20 bài/trang và 20 bài nộp/trang. Bài mở rộng: thêm điều khiển phân trang; không coi đây là toàn bộ dữ liệu.</p>
+-    {items.map(item => <AssignmentPanel key={`${classId}:${item.id}`} token={token} item={item} teacher={actor?.role === 'teacher'} />)}
++    {items.map(item => <AssignmentPanel key={`${classId}:${item.id}`} token={token} item={item} teacher={actor?.role === 'teacher'} archived={classroom?.archived ?? true} />)}
+   </section>;
+ }
+diff --git a/deploy/migrations/versions/0002_archive.py b/deploy/migrations/versions/0002_archive.py
+new file mode 100644
+--- /dev/null
++++ b/deploy/migrations/versions/0002_archive.py
+@@ -0,0 +1,17 @@
++"""Add state without deleting existing classrooms or their history."""
++from alembic import op
++import sqlalchemy as sa
++
++revision = '0002_archive'
++down_revision = '0001'
++branch_labels = None
++depends_on = None
++
++
++def upgrade():
++    op.add_column('classes', sa.Column('archived', sa.Boolean(), nullable=False, server_default=sa.false()))
++
++
++def downgrade():
++    # Removing this state can reopen archived classes. Review before any rollback.
++    op.drop_column('classes', 'archived')
+diff --git a/test_archive.py b/test_archive.py
+new file mode 100644
+--- /dev/null
++++ b/test_archive.py
+@@ -0,0 +1,94 @@
++"""Copy as test_archive.py into the disposable patched workshop, never the product."""
++import unittest
++from sqlalchemy import select
++import test_workshop as support
++from lms_lab.models import Assignment, Classroom, Membership, Submission, User
++from lms_lab.repository import ClassRepository
++from lms_lab.service import ClassService
++
++
++class ArchiveTests(unittest.TestCase):
++    setUp = support.WorkshopTests.setUp
++    tearDown = support.WorkshopTests.tearDown
++    call = support.WorkshopTests.call
++
++    def assignment(self):
++        status, row = self.call('POST', '/classes/1/assignments', body={'title': 'Bài cũ'})
++        self.assertEqual(status, 201)
++        return row['id']
++
++    def test_archive_checks_identity_and_owner_before_writing(self):
++        path = '/classes/1/archive'
++        self.assertEqual(self.call('PUT', path, user=None)[0], 401)
++        self.assertEqual(self.call('PUT', path, user=2)[0], 403)
++        with self.sessions() as db:
++            db.add(User(id=5, name='Other', role='teacher'))
++            db.commit()
++        self.assertEqual(self.call('PUT', path, user=5)[0], 404)
++        self.assertEqual(self.call('PUT', '/classes/999/archive')[0], 404)
++        with self.sessions() as db:
++            self.assertFalse(db.get(Classroom, 1).archived)
++
++    def test_archive_preserves_history_and_repeating_is_safe(self):
++        assignment_id = self.assignment()
++        first = self.call('PUT', '/classes/1/archive')
++        self.assertEqual(first[0], 200)
++        self.assertTrue(first[1]['archived'])
++        self.assertEqual(self.call('PUT', '/classes/1/archive'), first)
++        self.assertEqual(self.call('GET', '/classes/1', user=2)[0], 200)
++        self.assertEqual(self.call('GET', '/classes/1/assignments', user=2)[1][0]['id'], assignment_id)
++        self.assertEqual(self.call('GET', '/classes/1', user=3)[0], 404)
++        with self.sessions() as db:
++            self.assertIsNotNone(db.get(Assignment, assignment_id))
++            self.assertEqual(len(db.scalars(select(Membership)).all()), 1)
++
++    def test_archived_class_blocks_new_assignment_and_submission(self):
++        assignment_id = self.assignment()
++        self.call('PUT', '/classes/1/archive')
++        self.assertEqual(self.call('POST', '/classes/1/assignments', body={'title': 'Không tạo'})[0], 409)
++        self.assertEqual(self.call('POST', f'/assignments/{assignment_id}/submissions', user=2,
++                                   body={'answer': 'Không nộp mới'})[0], 409)
++        with self.sessions() as db:
++            self.assertEqual(len(db.scalars(select(Assignment)).all()), 1)
++            self.assertEqual(db.scalars(select(Submission)).all(), [])
++
++    def test_existing_retry_and_grading_work_after_archive(self):
++        assignment_id = self.assignment()
++        path = f'/assignments/{assignment_id}/submissions'
++        first = self.call('POST', path, user=2, body={'answer': 'A'})
++        self.call('PUT', '/classes/1/archive')
++        self.assertEqual(self.call('POST', path, user=2, body={'answer': ' A '}), first)
++        self.assertEqual(self.call('POST', path, user=2, body={'answer': 'B'})[0], 409)
++        grade = f'/submissions/{first[1]["id"]}/grade'
++        self.assertEqual(self.call('PUT', grade, body={'score': 0, 'publish': True})[0], 200)
++        status, mine = self.call('GET', f'/assignments/{assignment_id}/my-submission', user=2)
++        self.assertEqual(status, 200)
++        self.assertEqual(mine['score'], 0)
++        with self.sessions() as db:
++            self.assertEqual(len(db.scalars(select(Submission)).all()), 1)
++
++    def test_client_cannot_archive_through_title_input(self):
++        self.assertEqual(self.call('PATCH', '/classes/1', body={'title': 'X', 'archived': True})[0], 422)
++        with self.sessions() as db:
++            self.assertFalse(db.get(Classroom, 1).archived)
++            self.assertEqual(db.get(Classroom, 1).title, 'Algebra')
++
++    def test_failure_during_commit_rolls_back_archived_flag(self):
++        with self.sessions() as db:
++            class FailingTransaction:
++                def commit(self):
++                    db.flush()
++                    raise RuntimeError('Injected failure after flush')
++
++                def rollback(self):
++                    db.rollback()
++
++            service = ClassService(ClassRepository(db), FailingTransaction())
++            with self.assertRaises(RuntimeError):
++                service.archive(db.get(User, 1), 1)
++        with self.sessions() as fresh:
++            self.assertFalse(fresh.get(Classroom, 1).archived)
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff --git a/test_archive_migration.py b/test_archive_migration.py
+new file mode 100644
+--- /dev/null
++++ b/test_archive_migration.py
+@@ -0,0 +1,29 @@
++"""Upgrade an existing baseline row, not just an empty create_all database."""
++from pathlib import Path
++import unittest
++from alembic import command
++from alembic.config import Config
++from sqlalchemy import text
++from lms_lab.database import make_engine
++
++
++class ArchiveMigrationTests(unittest.TestCase):
++    def test_existing_class_gets_false_default_without_losing_title(self):
++        engine = make_engine('sqlite://')
++        try:
++            with engine.connect() as connection:
++                config = Config(str(Path(__file__).parent / 'deploy' / 'alembic.ini'))
++                config.attributes['test_connection'] = connection
++                command.upgrade(config, '0001')
++                connection.execute(text("INSERT INTO users(id,name,role,active) VALUES (1,'Cô','teacher',1)"))
++                connection.execute(text("INSERT INTO classes(id,title,teacher_id) VALUES (1,'Lớp cũ',1)"))
++                connection.commit()
++                command.upgrade(config, 'head')
++                row = connection.execute(text('SELECT title, archived FROM classes WHERE id=1')).one()
++                self.assertEqual(tuple(row), ('Lớp cũ', 0))
++        finally:
++            engine.dispose()
++
++
++if __name__ == '__main__':
++    unittest.main()

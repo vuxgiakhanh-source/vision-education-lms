@@ -1,0 +1,4 @@
+__pycache__/
+.archive-check/
+_validation/
+_split-validation/

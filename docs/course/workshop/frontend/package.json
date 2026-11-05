@@ -1,0 +1,13 @@
+{
+  "name": "lms-learning-workshop",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "vite --host 127.0.0.1 --port 5173", "build": "tsc --noEmit && vite build" },
+  "dependencies": {
+    "react": "^19.2.8", "react-dom": "^19.2.8", "axios": "^1.19.0", "zod": "^4.4.3",
+    "react-hook-form": "^7.85.0", "@hookform/resolvers": "^5.9.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17", "@types/react-dom": "^19.2.3", "typescript": "~6.0.2", "vite": "^8.2.0", "@vitejs/plugin-react": "^6.0.4"
+  }
+}

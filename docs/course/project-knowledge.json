@@ -1,0 +1,776 @@
+[
+  {
+    "id": "language",
+    "name": "Biến, biểu thức, if/for và hàm",
+    "level": "build",
+    "use": "Xử lý điểm, danh sách lớp và nhánh hợp lệ/không hợp lệ.",
+    "why": "Đây là cú pháp phải tự viết được trước callback hay framework.",
+    "proof": "Viết hàm từ đề trắng; kiểm điểm 0 và array rỗng.",
+    "targets": [
+      {
+        "lesson": "zero",
+        "match": ""
+      },
+      {
+        "lesson": "bridge",
+        "match": "2. Biến"
+      },
+      {
+        "lesson": "bridge",
+        "match": "3. if"
+      },
+      {
+        "lesson": "bridge",
+        "match": "5. for"
+      },
+      {
+        "lesson": "thinking",
+        "match": ""
+      },
+      {
+        "lesson": "python",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "data-shapes",
+    "name": "Array/object và hình dạng dữ liệu",
+    "level": "build",
+    "use": "Lớp là object; nhiều lớp là array; JSON qua API có hợp đồng riêng.",
+    "why": "Nhầm một bản ghi với danh sách sẽ đọc/sửa dữ liệu sai.",
+    "proof": "Chỉ ra kiểu và giá trị của từng bước truy cập.",
+    "targets": [
+      {
+        "lesson": "bridge",
+        "match": "4. List"
+      },
+      {
+        "lesson": "01",
+        "match": ""
+      },
+      {
+        "lesson": "02",
+        "match": "Bài 02.1"
+      },
+      {
+        "lesson": "studio-web",
+        "match": "Buổi 6"
+      }
+    ]
+  },
+  {
+    "id": "callback",
+    "name": "Hàm, callback và return",
+    "level": "build",
+    "use": "Submit form, click nút, map/filter danh sách.",
+    "why": "Phải hiểu truyền hàm khác gọi hàm; arrow block thiếu return cho kết quả khác.",
+    "proof": "Tự viết function rồi chuyển sang arrow; dự đoán từng lần gọi.",
+    "targets": [
+      {
+        "lesson": "bridge",
+        "match": "6. Hàm"
+      },
+      {
+        "lesson": "bridge",
+        "match": "7. Callback"
+      },
+      {
+        "lesson": "01",
+        "match": ""
+      },
+      {
+        "lesson": "studio-web",
+        "match": "Buổi 5"
+      },
+      {
+        "lesson": "04",
+        "match": "Xưởng đọc LoginForm"
+      }
+    ]
+  },
+  {
+    "id": "destructure",
+    "name": "Destructuring, spread và tham chiếu",
+    "level": "build",
+    "use": "useState, lấy errors của form, cập nhật object state.",
+    "why": "Đọc được cú pháp gọn và tránh sửa chung object ngoài ý muốn.",
+    "proof": "Giải thích tên nào được khai báo và dữ liệu gốc có bị sửa không.",
+    "targets": [
+      {
+        "lesson": "bridge",
+        "match": "13. Destructuring"
+      },
+      {
+        "lesson": "bridge",
+        "match": "14. Spread"
+      },
+      {
+        "lesson": "04",
+        "match": "Xưởng đọc LoginForm"
+      },
+      {
+        "lesson": "studio-react",
+        "match": "Buổi 4"
+      }
+    ]
+  },
+  {
+    "id": "imports",
+    "name": "Module, import/export và entry",
+    "level": "build",
+    "use": "main.tsx → App → feature; Python main → router/service.",
+    "why": "Tự chia file phải biết nơi bắt đầu chạy và chiều phụ thuộc.",
+    "proof": "Tự chuyển hàm sang module, import đúng, không tạo vòng.",
+    "targets": [
+      {
+        "lesson": "bridge",
+        "match": "15. Import"
+      },
+      {
+        "lesson": "studio-react",
+        "match": "Buổi 2"
+      },
+      {
+        "lesson": "studio-python",
+        "match": "Buổi G3.6"
+      },
+      {
+        "lesson": "05",
+        "match": ""
+      },
+      {
+        "lesson": "clean",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "tooling",
+    "name": "Manifest, môi trường và lệnh chạy",
+    "level": "build",
+    "use": "frontend/package.json; Python interpreter; process API và cổng.",
+    "why": "Lỗi sai cwd/runtime không thể sửa bằng đổi code nghiệp vụ.",
+    "proof": "Nói rõ lệnh chạy ở đâu, công cụ nào đọc cấu hình nào.",
+    "targets": [
+      {
+        "lesson": "tools",
+        "match": ""
+      },
+      {
+        "lesson": "studio-react",
+        "match": "Buổi 1"
+      },
+      {
+        "lesson": "studio-feature",
+        "match": "Buổi G4.1 —"
+      }
+    ]
+  },
+  {
+    "id": "api-contract",
+    "name": "Tự tra API và giá trị trả về",
+    "level": "build",
+    "use": "trim, useForm, Depends, SQLAlchemy; authService trả res.data.",
+    "why": "Không thể nhớ mọi tên hàm; phải học cách đọc hợp đồng của tên mới.",
+    "proof": "Ghi input/output/tác dụng/lỗi, đổi input rồi dự đoán lại.",
+    "targets": [
+      {
+        "lesson": "api-reading",
+        "match": ""
+      },
+      {
+        "lesson": "reference",
+        "match": ""
+      },
+      {
+        "lesson": "00",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "html-css",
+    "name": "HTML semantic, selector và box model",
+    "level": "build",
+    "use": "Form đăng nhập, danh sách lớp, màn bài tập.",
+    "why": "Biết cấu trúc và hộp trước khi dùng class Tailwind.",
+    "proof": "Tự dựng card từ file trắng, giải thích padding/border/margin.",
+    "targets": [
+      {
+        "lesson": "markup",
+        "match": "1. Một trang"
+      },
+      {
+        "lesson": "markup",
+        "match": "2. Một luật"
+      },
+      {
+        "lesson": "markup",
+        "match": "4. Padding"
+      },
+      {
+        "lesson": "03",
+        "match": ""
+      },
+      {
+        "lesson": "studio-web",
+        "match": "Buổi 2"
+      }
+    ]
+  },
+  {
+    "id": "responsive",
+    "name": "Flex/grid, responsive và nội dung dài",
+    "level": "build",
+    "use": "Sidebar, toolbar, card và bảng trên màn hình hẹp.",
+    "why": "User cần đọc và thao tác được ở nhiều chiều rộng; ảnh desktop chưa đủ.",
+    "proof": "Thử màn hẹp, chữ dài, bàn phím; chỉ hộp nào co hoặc xuống hàng.",
+    "targets": [
+      {
+        "lesson": "markup",
+        "match": "6. Block"
+      },
+      {
+        "lesson": "markup",
+        "match": "9. Responsive"
+      },
+      {
+        "lesson": "studio-web",
+        "match": "Buổi 3"
+      },
+      {
+        "lesson": "studio-web",
+        "match": "Buổi 4"
+      },
+      {
+        "lesson": "03",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "dom",
+    "name": "Event, dữ liệu gốc và render",
+    "level": "build",
+    "use": "Nút thêm/tìm lớp trước khi chuyển sang React.",
+    "why": "Phân biệt sự kiện với cập nhật dữ liệu và vẽ lại.",
+    "proof": "Tìm rồi xóa query phải hiện đủ dữ liệu gốc.",
+    "targets": [
+      {
+        "lesson": "studio-web",
+        "match": "Buổi 5"
+      },
+      {
+        "lesson": "studio-web",
+        "match": "Buổi 6"
+      },
+      {
+        "lesson": "studio-web",
+        "match": "Buổi 7"
+      }
+    ]
+  },
+  {
+    "id": "types",
+    "name": "Type, union, optional và generic",
+    "level": "build",
+    "use": "Props, request/response, điểm number hoặc null, useForm<LoginFormData>.",
+    "why": "Giúp đọc đúng hợp đồng và biểu diễn trạng thái; TS không kiểm JSON hộ.",
+    "proof": "Tự tạo type, thu hẹp null, giải thích phần nào mất khi build.",
+    "targets": [
+      {
+        "lesson": "bridge",
+        "match": "8. Giờ"
+      },
+      {
+        "lesson": "bridge",
+        "match": "9. Đọc object"
+      },
+      {
+        "lesson": "02",
+        "match": ""
+      },
+      {
+        "lesson": "studio-react",
+        "match": "Buổi 3"
+      }
+    ]
+  },
+  {
+    "id": "async",
+    "name": "Promise, async/await và đường lỗi",
+    "level": "build",
+    "use": "Đăng nhập, tải lớp, gửi bài và cập nhật UI sau response.",
+    "why": "Nhận Promise khác nhận dữ liệu; lỗi tại await đổi đường chạy.",
+    "proof": "Dự đoán cả resolve/reject, không chuyển trang khi gửi thất bại.",
+    "targets": [
+      {
+        "lesson": "02",
+        "match": "Bài 02.4"
+      },
+      {
+        "lesson": "02",
+        "match": "Xưởng cú pháp"
+      },
+      {
+        "lesson": "first",
+        "match": ""
+      },
+      {
+        "lesson": "studio-feature",
+        "match": "Buổi G4.5"
+      }
+    ]
+  },
+  {
+    "id": "react-state",
+    "name": "JSX, state, props và callback",
+    "level": "build",
+    "use": "Component form, list lớp, bộ lọc; tự chọn chủ state.",
+    "why": "Chia UI theo trách nhiệm, tránh hai bản dữ liệu cạnh tranh.",
+    "proof": "Vẽ props xuống/callback lên; tự thêm bộ đếm từ dữ liệu có sẵn.",
+    "targets": [
+      {
+        "lesson": "04",
+        "match": ""
+      },
+      {
+        "lesson": "studio-react",
+        "match": "Buổi 4"
+      },
+      {
+        "lesson": "studio-react",
+        "match": "Buổi 6"
+      }
+    ]
+  },
+  {
+    "id": "forms",
+    "name": "Form, validation và trạng thái gửi",
+    "level": "build",
+    "use": "React Hook Form + Zod trong LoginForm; form lớp tự viết.",
+    "why": "Input không hợp lệ, đang gửi và gửi lỗi cần hành vi rõ.",
+    "proof": "Tự làm form thủ công rồi giải thích register/handleSubmit/resolver.",
+    "targets": [
+      {
+        "lesson": "04",
+        "match": "Bài 04.5"
+      },
+      {
+        "lesson": "04",
+        "match": "Xưởng đọc LoginForm"
+      },
+      {
+        "lesson": "studio-react",
+        "match": "Buổi 5"
+      },
+      {
+        "lesson": "02",
+        "match": "Xưởng — Parser"
+      }
+    ]
+  },
+  {
+    "id": "http",
+    "name": "HTTP: method/path/header/body/status",
+    "level": "build",
+    "use": "Axios POST /login → FastAPI; sau này GET/POST lớp và bài nộp.",
+    "why": "Hai process chỉ nối nhau qua hợp đồng; tên biến nội bộ có thể khác key JSON.",
+    "proof": "Đọc được một request trong Network và lần tới handler.",
+    "targets": [
+      {
+        "lesson": "02",
+        "match": "Bài 02.5"
+      },
+      {
+        "lesson": "02",
+        "match": "Xưởng — Đọc đủ"
+      },
+      {
+        "lesson": "studio-feature",
+        "match": "Buổi G4.1 —"
+      },
+      {
+        "lesson": "07",
+        "match": "Bài 07.3"
+      }
+    ]
+  },
+  {
+    "id": "layering",
+    "name": "Router/service/repository và DI",
+    "level": "build",
+    "use": "Các module auth thật; kiến trúc tính năng lớp sẽ tự thêm.",
+    "why": "Biết quy tắc nằm đâu để thêm tính năng mà không dồn hết vào endpoint.",
+    "proof": "Tự phân trách nhiệm, chỉ nơi ghép dependency và chiều import.",
+    "targets": [
+      {
+        "lesson": "studio-python",
+        "match": ""
+      },
+      {
+        "lesson": "studio-feature",
+        "match": "Buổi G4.2"
+      },
+      {
+        "lesson": "studio-feature",
+        "match": "Buổi G4.10"
+      },
+      {
+        "lesson": "07",
+        "match": "Bài 07.4"
+      },
+      {
+        "lesson": "07",
+        "match": "Bài 07.5"
+      },
+      {
+        "lesson": "map",
+        "match": ""
+      },
+      {
+        "lesson": "clean",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "business",
+    "name": "Vai trò, trạng thái và bảng quy tắc",
+    "level": "build",
+    "use": "Cô giao bài, học sinh nộp, trợ giảng chấm, công bố điểm.",
+    "why": "Sản phẩm hoàn chỉnh cần quy tắc đúng trước khi có nhiều màn hình.",
+    "proof": "Viết ca đúng/sai và kiểm chuyển trạng thái trái phép.",
+    "targets": [
+      {
+        "lesson": "studio-start",
+        "match": ""
+      },
+      {
+        "lesson": "studio-feature",
+        "match": "Buổi G4.6"
+      },
+      {
+        "lesson": "studio-modules",
+        "match": ""
+      },
+      {
+        "lesson": "product",
+        "match": ""
+      },
+      {
+        "lesson": "10",
+        "match": ""
+      },
+      {
+        "lesson": "11",
+        "match": ""
+      },
+      {
+        "lesson": "14",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "relational",
+    "name": "SQL, PK/FK, UNIQUE và JOIN",
+    "level": "build",
+    "use": "User/class/membership/assignment/submission trong thiết kế LMS.",
+    "why": "Quan hệ và constraint giữ dữ liệu có nghĩa; ORM không thay tư duy dữ liệu.",
+    "proof": "Từ câu chuyện tự vẽ bảng, viết JOIN và phát hiện hàng bị nhân.",
+    "targets": [
+      {
+        "lesson": "06",
+        "match": ""
+      },
+      {
+        "lesson": "studio-feature",
+        "match": "Buổi G4.3"
+      },
+      {
+        "lesson": "studio-modules",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "orm",
+    "name": "Session, flush, commit và rollback",
+    "level": "build",
+    "use": "SQLAlchemy trong repository; use case chọn ranh giới ghi.",
+    "why": "Flush chưa phải commit; cần hiểu transaction để không ghi dở dang.",
+    "proof": "Gây lỗi giữa hai lần ghi; kiểm trạng thái DB sau rollback.",
+    "targets": [
+      {
+        "lesson": "08",
+        "match": "Bài 08.1"
+      },
+      {
+        "lesson": "08",
+        "match": "Bài 08.3"
+      },
+      {
+        "lesson": "api-reading",
+        "match": "8. Ví dụ SQLAlchemy"
+      },
+      {
+        "lesson": "studio-feature",
+        "match": "Buổi G4.3"
+      }
+    ]
+  },
+  {
+    "id": "authentication",
+    "name": "Mật khẩu, JWT và current user",
+    "level": "release",
+    "use": "LoginService, core/security và /me đang có trong backend.",
+    "why": "Có token ở browser chưa đủ chứng minh danh tính/quyền cho request.",
+    "proof": "Kiểm sai mật khẩu, token hết hạn, user bị khóa và không lộ hash.",
+    "targets": [
+      {
+        "lesson": "09",
+        "match": "Bài 09.2"
+      },
+      {
+        "lesson": "09",
+        "match": "Bài 09.3"
+      },
+      {
+        "lesson": "operations",
+        "match": ""
+      },
+      {
+        "lesson": "first",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "authorization",
+    "name": "Quyền theo tài nguyên và chống xem chéo lớp",
+    "level": "release",
+    "use": "Giáo viên chỉ sửa lớp được phân công; học sinh chỉ đọc/nộp đúng phạm vi.",
+    "why": "Role đúng vẫn có thể truy cập sai lớp nếu thiếu scope.",
+    "proof": "Hai user cùng role, khác lớp; truy cập chéo phải bị chặn ở server.",
+    "targets": [
+      {
+        "lesson": "09",
+        "match": "Bài 09.4"
+      },
+      {
+        "lesson": "09",
+        "match": "Bài 09.5"
+      },
+      {
+        "lesson": "studio-feature",
+        "match": "Buổi G4.7"
+      },
+      {
+        "lesson": "workshop",
+        "match": ""
+      },
+      {
+        "lesson": "operations",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "migration",
+    "name": "Migration và nâng cấp dữ liệu cũ",
+    "level": "release",
+    "use": "Alembic; thêm archived_at hoặc constraint cho module mới.",
+    "why": "Deploy code mới phải tương thích schema và dữ liệu đang có.",
+    "proof": "Dựng DB rỗng, nâng DB cũ, đối chiếu dữ liệu và kế hoạch quay bản.",
+    "targets": [
+      {
+        "lesson": "08",
+        "match": "Bài 08.5"
+      },
+      {
+        "lesson": "studio-feature",
+        "match": "Buổi G4.8"
+      },
+      {
+        "lesson": "release",
+        "match": ""
+      },
+      {
+        "lesson": "delivery",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "concurrency",
+    "name": "Transaction, race và chống ghi trùng",
+    "level": "release",
+    "use": "Nộp lại, điểm danh lặp, hai người chấm/sửa cùng lúc.",
+    "why": "Nhiều user gây xen kẽ thao tác; kiểm trước khi ghi chưa đủ.",
+    "proof": "Chạy hai hành động cạnh tranh, kiểm constraint/revision và dữ liệu cuối.",
+    "targets": [
+      {
+        "lesson": "06",
+        "match": "Bài 06.5"
+      },
+      {
+        "lesson": "06",
+        "match": "Xưởng — Transaction"
+      },
+      {
+        "lesson": "studio-modules",
+        "match": ""
+      },
+      {
+        "lesson": "10",
+        "match": ""
+      },
+      {
+        "lesson": "performance",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "testing",
+    "name": "Test nghiệp vụ, DB và luồng người dùng",
+    "level": "release",
+    "use": "Auth/quyền, lưu/nộp/chấm bài, refactor có bảo vệ hành vi.",
+    "why": "Happy path hoặc test mock không chứng minh mọi tầng đã nối đúng.",
+    "proof": "Tái hiện một lỗi trước sửa và giữ test xác nhận sau sửa.",
+    "targets": [
+      {
+        "lesson": "studio-python",
+        "match": "Buổi G3.7"
+      },
+      {
+        "lesson": "studio-transfer",
+        "match": ""
+      },
+      {
+        "lesson": "12",
+        "match": ""
+      },
+      {
+        "lesson": "13",
+        "match": ""
+      },
+      {
+        "lesson": "capstone",
+        "match": ""
+      },
+      {
+        "lesson": "debug",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "observability",
+    "name": "Log, chẩn đoán lỗi và quan sát request",
+    "level": "release",
+    "use": "Lần lỗi từ form → API → truy vấn, theo dõi sự cố sau deploy.",
+    "why": "Không có tín hiệu thì không biết lỗi ở đâu hoặc user bị ảnh hưởng ra sao.",
+    "proof": "Một lỗi có log liên kết được, status đúng, thông báo UI hữu ích.",
+    "targets": [
+      {
+        "lesson": "debug",
+        "match": ""
+      },
+      {
+        "lesson": "operations",
+        "match": ""
+      },
+      {
+        "lesson": "12",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "capacity",
+    "name": "Đo tải, latency, worker và DB pool",
+    "level": "release",
+    "use": "Kiểm các luồng login/xem lớp/nộp bài với workload và dữ liệu đã chốt.",
+    "why": "Không suy sức tải từ async, số worker hay số user đăng ký.",
+    "proof": "Đo p95/rate/lỗi và kiểm dữ liệu sau tải; ghi môi trường, giới hạn.",
+    "targets": [
+      {
+        "lesson": "performance",
+        "match": "1. “Nhiều user”"
+      },
+      {
+        "lesson": "performance",
+        "match": "7. Worker"
+      },
+      {
+        "lesson": "capstone",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "deployment",
+    "name": "Build, config, CI/CD và phát hành",
+    "level": "release",
+    "use": "Vite artifact, API runtime, MySQL migration, health check.",
+    "why": "Máy người khác phải dựng/chạy được đúng phiên bản.",
+    "proof": "Làm lại từ hướng dẫn trên môi trường học sạch và kiểm một luồng thật.",
+    "targets": [
+      {
+        "lesson": "release",
+        "match": ""
+      },
+      {
+        "lesson": "delivery",
+        "match": ""
+      },
+      {
+        "lesson": "capstone",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "recovery",
+    "name": "Backup, restore và chính sách phiên",
+    "level": "release",
+    "use": "Giữ điểm/bài nộp, khóa tài khoản và phục hồi sau sự cố.",
+    "why": "Có file backup chưa chứng minh có thể phục hồi dữ liệu đúng.",
+    "proof": "Restore trên môi trường học, đối chiếu quan hệ và mốc dữ liệu.",
+    "targets": [
+      {
+        "lesson": "operations",
+        "match": ""
+      },
+      {
+        "lesson": "12",
+        "match": ""
+      },
+      {
+        "lesson": "capstone",
+        "match": ""
+      }
+    ]
+  },
+  {
+    "id": "cache-queue",
+    "name": "Cache, queue và công cụ mở rộng",
+    "level": "later",
+    "use": "Có thể dùng cho dashboard chậm hoặc tác vụ gửi thông báo khi đã có bằng chứng nhu cầu.",
+    "why": "Thêm hạ tầng cần hợp đồng invalidation/retry; không thêm chỉ để tên kiến trúc hoành tráng.",
+    "proof": "Chỉ ra điểm nghẽn hoặc tác dụng cần tách, rồi kiểm dữ liệu cũ/gửi lặp.",
+    "targets": [
+      {
+        "lesson": "performance",
+        "match": "8. Cache"
+      },
+      {
+        "lesson": "14",
+        "match": ""
+      }
+    ]
+  }
+]

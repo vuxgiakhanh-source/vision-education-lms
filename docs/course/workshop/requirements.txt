@@ -1,0 +1,8 @@
+# Direct dependencies observed in the local learning environment.
+# This is not a lock of every transitive dependency.
+fastapi==0.143.0
+uvicorn==0.54.0
+pydantic==2.14.0
+sqlalchemy==2.1.4
+pymysql==1.2.3
+python-jose==3.5.0

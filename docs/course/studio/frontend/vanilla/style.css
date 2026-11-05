@@ -1,0 +1,28 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #eef3ef; color: #20362a; font-family: system-ui, sans-serif; line-height: 1.5; }
+.page { max-width: 56rem; margin-inline: auto; padding: 24px; }
+.eyebrow { color: #42694f; }
+.panel { margin-top: 24px; padding: 20px; border: 1px solid #c8d7cd; border-radius: 12px; background: white; }
+h1, h2, h3 { line-height: 1.25; overflow-wrap: anywhere; }
+h2 { margin-top: 0; }
+label { display: block; margin-bottom: 6px; font-weight: 600; }
+input, button { font: inherit; padding: 10px 12px; border: 1px solid #779180; border-radius: 6px; }
+input { min-width: 0; width: 100%; }
+button { color: white; background: #245c3e; cursor: pointer; }
+input:focus-visible, button:focus-visible { outline: 3px solid #c27616; outline-offset: 3px; }
+.toolbar { display: flex; gap: 12px; align-items: start; }
+.toolbar input { flex: 1; }
+.toolbar button { flex-shrink: 0; }
+.help { color: #4f6257; font-size: 0.9rem; }
+.error { color: #9f2828; }
+.error:empty { margin: 0; }
+[aria-invalid="true"] { border-color: #9f2828; }
+.class-list { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+.class-card { flex: 1 1 240px; min-width: 0; padding: 16px; background: #f3f8f4; border: 1px solid #c8d7cd; border-radius: 8px; }
+.class-card h3 { margin: 0; }
+.class-card p { margin-bottom: 0; }
+@media (max-width: 600px) {
+  .page { padding: 16px; }
+  .toolbar { flex-direction: column; }
+  .toolbar button { width: 100%; }
+}

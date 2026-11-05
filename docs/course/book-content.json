@@ -1,0 +1,2087 @@
+{
+  "lessons": [
+    {
+      "id": "first",
+      "number": "MỞ ĐẦU",
+      "short": "Một request đi đâu?",
+      "title": "Nhìn thấy code đăng nhập chạy",
+      "source": "BAI-DAU-TIEN.md",
+      "lab": "login",
+      "goal": "Tự kể lại đường đi của dữ liệu từ một lần bấm nút đến lúc đổi trang.",
+      "question": "Cùng là biến res, tại sao res ở form và res trong lớp gọi API lại chứa dữ liệu khác nhau?",
+      "core": "Hàm không tự chia sẻ biến chỉ vì chúng đặt cùng tên. Lớp gọi API nhận AxiosResponse rồi return res.data. Form await hàm đó nên nhận phần data đã được trả ra. Muốn hiểu một dòng, hãy lần về giá trị mà hàm được gọi thực sự return; đừng đoán từ tên biến.",
+      "steps": [
+        "Bắt đầu ở event: tìm onSubmit và ai truyền dữ liệu cho nó.",
+        "Theo dấu lời gọi, ghi kiểu và giá trị trả về ở mỗi lớp.",
+        "Quay lại nơi gọi: xác định dòng tiếp theo chạy khi Promise thành công hoặc thất bại."
+      ],
+      "trap": "Tới được dashboard chưa chứng minh hồ sơ đã lấy từ database. Dashboard hiện vẫn dùng dữ liệu mẫu.",
+      "terms": [
+        [
+          "await",
+          "Đợi Promise hoàn thành tại vị trí này trong hàm async. Nếu Promise reject, luồng chuyển đến catch phù hợp."
+        ],
+        [
+          "return",
+          "Đưa một giá trị về nơi gọi và kết thúc lần gọi hiện tại. Console.log không thay thế return."
+        ],
+        [
+          "scope",
+          "Phạm vi mà một tên biến tồn tại. Hai hàm có thể có hai biến res hoàn toàn khác nhau."
+        ]
+      ],
+      "practice": [
+        "Đóng tài liệu, vẽ 6 điểm mà request đăng nhập đi qua.",
+        "Mở hai file có biến res và viết kiểu/giá trị của từng biến.",
+        "Mô tả đường đi khi mật khẩu sai, chỉ rõ dòng nào không được chạy tiếp."
+      ],
+      "quiz": [
+        {
+          "q": "authService.login trả res.data. Biến được await ở form nhận gì?",
+          "choices": [
+            "Nguyên AxiosResponse",
+            "Body JSON mà service trả ra",
+            "Một kết nối MySQL"
+          ],
+          "correct": 1,
+          "why": "Giá trị sau await là giá trị hàm async resolve. Ở đây service chọn trả res.data, nên form không nhận status/header của AxiosResponse trừ khi service chủ động trả thêm."
+        },
+        {
+          "q": "Một API trả 401 và Axios reject. Dòng lưu token nằm sau await sẽ thế nào?",
+          "choices": [
+            "Luôn chạy với token rỗng",
+            "Bị bỏ qua, luồng sang catch",
+            "Tự gọi lại API vô hạn"
+          ],
+          "correct": 1,
+          "why": "Lỗi được ném tại await làm rời đường chạy bình thường của try. Catch xử lý lỗi; những dòng còn lại trong try không được chạy trong lần đó."
+        },
+        {
+          "q": "Hàm API return res.data. Biến res tại form nhận gì sau await?",
+          "choices": [
+            "Nguyên AxiosResponse",
+            "Body mà hàm API đã return",
+            "Một biến dùng chung toàn hệ thống"
+          ],
+          "correct": 1,
+          "why": "Return quyết định giá trị Promise resolve cho caller; tên biến giống nhau không nối scope."
+        },
+        {
+          "q": "Promise reject ở dòng await. Dòng lưu token kế tiếp trong try có chạy không?",
+          "choices": [
+            "Có luôn",
+            "Không, luồng chuyển tới catch phù hợp",
+            "Chạy trước request"
+          ],
+          "correct": 1,
+          "why": "Exception tại await bỏ phần còn lại của try, nên không được lưu token như thể login thành công."
+        },
+        {
+          "q": "onSubmit được định nghĩa nhưng chưa được gọi. Request đã đi chưa?",
+          "choices": [
+            "Chưa, định nghĩa hàm không tự chạy thân hàm",
+            "Đã đi một lần",
+            "Chỉ khi đặt tên đúng"
+          ],
+          "correct": 0,
+          "why": "Tìm event và lời gọi thực tế để biết khi nào nghiệp vụ bắt đầu."
+        }
+      ],
+      "prerequisites": [],
+      "group": "Học từ code hiện có",
+      "deliverable": "Đóng tài liệu, vẽ 6 điểm mà request đăng nhập đi qua."
+    },
+    {
+      "id": "map",
+      "number": "A0",
+      "short": "Bản đồ toàn hệ thống",
+      "title": "Biết mình cần xây gì và chứng minh được gì",
+      "source": "15-ban-do-he-thong.md",
+      "lab": "login",
+      "goal": "Tự chia LMS thành dữ liệu, hành động, quyền và mốc thực hành.",
+      "question": "Muốn làm cả hệ thống, bắt đầu từ danh sách công nghệ hay từ hành động người dùng?",
+      "core": "Một tính năng là đường dữ liệu qua nhiều lớp và các quy tắc được giữ khi có lỗi. Từ hành động người dùng, xác định dữ liệu, quyền, trạng thái và bằng chứng; công nghệ phục vụ những quyết định đó.",
+      "terms": [
+        [
+          "lát cắt",
+          "Một hành động chạy xuyên UI–API–DB, có quy tắc và kiểm tra."
+        ],
+        [
+          "invariant",
+          "Điều phải luôn đúng trong phạm vi nghiệp vụ, kể cả khi thao tác lỗi."
+        ],
+        [
+          "bằng chứng",
+          "Code tự viết, phép thử và kết quả thật dùng để đối chiếu năng lực."
+        ]
+      ],
+      "practice": [
+        "Vẽ luồng nộp bài với từng lớp và điểm có thể lỗi.",
+        "Viết câu hỏi nghiệp vụ còn chưa chốt của lớp/giao/nộp/chấm.",
+        "Tự khảo sát sáu năng lực trước khi học framework."
+      ],
+      "quiz": [
+        {
+          "q": "Bạn tự tạo được UI nhưng chưa gọi API. Mốc nào đã chứng minh?",
+          "choices": [
+            "Giao diện chạy theo dữ liệu hiện có",
+            "Lưu DB và quyền đã đúng",
+            "Có thể triển khai toàn bộ LMS"
+          ],
+          "correct": 0,
+          "why": "Giao diện là một mốc; lưu bền và quyền cần đường chạy cùng phép kiểm riêng."
+        },
+        {
+          "q": "Một lớp có nhiều cô xuất hiện như yêu cầu mới. Cần xem lại gì?",
+          "choices": [
+            "Chỉ đổi icon cô",
+            "Quan hệ dữ liệu, quyền, API, UI và tests liên quan",
+            "Chỉ thêm một chuỗi tên"
+          ],
+          "correct": 1,
+          "why": "Yêu cầu thay quan hệ sở hữu/phân công tác động nhiều lớp, không chỉ nhãn UI."
+        },
+        {
+          "q": "Tự code nghĩa là phải nhớ mọi API không?",
+          "choices": [
+            "Có, cấm tra docs",
+            "Không; tự quyết định, tra đúng và kiểm hành vi",
+            "Có thể nhận nguyên code mà không hiểu"
+          ],
+          "correct": 1,
+          "why": "Tra tài liệu là kỹ năng làm việc; bạn phải hiểu hợp đồng và bảo vệ được quyết định."
+        }
+      ],
+      "steps": [
+        "Viết đầu vào, đầu ra và quy tắc bằng lời trước khi mở implementation.",
+        "Dự đoán một trường hợp đúng, một trường hợp sai và theo dấu dữ liệu.",
+        "Tự viết, chạy kiểm tra, sửa một biến thể rồi ghi bằng chứng."
+      ],
+      "trap": "Đọc hiểu và nhận ra đáp án chưa chứng minh tự làm. Chỉ tự đánh dấu khi đã viết, kiểm và giải thích một biến thể.",
+      "group": "Nhìn toàn hệ thống",
+      "prerequisites": [],
+      "deliverable": "Vẽ luồng nộp bài với từng lớp và điểm có thể lỗi."
+    },
+    {
+      "id": "tools",
+      "number": "A1",
+      "short": "Bộ công cụ của repo",
+      "title": "Mở đúng công cụ cho đúng câu hỏi",
+      "source": "16-cong-cu.md",
+      "lab": "http",
+      "goal": "Tự chạy, quan sát và giải thích frontend/backend/database cùng các công cụ đang dùng.",
+      "question": "npm chạy ở thư mục gốc và ở frontend có chắc dùng cùng package.json không?",
+      "core": "Thư mục, interpreter và process quyết định lệnh thực sự làm việc ở đâu. Công cụ có vai trò riêng: editor viết source, compiler kiểm kiểu, dev server phục vụ, browser chạy UI, API xử lý và DB giữ dữ liệu.",
+      "terms": [
+        [
+          "manifest / lockfile",
+          "Manifest mô tả phụ thuộc/scripts; lockfile giữ đồ thị đã resolve."
+        ],
+        [
+          "process",
+          "Một chương trình đang chạy với môi trường, CWD và tài nguyên của nó."
+        ],
+        [
+          "DevTools",
+          "Công cụ quan sát DOM, CSS, JavaScript, HTTP và storage trong browser."
+        ]
+      ],
+      "practice": [
+        "Vẽ bốn process và cổng trong một lần chạy dự án.",
+        "Giải thích npm run build từ manifest frontend hiện tại.",
+        "Đọc một request trong Network và ghi báo cáo đã ẩn credential."
+      ],
+      "quiz": [
+        {
+          "q": "Import Python báo không thấy app. Nên kiểm gì trước?",
+          "choices": [
+            "Đổi database",
+            "CWD, package và interpreter/module path",
+            "Tăng RAM"
+          ],
+          "correct": 1,
+          "why": "Python phải tìm được package đúng trước khi endpoint có cơ hội chạy."
+        },
+        {
+          "q": "VITE_SECRET có giữ bí mật với người dùng frontend không?",
+          "choices": [
+            "Có vì nằm trong .env",
+            "Không; giá trị dùng trong bundle có thể đọc ở client",
+            "Chỉ bí mật ở Chrome"
+          ],
+          "correct": 1,
+          "why": "Biến frontend không phải nơi lưu server secret. File .env là cách cấu hình, không tự tạo bảo mật."
+        },
+        {
+          "q": "docker compose của repo hiện có chứng minh FE/BE được container hóa không?",
+          "choices": [
+            "Có",
+            "Chưa; file hiện chỉ mô tả MySQL",
+            "Không cần đọc file"
+          ],
+          "correct": 1,
+          "why": "Phải đối chiếu service thực tế; không suy từ việc có Dockerfile/Compose sang toàn hệ thống."
+        }
+      ],
+      "steps": [
+        "Viết đầu vào, đầu ra và quy tắc bằng lời trước khi mở implementation.",
+        "Dự đoán một trường hợp đúng, một trường hợp sai và theo dấu dữ liệu.",
+        "Tự viết, chạy kiểm tra, sửa một biến thể rồi ghi bằng chứng."
+      ],
+      "trap": "Đọc hiểu và nhận ra đáp án chưa chứng minh tự làm. Chỉ tự đánh dấu khi đã viết, kiểm và giải thích một biến thể.",
+      "group": "Nhìn toàn hệ thống",
+      "prerequisites": [
+        "map"
+      ],
+      "deliverable": "Vẽ bốn process và cổng trong một lần chạy dự án."
+    },
+    {
+      "id": "00",
+      "number": "00",
+      "short": "Cách học & tìm lỗi",
+      "title": "Biến một yêu cầu thành đường đi có thể kiểm tra",
+      "source": "00-phuong-phap.md",
+      "lab": "login",
+      "goal": "Biết bắt đầu từ đâu khi đọc code cũ hoặc gặp một lỗi mới.",
+      "question": "Bấm nộp mà cô không thấy bài: sửa component, endpoint hay database trước?",
+      "core": "Chưa có bằng chứng thì chưa chọn nơi sửa. Chia đường đi thành những điểm quan sát được: event, request, response, service, transaction và state UI. Tìm điểm đầu tiên mà thực tế khác mong đợi. Một lỗi hiển thị có thể do dữ liệu sai từ server, và một request thành công chưa chắc đã làm UI cập nhật.",
+      "steps": [
+        "Viết mong đợi và các bước tái hiện bằng dữ liệu cụ thể.",
+        "Quan sát từng ranh giới, bắt đầu từ nơi hành động phát sinh.",
+        "Đặt một giả thuyết, đổi một nguyên nhân rồi kiểm tra lại."
+      ],
+      "trap": "Sửa nhiều nơi cùng lúc có thể làm hết lỗi nhưng bạn không biết vì sao, lần sau rất dễ lặp lại.",
+      "terms": [
+        [
+          "input / output",
+          "Dữ liệu một phần nhận và kết quả nó phải tạo. Xác định chúng trước khi nghĩ đến tên class."
+        ],
+        [
+          "breakpoint",
+          "Điểm dừng để quan sát giá trị và thứ tự chạy thực tế."
+        ],
+        [
+          "git diff",
+          "Bản so sánh thay đổi giúp biết mình đã sửa gì; thay đổi chưa commit không tự xuất hiện trong git log."
+        ]
+      ],
+      "practice": [
+        "Viết báo cáo lỗi có mong đợi, thực tế và bằng chứng.",
+        "Dùng Network tìm request login; không chép token vào ghi chú.",
+        "Chọn một thay đổi trong git diff và giải thích lý do từng phần."
+      ],
+      "quiz": [
+        {
+          "q": "Không thấy request trong Network sau khi bấm nút. Nên kiểm tra gì đầu tiên?",
+          "choices": [
+            "Index MySQL",
+            "Event handler và validation frontend",
+            "Đổi framework"
+          ],
+          "correct": 1,
+          "why": "Khi request chưa phát sinh, backend chưa có cơ hội xử lý. Tìm xem event có chạy, validation có chặn và handler có gọi client HTTP hay chưa."
+        },
+        {
+          "q": "Build thành công chứng minh điều nào?",
+          "choices": [
+            "Mọi nghiệp vụ đã đúng",
+            "Code qua các bước build được cấu hình",
+            "Đã kiểm thử quyền theo lớp"
+          ],
+          "correct": 1,
+          "why": "Build có thể phát hiện lỗi kiểu hoặc đóng gói, nhưng không tự thử tài khoản khác lớp, deadline, transaction hay nội dung dữ liệu thật."
+        },
+        {
+          "q": "Báo cáo lỗi hữu ích cần gì?",
+          "choices": [
+            "Chỉ câu không chạy",
+            "Bước tái hiện, mong đợi, thực tế và bằng chứng đã làm sạch secret",
+            "Toàn bộ password để dễ thử"
+          ],
+          "correct": 1,
+          "why": "Báo cáo nhỏ có thể tái hiện giúp kiểm giả thuyết; credential thật không cần đưa vào."
+        },
+        {
+          "q": "Không biết sửa gì khi thấy HTTP422, bắt đầu đâu?",
+          "choices": [
+            "Đối chiếu payload và schema trong Network/API",
+            "Đổi logo",
+            "Cài lại toàn bộ hệ điều hành"
+          ],
+          "correct": 0,
+          "why": "422 là tín hiệu cần xem dữ liệu request theo hợp đồng, không đoán từ giao diện."
+        },
+        {
+          "q": "Git commit thành công có tự đưa code lên remote không?",
+          "choices": [
+            "Có",
+            "Không; commit là lịch sử local, push là bước riêng",
+            "Chỉ ở Windows"
+          ],
+          "correct": 1,
+          "why": "Phân biệt source chưa commit, staging, lịch sử local và remote để không tưởng đã lưu/chia sẻ mọi thay đổi."
+        }
+      ],
+      "prerequisites": [
+        "tools"
+      ],
+      "group": "Nền tảng lập trình",
+      "deliverable": "Viết báo cáo lỗi có mong đợi, thực tế và bằng chứng."
+    },
+    {
+      "id": "thinking",
+      "number": "A2",
+      "short": "Tư duy trước cú pháp",
+      "title": "Biến yêu cầu thành thuật toán có thể kiểm",
+      "source": "17-tu-duy-lap-trinh.md",
+      "lab": "memory",
+      "goal": "Tự viết nhánh/lặp/hàm từ hợp đồng và giải thích vết giá trị.",
+      "question": "Vì sao cùng là đếm task, hai người có thể viết hai kết quả khác nhau?",
+      "core": "Trước cú pháp phải chốt tập đầu vào và điều kiện tính. Dùng ví dụ nhỏ, bảng vết và invariant để giải thích. Sau đó mới chọn for, filter hoặc cấu trúc phù hợp.",
+      "terms": [
+        [
+          "tham số / đối số",
+          "Tham số là tên ở định nghĩa; đối số là giá trị đưa vào lần gọi."
+        ],
+        [
+          "return",
+          "Kết thúc lần gọi và đưa giá trị ra ngoài, khác việc chỉ in."
+        ],
+        [
+          "bảng vết",
+          "Ghi trạng thái qua từng lượt/nhánh để kiểm dự đoán."
+        ]
+      ],
+      "practice": [
+        "Viết countPending bằng lời rồi bằng for.",
+        "Tìm lỗi return trong vòng lặp và giữ test rỗng.",
+        "Thiết kế báo cáo theo trạng thái với policy cho trạng thái lạ."
+      ],
+      "quiz": [
+        {
+          "q": "return đặt trong for thường khiến điều gì xảy ra?",
+          "choices": [
+            "Tự chạy đủ lượt",
+            "Hàm có thể kết thúc từ lượt đầu",
+            "Chỉ thoát if"
+          ],
+          "correct": 1,
+          "why": "Return kết thúc hàm; break/continue có phạm vi điều khiển khác."
+        },
+        {
+          "q": "Hàm chỉ console.log kết quả nhưng không return. Bên gọi nhận gì trong JS?",
+          "choices": [
+            "Giá trị được in",
+            "undefined",
+            "Một Promise luôn luôn"
+          ],
+          "correct": 1,
+          "why": "In là quan sát side effect; return mới đưa kết quả của hàm thường về caller."
+        },
+        {
+          "q": "active && (owner || teacher) bảo vệ điều gì?",
+          "choices": [
+            "Cả chủ bài và cô đều phải active",
+            "Cô không cần active",
+            "Chỉ chủ bài cần active"
+          ],
+          "correct": 0,
+          "why": "Ngoặc giữ yêu cầu active áp dụng cho cả hai nhánh quyền; server phải xác minh dữ liệu."
+        }
+      ],
+      "steps": [
+        "Viết đầu vào, đầu ra và quy tắc bằng lời trước khi mở implementation.",
+        "Dự đoán một trường hợp đúng, một trường hợp sai và theo dấu dữ liệu.",
+        "Tự viết, chạy kiểm tra, sửa một biến thể rồi ghi bằng chứng."
+      ],
+      "trap": "Đọc hiểu và nhận ra đáp án chưa chứng minh tự làm. Chỉ tự đánh dấu khi đã viết, kiểm và giải thích một biến thể.",
+      "group": "Nền tảng lập trình",
+      "prerequisites": [
+        "tools",
+        "00"
+      ],
+      "deliverable": "Viết countPending bằng lời rồi bằng for."
+    },
+    {
+      "id": "01",
+      "number": "01",
+      "short": "JavaScript tận gốc",
+      "title": "Giá trị, tham chiếu và biến đổi dữ liệu",
+      "source": "01-javascript.md",
+      "lab": "memory",
+      "goal": "Tự lọc, đếm và cập nhật nhiệm vụ mà biết chính xác dữ liệu nào bị đổi.",
+      "question": "Đã dùng const và spread rồi, vì sao dữ liệu gốc vẫn thay đổi?",
+      "core": "Một biến giữ tham chiếu đến object, không phải một bản sao sâu tự động. Const chỉ ngăn gán lại tên biến. Spread array tạo array mới nhưng các object bên trong có thể vẫn chung. Khi cần giữ bản cũ, tạo object mới tại đúng nhánh được thay đổi. Đây là nền tảng để hiểu cập nhật state React.",
+      "steps": [
+        "Vẽ biến nào trỏ đến array hoặc object nào.",
+        "Phân biệt tạo container mới với tạo lại phần tử bên trong.",
+        "Kiểm tra cả giá trị gốc và giá trị sau cập nhật."
+      ],
+      "trap": "filter(Boolean) loại cả điểm 0. Dùng điều kiện thể hiện đúng khái niệm chưa chấm, chẳng hạn score !== null.",
+      "terms": [
+        [
+          "const",
+          "Không được gán lại biến; không làm object mà biến trỏ tới trở thành bất biến."
+        ],
+        [
+          "map / filter",
+          "Map biến đổi từng phần tử; filter chọn phần tử theo điều kiện. Chúng trả array mới nhưng không tự sao chép sâu object."
+        ],
+        [
+          "??",
+          "Chọn giá trị thay thế chỉ khi vế trái là null hoặc undefined; giữ được điểm 0."
+        ]
+      ],
+      "practice": [
+        "Viết lại countPending bằng for rồi bằng filter.",
+        "Cập nhật một task, chứng minh object gốc không đổi.",
+        "Tính trung bình [0, null, 10] và giải thích mẫu số."
+      ],
+      "quiz": [
+        {
+          "q": "const b = [...a]; b[0].status = 'submitted'. Nếu a chứa object, a[0] có thể đổi không?",
+          "choices": [
+            "Không vì đã spread",
+            "Có vì phần tử object vẫn chung",
+            "Không vì a dùng const"
+          ],
+          "correct": 1,
+          "why": "Spread ở đây chỉ sao chép array. Cả hai array vẫn trỏ tới cùng object ở index 0, nên đổi thuộc tính qua b cũng quan sát được qua a."
+        },
+        {
+          "q": "Muốn hiển thị điểm 0, biểu thức nào phù hợp?",
+          "choices": [
+            "score || 'Chưa chấm'",
+            "score ?? 'Chưa chấm'",
+            "Boolean(score)"
+          ],
+          "correct": 1,
+          "why": "0 là falsy nên || chọn chuỗi thay thế. Nullish coalescing chỉ thay null/undefined, phù hợp quy tắc chưa có điểm của ví dụ."
+        },
+        {
+          "q": "tasks.filter(task => { task.id === 1 }) thường giữ gì?",
+          "choices": [
+            "Mọi task id1",
+            "Không task nào do callback không return giá trị truthy",
+            "Chỉ phần tử cuối"
+          ],
+          "correct": 1,
+          "why": "Arrow có block cần return rõ. Biểu thức bên trong block không tự được trả ra."
+        },
+        {
+          "q": "a=makeCounter(); b=makeCounter(); a(), a(), b() với value ban đầu0 cho gì?",
+          "choices": [
+            "1,2,1",
+            "1,2,3",
+            "0,0,0"
+          ],
+          "correct": 0,
+          "why": "Mỗi lần gọi factory tạo phạm vi value riêng; closure giữ phạm vi nơi nó được tạo."
+        },
+        {
+          "q": "Async hàm A log1, await Promise, log2; bên ngoài gọi A rồi log3. Thứ tự đầu là gì?",
+          "choices": [
+            "1,2,3",
+            "1,3,2 khi await tiếp tục sau lượt đồng bộ",
+            "3,2,1"
+          ],
+          "correct": 1,
+          "why": "Await tạm dừng continuation của hàm async, không dừng toàn bộ chương trình."
+        }
+      ],
+      "prerequisites": [
+        "thinking"
+      ],
+      "group": "Nền tảng lập trình",
+      "deliverable": "Viết lại countPending bằng for rồi bằng filter."
+    },
+    {
+      "id": "02",
+      "number": "02",
+      "short": "TypeScript & HTTP",
+      "title": "Có kiểu dữ liệu vẫn phải kiểm tra dữ liệu thật",
+      "source": "02-typescript-http.md",
+      "lab": "http",
+      "goal": "Phân biệt kiểu lúc viết code, validation lúc chạy và trạng thái của một request.",
+      "question": "Viết api.get<Task[]> có đảm bảo server gửi đúng Task[] không?",
+      "core": "TypeScript giúp kiểm tra quan hệ kiểu trong code, nhưng kiểu không được gửi lên mạng để sửa JSON. Server vẫn có thể trả dữ liệu khác hợp đồng. Ở ranh giới cần kiểm tra, nhận unknown rồi xác minh hoặc parse bằng schema. Đồng thời tách đang tải, lỗi, thành công rỗng và thành công có dữ liệu.",
+      "steps": [
+        "Định nghĩa hợp đồng: trường nào cần có, null nghĩa gì, lỗi nào có thể xảy ra.",
+        "Nhận và xác minh dữ liệu ở ranh giới đáng tin cậy.",
+        "Render theo trạng thái thực tế thay vì đoán từ một biến data."
+      ],
+      "trap": "Ép as Task không biến dữ liệu sai thành đúng. Quên await cũng không biến Promise thành dữ liệu đã tải.",
+      "terms": [
+        [
+          "unknown",
+          "Có dữ liệu nhưng chưa biết cấu trúc; phải thu hẹp/kiểm tra trước khi dùng."
+        ],
+        [
+          "union",
+          "Một tập khả năng có giới hạn, ví dụ pending | submitted | graded; hữu ích để biểu diễn trạng thái."
+        ],
+        [
+          "Promise",
+          "Đại diện kết quả có thể hoàn thành sau; resolve và reject dẫn đến hai đường xử lý khác nhau."
+        ]
+      ],
+      "practice": [
+        "Viết parser từ unknown và thử response thiếu title.",
+        "Mô tả state cho danh sách rỗng nhưng tải thành công.",
+        "So sánh fetch và Axios khi nhận status 401."
+      ],
+      "quiz": [
+        {
+          "q": "Một danh sách tải thành công nhưng [] là trạng thái nào?",
+          "choices": [
+            "Lỗi mạng",
+            "Thành công, không có dữ liệu",
+            "Chưa đăng nhập chắc chắn"
+          ],
+          "correct": 1,
+          "why": "Rỗng là một kết quả hợp lệ. Nó khác chưa tải được hoặc bị từ chối; UI nên có hướng dẫn phù hợp với từng trạng thái."
+        },
+        {
+          "q": "fetch nhận HTTP 500. Điều gì phải kiểm tra?",
+          "choices": [
+            "response.ok hoặc status",
+            "Chỉ cần catch vì fetch luôn reject 500",
+            "Đổi tên biến"
+          ],
+          "correct": 0,
+          "why": "Fetch thường resolve với Response cho lỗi HTTP. Catch tự nhiên xử lý các lỗi bị throw/reject; bạn cần kiểm tra ok/status và quyết định ném lỗi HTTP."
+        },
+        {
+          "q": "Field score?: number khác score: number|null ở đâu?",
+          "choices": [
+            "Không khác",
+            "Một kiểu cho thiếu field; kiểu kia yêu cầu field nhưng cho null",
+            "Cả hai tự sửa JSON"
+          ],
+          "correct": 1,
+          "why": "Optional và nullable biểu diễn hai hợp đồng khác nhau; parser và UI phải tôn trọng điều đó."
+        },
+        {
+          "q": "HTTP204 mà client luôn response.json có thể gây gì?",
+          "choices": [
+            "Luôn parse được object",
+            "Lỗi parse do không có body theo hợp đồng",
+            "Tự tạo body"
+          ],
+          "correct": 1,
+          "why": "Không giả định mọi response thành công có JSON body; xem status/contract."
+        },
+        {
+          "q": "Cùng host nhưng :5175 và :8000 có cùng origin không?",
+          "choices": [
+            "Có",
+            "Không, port là một phần của origin",
+            "Chỉ khi dùng React"
+          ],
+          "correct": 1,
+          "why": "Origin xét scheme,host,port. CORS không thay thế auth hoặc quyền server."
+        }
+      ],
+      "prerequisites": [
+        "01"
+      ],
+      "group": "Frontend và web",
+      "deliverable": "Viết parser từ unknown và thử response thiếu title."
+    },
+    {
+      "id": "03",
+      "number": "03",
+      "short": "HTML, CSS & bố cục",
+      "title": "Giải thích được vì sao một giao diện co hoặc tràn",
+      "source": "03-html-css.md",
+      "lab": "layout",
+      "goal": "Dựng form và layout có thể sử dụng ở nhiều viewport, kể cả bàn phím và zoom.",
+      "question": "Màn 32 inch có luôn cho cùng một diện tích web không?",
+      "core": "Layout phản ứng với không gian CSS mà trình duyệt cung cấp. Inch, pixel vật lý, Windows Scale và browser zoom không phải cùng một đại lượng. Trước khi sửa một khoảng cách, hãy xem kích thước box, padding, min-width và bố cục cha. HTML ngữ nghĩa còn quyết định người dùng tương tác bằng bàn phím và công nghệ hỗ trợ ra sao.",
+      "steps": [
+        "Đo viewport và computed box thực tế.",
+        "Chọn Flex cho hàng/cột hoặc Grid cho quan hệ hàng/cột rõ.",
+        "Thử nội dung dài, màn nhỏ, focus bàn phím và zoom."
+      ],
+      "trap": "overflow:hidden có thể che triệu chứng tràn bằng cách cắt mất nội dung. Với ảnh khác tỉ lệ khung, cover và contain có đánh đổi thật.",
+      "terms": [
+        [
+          "box-sizing",
+          "Quy định width có tính padding và border hay không; border-box giúp tính tổng kích thước dễ hơn."
+        ],
+        [
+          "minmax(0, 1fr)",
+          "Cho cột co dưới min-content mặc định và dùng phần không gian còn lại."
+        ],
+        [
+          "label",
+          "Tên có liên kết với input; placeholder không thay thế label."
+        ]
+      ],
+      "practice": [
+        "Tính phần nội dung của card 300px, padding 24px và border 1px.",
+        "Dựng hai cột xuống một cột mà không cắt chữ.",
+        "Đi hết form bằng Tab và thử zoom 200%."
+      ],
+      "quiz": [
+        {
+          "q": "Ảnh nguồn khác tỉ lệ khung. cover làm gì?",
+          "choices": [
+            "Luôn giữ đủ ảnh, không khoảng trống",
+            "Lấp khung và có thể crop",
+            "Tự dời nội dung quan trọng khỏi chữ"
+          ],
+          "correct": 1,
+          "why": "Cover giữ tỉ lệ ảnh và phóng đủ lấp khung, nên một chiều có thể vượt khung. Object-position chọn vùng ưu tiên, không bảo đảm mọi chi tiết luôn còn."
+        },
+        {
+          "q": "Nút chỉ mở/ẩn mật khẩu trong form nên có type gì?",
+          "choices": [
+            "submit",
+            "button",
+            "Không cần quan tâm"
+          ],
+          "correct": 1,
+          "why": "Đây là hành động phụ. Khai báo type=button tránh việc nút mặc định làm form submit ngoài ý muốn."
+        },
+        {
+          "q": "Đặt button phụ trong form mà bỏ type có rủi ro gì?",
+          "choices": [
+            "Có thể submit ngoài ý muốn",
+            "Không bao giờ click được",
+            "Tự thành link"
+          ],
+          "correct": 0,
+          "why": "Nêu type=button cho hành động phụ để giữ đúng ý nghĩa form."
+        },
+        {
+          "q": "grid 1fr vẫn bị title dài đẩy cột. Nên kiểm gì?",
+          "choices": [
+            "Min-content/min-width/nowrap của track và phần tử con",
+            "Chỉ đổi framework",
+            "Chỉ giảm độ phân giải màn"
+          ],
+          "correct": 0,
+          "why": "Kiểm computed layout trước; minmax(0,1fr),min-width và wrap có thể cần phối hợp."
+        },
+        {
+          "q": "CSS class viết cuối trong attribute có luôn thắng không?",
+          "choices": [
+            "Có",
+            "Không; phải xét cascade/layer/specificity/thứ tự rule",
+            "Chỉ với màu tím"
+          ],
+          "correct": 1,
+          "why": "Thứ tự token HTML không phải quy tắc thắng tổng quát của CSS; xem Computed."
+        }
+      ],
+      "prerequisites": [
+        "tools"
+      ],
+      "group": "Frontend và web",
+      "deliverable": "Tính phần nội dung của card 300px, padding 24px và border 1px."
+    },
+    {
+      "id": "04",
+      "number": "04",
+      "short": "React & trạng thái",
+      "title": "Mỗi lần render nhìn thấy một ảnh chụp dữ liệu",
+      "source": "04-react.md",
+      "lab": "state",
+      "goal": "Biết dữ liệu nào cần state, ai sở hữu state và khi nào cần effect.",
+      "question": "Hai lần setCount(count + 1) có luôn cộng được 2 không?",
+      "core": "Handler đọc các giá trị thuộc lần render đã tạo ra nó. Setter không thay count ngay trong handler đó. Khi tính từ giá trị trước của hàng đợi, dùng updater để React áp dụng tuần tự. Với danh sách đã có và query tìm kiếm, kết quả lọc là dữ liệu suy ra; thêm state cho nó dễ tạo hai nguồn sự thật.",
+      "steps": [
+        "Liệt kê những dữ liệu giao diện cần nhớ.",
+        "Loại phần tính được từ props/state hiện có.",
+        "Đặt state ở cha chung phù hợp; dùng effect cho đồng bộ bên ngoài, event cho hành động người dùng."
+      ],
+      "trap": "Tắt StrictMode có thể giấu effect thiếu cleanup. Nó không sửa được request cũ ghi đè khi đổi lớp.",
+      "terms": [
+        [
+          "props",
+          "Dữ liệu cha truyền vào component. Con dùng callback để báo hành động lên thay vì sửa props."
+        ],
+        [
+          "state snapshot",
+          "Giá trị mà một lần render và các handler của nó đang nhìn thấy."
+        ],
+        [
+          "effect cleanup",
+          "Dọn đồng bộ cũ, chẳng hạn hủy/chặn kết quả request cũ khi đổi dependency hoặc unmount."
+        ]
+      ],
+      "practice": [
+        "Dự đoán hai kiểu cộng count rồi chạy phòng thực hành.",
+        "Viết search từ tasks và query mà không thêm filteredTasks state.",
+        "Tải theo classId, chuyển nhanh hai lớp và kiểm tra response cũ."
+      ],
+      "quiz": [
+        {
+          "q": "count=0, cùng handler gọi setCount(count+1) hai lần. Giá trị thông thường sau xử lý là gì?",
+          "choices": [
+            "1",
+            "2",
+            "Tùy tên component"
+          ],
+          "correct": 0,
+          "why": "Cả hai biểu thức đều đọc count=0 của snapshot hiện tại nên cùng đề nghị giá trị 1. Updater trước=>trước+1 hai lần mới diễn tả hai lần cộng liên tiếp."
+        },
+        {
+          "q": "Danh sách đã lọc tính được từ tasks và query nên đặt ở đâu?",
+          "choices": [
+            "Thêm state và effect đồng bộ",
+            "Tính trong render từ dữ liệu có sẵn",
+            "Lưu vào database sau mỗi phím"
+          ],
+          "correct": 1,
+          "why": "Đó là dữ liệu suy ra. Tính trực tiếp tránh trạng thái lệch nhau; chỉ tối ưu tính toán nếu có bằng chứng cần thiết."
+        },
+        {
+          "q": "Có items và query rồi, filteredItems có cần thêm state không?",
+          "choices": [
+            "Luôn cần",
+            "Thường tính được trực tiếp, tránh state dư phải đồng bộ",
+            "Phải đưa MySQL"
+          ],
+          "correct": 1,
+          "why": "State tối thiểu giảm hai nguồn dữ liệu có thể lệch nhau; chỉ lưu thứ cần nhớ độc lập."
+        },
+        {
+          "q": "Hai component gọi cùng custom hook tự có chung state không?",
+          "choices": [
+            "Luôn chung",
+            "Không; hook tái dùng logic, cần nguồn chung nếu muốn chia sẻ",
+            "Chỉ khi tên giống nhau"
+          ],
+          "correct": 1,
+          "why": "Mỗi lần gọi hook có state theo instance/cây React của nó nếu không dùng một nguồn chung bên ngoài."
+        },
+        {
+          "q": "Tạo lớp API lỗi thì form nên làm gì?",
+          "choices": [
+            "Xóa hết input và báo thành công",
+            "Giữ input, báo lỗi phù hợp, kết thúc trạng thái gửi",
+            "Đổi id local coi như xong"
+          ],
+          "correct": 1,
+          "why": "Không làm mất công người dùng hoặc giả lưu thành công; side effect phải được backend xác nhận."
+        }
+      ],
+      "prerequisites": [
+        "01",
+        "02",
+        "03"
+      ],
+      "group": "Frontend và web",
+      "deliverable": "Dự đoán hai kiểu cộng count rồi chạy phòng thực hành."
+    },
+    {
+      "id": "python",
+      "number": "B0",
+      "short": "Python từ đầu",
+      "title": "Viết Python trước khi tạo class",
+      "source": "18-python-nen-tang.md",
+      "lab": "oop",
+      "goal": "Tự viết hàm, module, exception và unittest bằng Python.",
+      "question": "Type hint đúng có tự ngăn mọi dữ liệu sai lúc runtime không?",
+      "core": "Python thực hiện giá trị và luồng lệnh; annotation hỗ trợ hợp đồng/công cụ. Hiểu scope, mutable object, default argument, import và dọn tài nguyên trước khi dùng chúng qua OOP/FastAPI.",
+      "terms": [
+        [
+          "None / 0",
+          "None là thiếu theo hợp đồng; 0 có thể là điểm hợp lệ."
+        ],
+        [
+          "raise / except",
+          "Ném lỗi chuyển khỏi đường bình thường tới handler phù hợp."
+        ],
+        [
+          "yield / with",
+          "Tạm dừng/cấp tài nguyên và quản lý lifecycle, không đồng nghĩa commit."
+        ]
+      ],
+      "practice": [
+        "Viết average_graded bằng for và unittest cho điểm0/None/rỗng.",
+        "Tách normalize_title sang module và import đúng package.",
+        "Tái hiện mutable default rồi sửa và giải thích."
+      ],
+      "quiz": [
+        {
+          "q": "Default items=[] được tạo lúc nào?",
+          "choices": [
+            "Mỗi lần gọi chắc chắn",
+            "Khi định nghĩa hàm",
+            "Khi print"
+          ],
+          "correct": 1,
+          "why": "Object default có thể bị dùng lại giữa các lần gọi. Dùng None và tạo mới khi phù hợp."
+        },
+        {
+          "q": "is có phải cách so mọi số/chuỗi bằng nhau không?",
+          "choices": [
+            "Có",
+            "Không; is kiểm identity, == kiểm giá trị",
+            "Giống nhau hoàn toàn"
+          ],
+          "correct": 1,
+          "why": "is None phù hợp sentinel; không suy sang mọi phép so dữ liệu."
+        },
+        {
+          "q": "finally có đồng nghĩa thao tác đã thành công không?",
+          "choices": [
+            "Có",
+            "Không; nó phục vụ dọn và có thể chạy sau lỗi",
+            "Chỉ chạy khi không có lỗi"
+          ],
+          "correct": 1,
+          "why": "Dọn tài nguyên và xác nhận transaction là hai trách nhiệm cần phân biệt."
+        }
+      ],
+      "steps": [
+        "Viết đầu vào, đầu ra và quy tắc bằng lời trước khi mở implementation.",
+        "Dự đoán một trường hợp đúng, một trường hợp sai và theo dấu dữ liệu.",
+        "Tự viết, chạy kiểm tra, sửa một biến thể rồi ghi bằng chứng."
+      ],
+      "trap": "Đọc hiểu và nhận ra đáp án chưa chứng minh tự làm. Chỉ tự đánh dấu khi đã viết, kiểm và giải thích một biến thể.",
+      "group": "Backend và dữ liệu",
+      "prerequisites": [
+        "01"
+      ],
+      "deliverable": "Viết average_graded bằng for và unittest cho điểm0/None/rỗng."
+    },
+    {
+      "id": "05",
+      "number": "05",
+      "short": "Python & OOP",
+      "title": "Đối tượng giữ gì, biết làm gì, nhờ ai làm việc?",
+      "source": "05-python-oop.md",
+      "lab": "oop",
+      "goal": "Tự thiết kế service/repository và giải thích composition thay vì tạo class theo cảm tính.",
+      "question": "LoginService cần biết SQL cụ thể không, hay chỉ cần một thao tác tìm user?",
+      "core": "Một object có trạng thái và hành vi. Service giữ thành phần nó cần và điều phối quy tắc; repository biết truy cập dữ liệu. Service sử dụng repository là quan hệ composition. Truyền repository từ ngoài vào giúp thay bằng fake để kiểm tra nghiệp vụ. Tên class không tự tạo đóng gói hoặc quyền truy cập; hành vi và ranh giới mới quyết định.",
+      "steps": [
+        "Xác định quy tắc và dữ liệu cần để quyết định.",
+        "Giao truy vấn cho repository, giữ điều phối ở service.",
+        "Thử thay dependency bằng fake rồi kiểm tra quy tắc không cần DB."
+      ],
+      "trap": "Có enum Teacher/Student không buộc bạn tạo cây kế thừa tài khoản. Vai trò theo lớp thường là dữ liệu và quan hệ.",
+      "terms": [
+        [
+          "self",
+          "Instance đang nhận lời gọi method. self.repository là thành phần của instance đó."
+        ],
+        [
+          "composition",
+          "Một object sử dụng object khác để làm một phần công việc; không phải kế thừa nó."
+        ],
+        [
+          "Protocol",
+          "Mô tả cấu trúc thao tác cho type checker, không tự thay kiểm tra dữ liệu runtime."
+        ]
+      ],
+      "practice": [
+        "Vẽ object nào tạo object nào trong get_auth_service.",
+        "Viết hai repository fake không chia sẻ dict.",
+        "Tạo hai bộ chấm có cùng grade và thay chúng ở nơi gọi."
+      ],
+      "quiz": [
+        {
+          "q": "LoginService(repository) mô tả quan hệ nào?",
+          "choices": [
+            "Service là một loại repository",
+            "Service sử dụng repository",
+            "Service tự tạo database"
+          ],
+          "correct": 1,
+          "why": "Service nhận một dependency để nhờ truy cập dữ liệu. Đây là composition/DI; không có quan hệ kế thừa chỉ vì tên class xuất hiện trong constructor."
+        },
+        {
+          "q": "Type hint Python tự kiểm tra mọi kiểu khi chạy không?",
+          "choices": [
+            "Có, giống một schema runtime",
+            "Không; cần kiểm tra/validation ở ranh giới phù hợp",
+            "Chỉ khi đặt tên biến dài"
+          ],
+          "correct": 1,
+          "why": "Type hint hỗ trợ công cụ và mô tả hợp đồng. Python không tự thực thi toàn bộ ràng buộc đó; schema Pydantic hoặc kiểm tra nghiệp vụ có trách nhiệm khác."
+        },
+        {
+          "q": "Service có repository thì nên mặc định kế thừa repository không?",
+          "choices": [
+            "Có",
+            "Không; quan hệ có-một thường dùng composition",
+            "Luôn tạo đa kế thừa"
+          ],
+          "correct": 1,
+          "why": "Service và repository có trách nhiệm khác; truyền dependency giúp thay adapter và test quy tắc."
+        },
+        {
+          "q": "Protocol trong typing có tự chạy SQL và validate mọi method runtime không?",
+          "choices": [
+            "Có",
+            "Không; nó mô tả hợp đồng cho công cụ kiểu theo cách dùng",
+            "Thay Session"
+          ],
+          "correct": 1,
+          "why": "Hợp đồng vẫn cần implementation và test hành vi; annotation không biến lời gọi thành DB query."
+        },
+        {
+          "q": "Hai instance cùng sửa dict class attribute có thể thế nào?",
+          "choices": [
+            "Luôn độc lập",
+            "Có thể dùng chung trạng thái ngoài ý muốn",
+            "Không thể sửa dict"
+          ],
+          "correct": 1,
+          "why": "Phân biệt class attribute và self.instance attribute để không chia sẻ nhầm dữ liệu giữa request/object."
+        }
+      ],
+      "prerequisites": [
+        "python"
+      ],
+      "group": "Backend và dữ liệu",
+      "deliverable": "Vẽ object nào tạo object nào trong get_auth_service."
+    },
+    {
+      "id": "06",
+      "number": "06",
+      "short": "SQL & dữ liệu",
+      "title": "Từ một câu chuyện thành quan hệ có ràng buộc",
+      "source": "06-sql.md",
+      "lab": "join",
+      "goal": "Tự viết JOIN và giải thích vì sao service cùng database đều cần bảo vệ quy tắc.",
+      "question": "Muốn tìm người chưa nộp, bắt đầu từ bảng bài nộp có lấy được họ không?",
+      "core": "Người chưa nộp không có hàng trong submissions. Phải bắt đầu từ danh sách học sinh hợp lệ rồi ghép bài nộp nếu có. LEFT JOIN giữ hàng bên trái và cho NULL khi không khớp. Đồng thời ràng buộc UNIQUE bảo vệ tính duy nhất ngay cả khi hai request cùng vượt qua bước kiểm tra ở Python.",
+      "steps": [
+        "Xác định tập người/bản ghi phải được giữ lại.",
+        "Ghép theo đầy đủ khóa, không chỉ theo tên hoặc một id thiếu ngữ cảnh.",
+        "Thử trường hợp không khớp và kiểm tra mẫu số/COUNT."
+      ],
+      "trap": "COUNT(*) trên LEFT JOIN có thể đếm cả hàng đại diện không có submission. COUNT(s.id) bỏ các NULL đó.",
+      "terms": [
+        [
+          "foreign key",
+          "Ràng buộc tham chiếu tồn tại; không tự chứng minh người dùng có quyền với bản ghi."
+        ],
+        [
+          "LEFT JOIN",
+          "Giữ tất cả hàng bên trái, ghép hàng bên phải nếu điều kiện đúng, còn không là NULL."
+        ],
+        [
+          "UNIQUE",
+          "Bảo vệ không có hai hàng trùng trên bộ cột đã chọn, kể cả khi request cạnh tranh."
+        ]
+      ],
+      "practice": [
+        "Viết truy vấn người chưa nộp trước khi xem gợi ý.",
+        "Đếm bài nộp của bài chưa có ai nộp bằng hai loại COUNT.",
+        "Giải thích hai request đều thấy chưa có dữ liệu nhưng vẫn cần UNIQUE."
+      ],
+      "quiz": [
+        {
+          "q": "Để giữ học sinh chưa có bài nộp nên dùng gì từ tập thành viên lớp?",
+          "choices": [
+            "INNER JOIN submissions",
+            "LEFT JOIN submissions",
+            "Chỉ SELECT submissions"
+          ],
+          "correct": 1,
+          "why": "LEFT JOIN giữ cả những thành viên không có bản nộp. Sau đó lọc s.id IS NULL để lấy tập chưa nộp."
+        },
+        {
+          "q": "Kiểm tra chưa có hàng ở Python có đủ chống ghi trùng đồng thời không?",
+          "choices": [
+            "Đủ nếu if rõ ràng",
+            "Chưa đủ; cần ràng buộc và xử lý cạnh tranh ở DB",
+            "Đủ nếu nút bị disable"
+          ],
+          "correct": 1,
+          "why": "Hai request có thể cùng đọc trạng thái cũ trước khi một bên ghi. UNIQUE ở DB và cách xử lý transaction/conflict mới bảo vệ ràng buộc chung."
+        },
+        {
+          "q": "JOIN lớp có2thành viên và3bài độc lập có thể tạo bao nhiêu hàng?",
+          "choices": [
+            "2",
+            "3",
+            "6"
+          ],
+          "correct": 2,
+          "why": "Quan hệ con độc lập nhân tổ hợp, làm aggregation sai nếu không thiết kế query theo mục tiêu."
+        },
+        {
+          "q": "SELECT chưa thấy bài rồi INSERT có tự ngăn hai request trùng không?",
+          "choices": [
+            "Có",
+            "Không; cần constraint và xử lý transaction/concurrency",
+            "Chỉ cần disabled nút"
+          ],
+          "correct": 1,
+          "why": "Hai transaction có thể cùng thấy chưa có; UNIQUE cùng hợp đồng retry/conflict bảo vệ ở DB."
+        },
+        {
+          "q": "Query không ORDER BY có hứa thứ tự trang ổn định không?",
+          "choices": [
+            "Có",
+            "Không",
+            "Chỉ theo chiều màn hình"
+          ],
+          "correct": 1,
+          "why": "Cần ordering rõ và tie-breaker phù hợp cho pagination, không dựa vào thứ tự tình cờ của plan."
+        }
+      ],
+      "prerequisites": [
+        "thinking"
+      ],
+      "group": "Backend và dữ liệu",
+      "deliverable": "Viết truy vấn người chưa nộp trước khi xem gợi ý."
+    },
+    {
+      "id": "07",
+      "number": "07",
+      "short": "FastAPI & hợp đồng",
+      "title": "Một endpoint cần nhiều hơn một hàm trả JSON",
+      "source": "07-fastapi.md",
+      "lab": "http",
+      "goal": "Tách đúng validation, dependency, nghiệp vụ và phản hồi HTTP.",
+      "question": "class_id là số dương thì đã chứng minh lớp tồn tại và bạn được giao bài chưa?",
+      "core": "Schema kiểm tra hình dạng và giới hạn của dữ liệu. Tồn tại, quyền và trạng thái cần ngữ cảnh của hệ thống nên được xử lý ở service/dependency phù hợp. Router nối HTTP với các phần đó và chuyển lỗi đã biết thành hợp đồng phản hồi. Phân tầng giúp quy tắc không bị chép khác nhau giữa nhiều endpoint.",
+      "steps": [
+        "Viết request, response và các lỗi trước khi code endpoint.",
+        "Đặt mỗi điều kiện ở nơi có đủ thông tin để kiểm tra.",
+        "Thử bằng client thật và quan sát status lẫn body."
+      ],
+      "trap": "Thêm async def không biến một lời gọi DB đồng bộ thành bất đồng bộ. Depends cũng không tự chạy khi bạn gọi hàm Python trực tiếp ngoài FastAPI.",
+      "terms": [
+        [
+          "Pydantic schema",
+          "Mô tả và xác thực dữ liệu ở runtime theo cấu hình. Nó không tự kiểm quyền sở hữu lớp."
+        ],
+        [
+          "Depends",
+          "Chỉ dẫn cho FastAPI lấy/lắp dependency khi xử lý request."
+        ],
+        [
+          "response_model",
+          "Hợp đồng các trường trả ra, giúp tránh vô tình trả model có dữ liệu riêng."
+        ]
+      ],
+      "practice": [
+        "Từ chối title chỉ có khoảng trắng trước khi lưu.",
+        "Viết 3 lỗi có status rõ cho API tạo bài.",
+        "Giải thích Session được tạo và đóng ở đâu trong request."
+      ],
+      "quiz": [
+        {
+          "q": "Kiểm tra giáo viên có được phân công lớp cần gì?",
+          "choices": [
+            "Chỉ Field(gt=0)",
+            "Ngữ cảnh user và quan hệ lớp ở backend",
+            "Một label trong form"
+          ],
+          "correct": 1,
+          "why": "Kiểu số dương chỉ là cấu trúc đầu vào. Quyền đòi hỏi đối chiếu danh tính đáng tin với dữ liệu phân công/capability."
+        },
+        {
+          "q": "CORS có thay xác thực không?",
+          "choices": [
+            "Có",
+            "Không; request vẫn phải được kiểm tra quyền",
+            "Chỉ với POST"
+          ],
+          "correct": 1,
+          "why": "CORS điều khiển việc trình duyệt cho phép đọc response giữa origin. Client ngoài trình duyệt không bị ràng buộc theo cùng cách; backend không được dựa vào CORS để cấp quyền."
+        },
+        {
+          "q": "Client gửi teacher_id trong ClassInput trong khi schema forbid extra. Mong đợi gì?",
+          "choices": [
+            "Tự gán chủ lớp theo client",
+            "422 và không tạo lớp",
+            "Bỏ mọi kiểm quyền"
+          ],
+          "correct": 1,
+          "why": "Extra field bị từ chối ở boundary; chủ lớp phải đến từ actor đã xác minh, không body tùy ý."
+        },
+        {
+          "q": "Gọi provider Python bình thường có tự làm Depends chạy như HTTP không?",
+          "choices": [
+            "Có",
+            "Không; cần tự truyền dependency hoặc chạy qua app/test",
+            "Depends tự tạo database mọi nơi"
+          ],
+          "correct": 1,
+          "why": "Dependency injection của FastAPI có ngữ cảnh thực thi; unit test có thể lắp object trực tiếp."
+        },
+        {
+          "q": "PATCH thiếu field và gửi field:null có nhất thiết cùng nghĩa không?",
+          "choices": [
+            "Luôn giống",
+            "Không; phải chốt partial update theo trường được gửi",
+            "Pydantic tự quyết định nghiệp vụ"
+          ],
+          "correct": 1,
+          "why": "Dùng field-set/exclude_unset khi phù hợp và giữ chính sách null rõ để không xóa dữ liệu ngoài ý muốn."
+        }
+      ],
+      "prerequisites": [
+        "05",
+        "02"
+      ],
+      "group": "Backend và dữ liệu",
+      "deliverable": "Từ chối title chỉ có khoảng trắng trước khi lưu."
+    },
+    {
+      "id": "08",
+      "number": "08",
+      "short": "ORM & transaction",
+      "title": "Gửi SQL xuống chưa đồng nghĩa lưu xong nghiệp vụ",
+      "source": "08-sqlalchemy.md",
+      "lab": "transaction",
+      "goal": "Tự giải thích add, flush, commit, rollback và giới hạn của migration tự sinh.",
+      "question": "Tạo lớp thành công nhưng thêm cô vào lớp lỗi: hệ thống có nên giữ lại nửa kết quả?",
+      "core": "Một nghiệp vụ có thể cần nhiều lệnh ghi. Transaction nhóm các thay đổi để xác nhận cùng nhau hoặc hủy. Flush gửi thay đổi trong transaction và có thể tạo id; commit mới xác nhận. Repository commit từng bước sẽ phá khả năng hủy toàn bộ nghiệp vụ ở service. Session có vòng đời và trạng thái, không phải một biến DB global dùng chung tùy ý.",
+      "steps": [
+        "Xác định những thay đổi cần cùng thành công.",
+        "Chọn một nơi điều phối transaction và rollback đúng khi lỗi.",
+        "Chạy thử bước sau thất bại rồi kiểm tra dữ liệu đã xác nhận."
+      ],
+      "trap": "Autogenerate tạo bản nháp migration. Đổi tên cột có thể bị nhận thành xóa/thêm và cần review trước khi áp dụng.",
+      "terms": [
+        [
+          "flush",
+          "Đồng bộ thay đổi xuống DB trong transaction; chưa phải commit cuối."
+        ],
+        [
+          "commit",
+          "Xác nhận transaction. Không đồng nghĩa gửi email hay lưu file ngoài DB cũng được rollback cùng nó."
+        ],
+        [
+          "rollback",
+          "Hủy transaction chưa xác nhận và đưa Session ra khỏi trạng thái lỗi cần xử lý."
+        ]
+      ],
+      "practice": [
+        "Cố tình làm bước thêm thành viên lỗi và kiểm tra lớp có bị giữ lại không.",
+        "Chỉ ra nơi commit trong auth hiện tại và nơi nên commit cho nghiệp vụ nhiều bước.",
+        "Đọc một migration và giải thích từng FK/UNIQUE."
+      ],
+      "quiz": [
+        {
+          "q": "Sau flush, đã chắc dữ liệu tồn tại sau rollback chưa?",
+          "choices": [
+            "Đã chắc vì có id",
+            "Chưa, flush vẫn nằm trong transaction",
+            "Chỉ khi id là số lớn"
+          ],
+          "correct": 1,
+          "why": "Id được tạo không phải bằng chứng transaction đã xác nhận. Rollback có thể hủy các thay đổi đã flush."
+        },
+        {
+          "q": "Autogenerate migration xong thì làm gì?",
+          "choices": [
+            "Apply thẳng lên dữ liệu thật",
+            "Review và thử trên DB phát triển phù hợp",
+            "Sửa lịch sử migration cũ tùy ý"
+          ],
+          "correct": 1,
+          "why": "Công cụ suy luận từ metadata và DB, không hiểu hết ý định như rename hay chuyển dữ liệu. Cần kiểm tra cả schema lẫn dữ liệu trước khi phát hành."
+        },
+        {
+          "q": "Hai repository của một transaction cần gì?",
+          "choices": [
+            "Mỗi cái commit riêng",
+            "Cùng Session/transaction theo boundary đã chọn",
+            "Cùng tên biến là đủ"
+          ],
+          "correct": 1,
+          "why": "Boundary chung mới giữ atomic nhiều bước; tên biến không chia sẻ kết nối/transaction."
+        },
+        {
+          "q": "Flush nhận được id, bước2 lỗi rồi rollback. Id chứng minh bản ghi đã commit không?",
+          "choices": [
+            "Có",
+            "Không",
+            "Chỉ khi id lớn"
+          ],
+          "correct": 1,
+          "why": "Flush gửi SQL trong transaction chưa xác nhận; rollback có thể hủy thay đổi đó."
+        },
+        {
+          "q": "Autogenerate migration có hiểu chắc mọi rename giữ dữ liệu không?",
+          "choices": [
+            "Có",
+            "Không; cần review diff và thử dữ liệu cũ",
+            "Không cần đọc upgrade"
+          ],
+          "correct": 1,
+          "why": "Drop/add có thể là đề xuất mất dữ liệu nếu ý định thật là rename; migration cần kế hoạch chuyển đổi."
+        }
+      ],
+      "prerequisites": [
+        "06",
+        "07"
+      ],
+      "group": "Backend và dữ liệu",
+      "deliverable": "Cố tình làm bước thêm thành viên lỗi và kiểm tra lớp có bị giữ lại không."
+    },
+    {
+      "id": "09",
+      "number": "09",
+      "short": "Auth & quyền theo lớp",
+      "title": "Đúng danh tính chưa đồng nghĩa đúng quyền",
+      "source": "09-auth-phan-quyen.md",
+      "lab": "permission",
+      "goal": "Tự kiểm tra quyền với một người dùng và một tài nguyên cụ thể.",
+      "question": "Một token học sinh hợp lệ có cho phép thay id để xem bài của bạn khác không?",
+      "core": "Xác thực trả lời ai đang gửi request. Phân quyền trả lời người đó được làm gì với tài nguyên này. Server phải nối user đáng tin với quan hệ lớp, chủ bài và capability. Ẩn nút ở UI chỉ hướng dẫn trải nghiệm, không ngăn request thủ công. Chỉ gửi về những trường người đó được xem ở thời điểm hiện tại.",
+      "steps": [
+        "Lấy current user bằng cơ chế backend đã xác minh.",
+        "Tìm tài nguyên và phạm vi lớp/chủ sở hữu của nó.",
+        "Đối chiếu quyền cho hành động, từ chối nếu không được cấp rõ."
+      ],
+      "trap": "JWT ký không có nghĩa payload được mã hóa bí mật. Role cũ trong token cũng cần được xử lý theo chính sách đổi quyền/khóa tài khoản.",
+      "terms": [
+        [
+          "authentication",
+          "Xác thực danh tính của người gửi yêu cầu."
+        ],
+        [
+          "authorization",
+          "Kiểm tra hành động được phép với tài nguyên và ngữ cảnh cụ thể."
+        ],
+        [
+          "resource scope",
+          "Phạm vi bản ghi mà người dùng được truy cập, ví dụ lớp được phân công."
+        ]
+      ],
+      "practice": [
+        "Dùng hai học sinh thử truy cập chéo id bài nộp.",
+        "Viết bảng quyền cô và trợ giảng theo từng hành động.",
+        "Kiểm tra cả đường tải file và export, không chỉ trang chi tiết."
+      ],
+      "quiz": [
+        {
+          "q": "student_id của bản nộp mới nên lấy từ đâu?",
+          "choices": [
+            "Body do form gửi",
+            "Current user đã xác thực ở backend",
+            "Tên hiển thị trên dashboard"
+          ],
+          "correct": 1,
+          "why": "Danh tính chủ bài phải đến từ ngữ cảnh đáng tin. Client có thể sửa body và tên hiển thị nên không được tự chọn người mà mình nộp thay."
+        },
+        {
+          "q": "Học sinh không thấy nút chấm điểm. Backend vẫn cần kiểm quyền không?",
+          "choices": [
+            "Không vì nút đã ẩn",
+            "Có, endpoint có thể bị gọi trực tiếp",
+            "Chỉ khi dùng điện thoại"
+          ],
+          "correct": 1,
+          "why": "UI không là ranh giới bảo mật. Mỗi endpoint phải từ chối người không có quyền, kể cả request gửi ngoài giao diện dự kiến."
+        },
+        {
+          "q": "User thuộc lớp7, request /classes/7/assignments/10. Cần kiểm thêm gì?",
+          "choices": [
+            "Bài10 thực sự thuộc lớp7 và hành động được phép",
+            "Không cần vì token có rồi",
+            "Chỉ class7 có tên"
+          ],
+          "correct": 0,
+          "why": "Nested path không tự chứng minh quan hệ; kiểm cả parent-resource và actor-action."
+        },
+        {
+          "q": "Xóa JWT ở client có tự thu hồi token còn hạn trên client khác không?",
+          "choices": [
+            "Có",
+            "Không; server cần policy phiên/revocation phù hợp",
+            "Có nếu dropdown đẹp"
+          ],
+          "correct": 1,
+          "why": "Client logout và server vô hiệu hóa credential là hai hành vi khác nhau."
+        },
+        {
+          "q": "Guard chỉ kiểm có chuỗi token bảo đảm gì?",
+          "choices": [
+            "Token có chữ ký đúng",
+            "Chỉ điều kiện hiện diện theo code guard",
+            "Mọi API đúng quyền"
+          ],
+          "correct": 1,
+          "why": "Xác minh token và quyền tài nguyên phải do backend thực thi; string tồn tại không chứng minh danh tính."
+        }
+      ],
+      "prerequisites": [
+        "07",
+        "08"
+      ],
+      "group": "Backend và dữ liệu",
+      "deliverable": "Dùng hai học sinh thử truy cập chéo id bài nộp."
+    },
+    {
+      "id": "workshop",
+      "number": "X1",
+      "short": "Xây từ số 0",
+      "title": "Tự nối React → API → quyền → dữ liệu bền",
+      "source": "21-xay-tu-so-0.md",
+      "lab": "transaction",
+      "goal": "Tự viết lát cắt lớp học và phát triển tiếp giao/nộp/chấm theo checkpoint.",
+      "question": "Tạo được lớp trên UI đã chứng minh DB lưu chưa?",
+      "core": "Viết từng checkpoint chạy được, từ contract và fixture tới UI/API/DB/quyền/test. Sau commit cần đọc bằng request/Session mới; sau lỗi phải kiểm cả response lẫn dữ liệu. Source tham chiếu để đối chiếu sau khi tự làm.",
+      "terms": [
+        [
+          "checkpoint",
+          "Mốc nhỏ có hành vi chạy được và phép kiểm rõ."
+        ],
+        [
+          "composition root",
+          "Nơi ghép engine, Session, repository, service và router/dependency."
+        ],
+        [
+          "scope",
+          "Tập tài nguyên người gửi được phép thấy hoặc thao tác."
+        ]
+      ],
+      "practice": [
+        "Tự làm list/create/detail/rename lớp từ hợp đồng, chưa xem source.",
+        "Đổi token fixture 1/2/3/4 và kiểm API cùng dữ liệu.",
+        "Chuyển DB học sang MySQL bằng migration và kiểm tra thật."
+      ],
+      "quiz": [
+        {
+          "q": "ClassInput có nên nhận teacher_id từ client để quyết định chủ lớp không?",
+          "choices": [
+            "Có vì frontend đã ẩn input",
+            "Không; lấy chủ từ current user đã xác minh",
+            "Lấy từ title"
+          ],
+          "correct": 1,
+          "why": "Client không được tự gán quyền sở hữu chỉ bằng body; service xác minh actor."
+        },
+        {
+          "q": "Tests SQLite + ASGI đã chứng minh MySQL production chưa?",
+          "choices": [
+            "Có",
+            "Chưa; dialect, concurrency và hạ tầng cần kiểm riêng",
+            "Không cần test nào khác"
+          ],
+          "correct": 1,
+          "why": "Mỗi phép thử có phạm vi; cần ghi rõ điều nó đã thực thi và chưa thực thi."
+        },
+        {
+          "q": "Mất response sau POST có nghĩa server chắc chắn chưa lưu không?",
+          "choices": [
+            "Có",
+            "Không; có thể đã commit trước khi mất response",
+            "Chỉ cần bấm lại vô hạn"
+          ],
+          "correct": 1,
+          "why": "Muốn retry an toàn phải chốt idempotency contract và tác dụng server, không chỉ đổi toast."
+        }
+      ],
+      "steps": [
+        "Viết đầu vào, đầu ra và quy tắc bằng lời trước khi mở implementation.",
+        "Dự đoán một trường hợp đúng, một trường hợp sai và theo dấu dữ liệu.",
+        "Tự viết, chạy kiểm tra, sửa một biến thể rồi ghi bằng chứng."
+      ],
+      "trap": "Đọc hiểu và nhận ra đáp án chưa chứng minh tự làm. Chỉ tự đánh dấu khi đã viết, kiểm và giải thích một biến thể.",
+      "group": "Tự xây xuyên hệ thống",
+      "prerequisites": [
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09"
+      ],
+      "deliverable": "Tự làm list/create/detail/rename lớp từ hợp đồng, chưa xem source."
+    },
+    {
+      "id": "10",
+      "number": "10",
+      "short": "Một chức năng trọn vẹn",
+      "title": "Giao → nộp → chấm: thiết kế trước từng đường đi",
+      "source": "10-lat-cat-hoan-chinh.md",
+      "lab": "deadline",
+      "goal": "Tự làm một lát cắt có dữ liệu thật, lỗi thật và quy tắc rõ.",
+      "question": "Mạng lỗi sau khi server lưu bài: lần bấm thử lại nên tạo thêm bản hay trả bản cũ?",
+      "core": "Client không thể kết luận server chưa lưu chỉ vì không nhận được response. Cần hợp đồng retry. Trong bài học, cùng nội dung đã chuẩn hóa trả bản cũ và giữ thời gian; nội dung khác báo xung đột. Deadline chỉ xét bản nộp mới sau khi đã kiểm quyền và bản cũ. Quy tắc phải được giữ ở service lẫn ràng buộc DB khi có cạnh tranh.",
+      "steps": [
+        "Viết các trạng thái và ví dụ đúng/sai trước khi viết endpoint.",
+        "Làm service thuần và fake, sau đó nối repository thật và transaction.",
+        "Lắp API/UI, dùng hai tài khoản và kiểm tra refresh, mất mạng, gửi lặp."
+      ],
+      "trap": "Disable nút không chống được mọi lần gửi trùng. Test fake tuần tự cũng không chứng minh hai request MySQL đồng thời đã đúng.",
+      "terms": [
+        [
+          "idempotency",
+          "Lặp yêu cầu theo hợp đồng không tạo thêm tác dụng không mong muốn. Cần xác định khóa/nội dung và kết quả được trả lại."
+        ],
+        [
+          "invariant",
+          "Điều kiện phải luôn đúng, ví dụ một bản nộp cuối cho mỗi assignment/student trong bài học này."
+        ],
+        [
+          "vertical slice",
+          "Một đường đi có thể dùng và kiểm tra từ UI qua API đến DB, thay vì làm từng tầng riêng kéo dài."
+        ]
+      ],
+      "practice": [
+        "Viết SubmitService không nhìn đáp án và chạy test riêng.",
+        "Thử retry sau deadline và xác nhận timestamp giữ nguyên.",
+        "Đề xuất thay đổi để hỗ trợ nộp muộn có phép, liệt kê dữ liệu/API/UI/test bị tác động."
+      ],
+      "quiz": [
+        {
+          "q": "Theo hợp đồng bài học, đã có bài A, sau hạn gửi lại A sẽ ra sao?",
+          "choices": [
+            "Luôn từ chối vì hết hạn",
+            "Trả bản A cũ, giữ thời gian",
+            "Tạo bản A thứ hai"
+          ],
+          "correct": 1,
+          "why": "Đây là retry của tác dụng đã được xác nhận trước đó, không phải nhận bài mới sau hạn. Vẫn phải kiểm danh tính/quyền và khớp nội dung trước khi trả bản cũ."
+        },
+        {
+          "q": "Client timeout sau khi gửi nộp chứng minh gì?",
+          "choices": [
+            "Server chắc chắn chưa lưu",
+            "Client chưa xác nhận được kết quả",
+            "Cô đã chấm bài"
+          ],
+          "correct": 1,
+          "why": "Request có thể đã commit nhưng response bị mất. UI cần đường kiểm tra trạng thái hoặc retry an toàn theo hợp đồng."
+        },
+        {
+          "q": "Gửi lại cùng bài sau mất mạng nên tự động đổi timestamp cũ không?",
+          "choices": [
+            "Có",
+            "Theo hợp đồng bài học, trả bản cũ và giữ timestamp",
+            "Luôn tạo submission mới"
+          ],
+          "correct": 1,
+          "why": "Retry cùng tác dụng cần giữ kết quả đã chốt; sửa/nộp lại là nghiệp vụ riêng phải định nghĩa."
+        },
+        {
+          "q": "Lưu bài thành công mà số dashboard không đổi, cần xét gì?",
+          "choices": [
+            "Nguồn dữ liệu/cơ chế tải lại hoặc cache liên quan",
+            "Chỉ màu nút",
+            "Sửa mock thành số mong muốn"
+          ],
+          "correct": 0,
+          "why": "Chi tiết và chỉ số phải cùng dữ liệu thật; cập nhật giao diện cần nhất quán với server."
+        },
+        {
+          "q": "Thêm lưu trữ lớp chỉ cần disabled nút tạo bài không?",
+          "choices": [
+            "Có",
+            "Không; mọi đường ghi liên quan phải xét rule server",
+            "Chỉ đổi title"
+          ],
+          "correct": 1,
+          "why": "UI không chặn client khác/API trực tiếp. State transition phải được giữ ở nghiệp vụ và kiểm thử."
+        }
+      ],
+      "prerequisites": [
+        "workshop"
+      ],
+      "group": "Tự xây xuyên hệ thống",
+      "deliverable": "Viết SubmitService không nhìn đáp án và chạy test riêng."
+    },
+    {
+      "id": "11",
+      "number": "11",
+      "short": "Thi & báo cáo đúng nghĩa",
+      "title": "Chấm điểm có thể tái lập và thống kê có mẫu số",
+      "source": "11-luyen-thi-bao-cao.md",
+      "lab": "grading",
+      "goal": "Giữ lượt làm ổn định, chấm theo quy tắc và giải thích được từng chỉ số.",
+      "question": "Đúng 6 câu, làm 8 câu trong đề 10 câu: tỉ lệ đúng là 60% hay 75%?",
+      "core": "Cả hai có thể là phép tính hợp lệ nhưng trả lời hai câu hỏi khác nhau. Một báo cáo cần ghi mẫu số, khoảng thời gian và lượt làm nào được chọn. Tương tự, lượt làm cần gắn phiên bản đề và mapping đáp án; chỉnh đề hiện tại không được âm thầm làm kết quả cũ mất khả năng giải thích.",
+      "steps": [
+        "Chốt cấu trúc câu hỏi, cách chuẩn hóa và thang điểm.",
+        "Lưu phiên bản/attempt/mapping đủ để tái lập kết quả.",
+        "Tính báo cáo từ fixture nhỏ có thể đối chiếu bằng tay."
+      ],
+      "trap": "KaTeX hiển thị toán không phải bộ chấm toán. Đồng hồ trình duyệt cũng không tự quyết định hạn nộp server.",
+      "terms": [
+        [
+          "attempt",
+          "Một lượt làm có danh tính, phiên bản đề, thời điểm và câu trả lời riêng."
+        ],
+        [
+          "denominator",
+          "Mẫu số của một tỉ lệ, ví dụ tổng câu được giao hoặc số câu đã làm."
+        ],
+        [
+          "Decimal",
+          "Số thập phân theo cơ chế decimal; hữu ích khi cần quy tắc tính và làm tròn rõ, nhưng vẫn phải kiểm tra định dạng và giới hạn."
+        ]
+      ],
+      "practice": [
+        "Chấm 0.5 và 0.50 theo hợp đồng số của bài học.",
+        "Đảo đáp án bằng id và chứng minh kết quả không lệch.",
+        "Tạo bảng báo cáo có nêu mẫu số và lượt được tính."
+      ],
+      "quiz": [
+        {
+          "q": "Muốn giữ kết quả cũ khi cô sửa đề cần gì?",
+          "choices": [
+            "Chỉ lưu tổng điểm",
+            "Gắn phiên bản/nội dung và mapping phù hợp với lượt làm",
+            "Đổi tên component"
+          ],
+          "correct": 1,
+          "why": "Tổng điểm không đủ giải thích vì sao đúng/sai. Cần dữ liệu và quy tắc của lượt đó để tái lập hoặc chấm lại có chủ đích."
+        },
+        {
+          "q": "Đúng 6 trong 8 câu đã làm của đề 10 câu: 6/8 biểu diễn gì?",
+          "choices": [
+            "Tỉ lệ đúng trong câu đã làm",
+            "Tỉ lệ đúng toàn đề",
+            "Tự động là điểm cuối cùng"
+          ],
+          "correct": 0,
+          "why": "Mẫu số là 8 nên câu hỏi là mức đúng trong phần đã làm. 6/10 trả lời mức đúng trên toàn bộ câu được giao; điểm cuối còn phụ thuộc quy tắc chấm."
+        },
+        {
+          "q": "Đúng6,đãlàm8,tổng10: accuracy trong phần đã làm là gì?",
+          "choices": [
+            "60%",
+            "75%",
+            "80%"
+          ],
+          "correct": 1,
+          "why": "6/8 là75%;6/10 là60% và8/10 là completion80%. Nhãn cần nói rõ mẫu số."
+        },
+        {
+          "q": "Đổi ngân hàng câu hỏi có nên làm đổi đề/lời chấm của lượt cũ không?",
+          "choices": [
+            "Mặc định có",
+            "Cần version/snapshot theo hợp đồng để kết quả tái lập",
+            "Chỉ đổi câu đúng"
+          ],
+          "correct": 1,
+          "why": "Lượt thi cần giữ dữ liệu dùng để đánh giá tại thời điểm đã chốt, không phụ thuộc bản mutable hiện tại."
+        },
+        {
+          "q": "Có nên eval đáp án biểu thức người dùng gửi để chấm không?",
+          "choices": [
+            "Có vì nhanh",
+            "Không; cần parser/miền phép toán và hợp đồng an toàn phù hợp",
+            "Chỉ khi dùng MySQL"
+          ],
+          "correct": 1,
+          "why": "Thực thi tùy ý khác đánh giá biểu thức toán giới hạn; chấm số/biểu thức cần thiết kế riêng."
+        }
+      ],
+      "prerequisites": [
+        "10"
+      ],
+      "group": "Tự xây xuyên hệ thống",
+      "deliverable": "Chấm 0.5 và 0.50 theo hợp đồng số của bài học."
+    },
+    {
+      "id": "14",
+      "number": "14",
+      "short": "Các module còn lại",
+      "title": "Mở rộng bằng cùng một cách suy nghĩ",
+      "source": "14-module-mo-rong.md",
+      "lab": "permission",
+      "goal": "Dùng lại nền tảng cho lịch, điểm danh, file, thông báo và chat.",
+      "question": "Lưu metadata file trong transaction có tự xóa được file đã upload khi DB rollback không?",
+      "core": "Một module mới vẫn bắt đầu từ người dùng, quyền, dữ liệu, trạng thái và bằng chứng kiểm tra. File, email và socket nằm ngoài transaction DB nên cần phối hợp và xử lý lỗi riêng. Từ danh sách thông báo HTTP đến chat realtime là những nhu cầu khác nhau; chọn cơ chế sau khi hiểu tác dụng và đường khôi phục.",
+      "steps": [
+        "Chọn một hành động nhỏ có ích và phạm vi dữ liệu rõ.",
+        "Tách tác dụng bên ngoài khỏi commit dữ liệu, thiết kế retry/cleanup.",
+        "Kiểm tra quyền cả ở đường đọc, tải file, join room và sau reconnect."
+      ],
+      "trap": "Dictionary socket trong một process không tự phát tin đến mọi worker. Đăng nhập cũng không mặc nhiên được tính điểm danh hay streak.",
+      "terms": [
+        [
+          "outbox",
+          "Ghi sự kiện cùng transaction dữ liệu rồi xử lý tác vụ ngoài sau; vẫn cần idempotency và retry phù hợp."
+        ],
+        [
+          "WebSocket",
+          "Kết nối hai chiều cho sự kiện liên tục; vẫn cần xác thực, quyền room và xử lý mất kết nối."
+        ],
+        [
+          "storage key",
+          "Khóa do hệ thống quản lý để xác định file lưu, khác tên file người dùng tự gửi."
+        ]
+      ],
+      "practice": [
+        "Điểm danh một buổi với khóa session/student, thử gửi lặp.",
+        "Đăng/tải tài liệu đúng lớp và thử đường tải ngoài quyền.",
+        "Làm hỏi đáp dưới bài trước, rồi mô tả điều cần thêm khi chuyển sang realtime."
+      ],
+      "quiz": [
+        {
+          "q": "DB rollback có tự thu hồi email đã gửi không?",
+          "choices": [
+            "Có",
+            "Không, đó là tác dụng ngoài DB cần phối hợp riêng",
+            "Chỉ khi dùng MySQL"
+          ],
+          "correct": 1,
+          "why": "Transaction DB chỉ quản lý thay đổi trong phạm vi nó. Email/file ngoài DB cần thiết kế thời điểm phát, retry, cleanup hoặc outbox theo yêu cầu."
+        },
+        {
+          "q": "Client yêu cầu join room class_id=99. Server cần làm gì?",
+          "choices": [
+            "Cho vào vì đã có socket",
+            "Xác thực và kiểm quyền vào lớp/room cụ thể",
+            "Chỉ kiểm tên room là số"
+          ],
+          "correct": 1,
+          "why": "Kết nối tồn tại không chứng minh người dùng là thành viên lớp đó. Quyền cần được kiểm tra với tài nguyên và cập nhật khi quyền thay đổi."
+        },
+        {
+          "q": "File đã lưu nhưng DB metadata lỗi. Rollback DB có tự xóa file không?",
+          "choices": [
+            "Có",
+            "Không; cần cleanup/retry theo dõi được",
+            "Chỉ trên Windows"
+          ],
+          "correct": 1,
+          "why": "File storage và DB không tự cùng transaction; phải thiết kế tác dụng ngoài DB."
+        },
+        {
+          "q": "WebSocket kết nối có token thì được join mọi class_id không?",
+          "choices": [
+            "Có",
+            "Không; phải kiểm room/scope và thu hồi quyền theo policy",
+            "Chỉ cần giấu room UI"
+          ],
+          "correct": 1,
+          "why": "Kết nối realtime vẫn có actor-resource và quyền thay đổi trong lifecycle."
+        },
+        {
+          "q": "Email gửi rồi DB rollback gây vấn đề gì?",
+          "choices": [
+            "Người dùng có thể nhận thông báo tài nguyên không tồn tại",
+            "Không vấn đề",
+            "Tự rollback email"
+          ],
+          "correct": 0,
+          "why": "Tác dụng ngoài DB cần phối hợp như outbox/idempotency/retry; commit DB không thu hồi email đã gửi."
+        }
+      ],
+      "prerequisites": [
+        "10"
+      ],
+      "group": "Tự xây xuyên hệ thống",
+      "deliverable": "Điểm danh một buổi với khóa session/student, thử gửi lặp."
+    },
+    {
+      "id": "debug",
+      "number": "X2",
+      "short": "Debug và an toàn",
+      "title": "Tìm nguyên nhân bằng một phép thử",
+      "source": "19-debug-va-an-toan.md",
+      "lab": "permission",
+      "goal": "Tự điều tra lỗi và bảo vệ dữ liệu theo actor–action–resource.",
+      "question": "Vì sao một ảnh UI đẹp không chứng minh dữ liệu đúng quyền?",
+      "core": "Quan sát đúng ranh giới rồi kiểm một giả thuyết. Đọc chéo dữ liệu có thể xảy ra qua list/detail/file/export dù UI giấu nút. Chất lượng cần các phép thử độc lập và giới hạn được nói rõ.",
+      "terms": [
+        [
+          "threat model",
+          "Xác định tài sản, tác nhân, điểm vào và điều cần bảo vệ."
+        ],
+        [
+          "regression test",
+          "Phép thử giữ một lỗi đã sửa không quay lại."
+        ],
+        [
+          "ASGI integration",
+          "Kiểm request/route/dependency trong process; chưa phải toàn bộ mạng/hạ tầng."
+        ]
+      ],
+      "practice": [
+        "Tái hiện một lỗi theo báo cáo tối thiểu, ghi giả thuyết trước sửa.",
+        "Kiểm scope ở list/detail/download/export trên fixture.",
+        "Viết test bắt điểm0 mất và quyền lớp sai."
+      ],
+      "quiz": [
+        {
+          "q": "Bạn sửa ba file và đổi DB trước khi thử lại. Khó biết điều gì?",
+          "choices": [
+            "Nguyên nhân nào thực sự làm lỗi hết",
+            "Tên editor",
+            "CSS viewport"
+          ],
+          "correct": 0,
+          "why": "Một giả thuyết/một phép thử giúp biết quan hệ nguyên nhân và tránh chữa nhầm."
+        },
+        {
+          "q": "JWT signed có nghĩa payload được mã hóa bí mật không?",
+          "choices": [
+            "Có",
+            "Không; chữ ký và mã hóa là hai việc khác",
+            "Tùy màu giao diện"
+          ],
+          "correct": 1,
+          "why": "Không đặt secret trong payload chỉ vì token có chữ ký."
+        },
+        {
+          "q": "Lỗi mạng có tự chứng minh token hết hạn không?",
+          "choices": [
+            "Có",
+            "Không; cần phân biệt transport với phản hồi xác thực",
+            "Luôn xóa dữ liệu trước"
+          ],
+          "correct": 1,
+          "why": "Chưa có response thì chưa thể suy ra server đã từ chối token."
+        }
+      ],
+      "steps": [
+        "Viết đầu vào, đầu ra và quy tắc bằng lời trước khi mở implementation.",
+        "Dự đoán một trường hợp đúng, một trường hợp sai và theo dấu dữ liệu.",
+        "Tự viết, chạy kiểm tra, sửa một biến thể rồi ghi bằng chứng."
+      ],
+      "trap": "Đọc hiểu và nhận ra đáp án chưa chứng minh tự làm. Chỉ tự đánh dấu khi đã viết, kiểm và giải thích một biến thể.",
+      "group": "Kiểm chứng và bàn giao",
+      "prerequisites": [
+        "10",
+        "09"
+      ],
+      "deliverable": "Tái hiện một lỗi theo báo cáo tối thiểu, ghi giả thuyết trước sửa."
+    },
+    {
+      "id": "12",
+      "number": "12",
+      "short": "Test, Git & vận hành",
+      "title": "Biết bằng chứng nào đủ cho kết luận nào",
+      "source": "12-kiem-thu-van-hanh.md",
+      "lab": "transaction",
+      "goal": "Tự kiểm chứng chức năng và chuẩn bị bản dùng thử có thể phát hiện/khôi phục lỗi.",
+      "question": "28 unit test với repository giả có chứng minh MySQL chống race condition không?",
+      "core": "Một test chỉ quan sát được phạm vi nó thực sự chạy. Fake giúp kiểm quy tắc thuần nhanh và độc lập, nhưng không tái tạo locking/collation/transaction MySQL. Kiểm thử tích hợp và luồng người dùng bổ sung phần đó. Tương tự, file backup tồn tại chưa chứng minh quy trình phục hồi hoạt động.",
+      "steps": [
+        "Chọn rủi ro và điều kiện cần chứng minh.",
+        "Chạy ở đúng tầng với fixture/môi trường riêng.",
+        "Ghi kết quả thật, phần chưa kiểm tra và đường phát hiện/phục hồi lỗi."
+      ],
+      "trap": "Đừng để test trỏ vào DB đang dùng thật; đừng ghi đã test toàn hệ thống chỉ vì build hoặc fake test xanh.",
+      "terms": [
+        [
+          "unit test",
+          "Kiểm tra một quy tắc hoặc phần nhỏ với dependency ngoài được kiểm soát."
+        ],
+        [
+          "integration test",
+          "Kiểm tra các thành phần thật phối hợp, ví dụ API/auth/Session/MySQL."
+        ],
+        [
+          "restore drill",
+          "Thử phục hồi backup trên môi trường phù hợp để kiểm tra dữ liệu và quy trình, không chỉ nhìn file backup."
+        ]
+      ],
+      "practice": [
+        "Viết test trước/đúng/sau deadline bằng giờ cố định.",
+        "Thiết kế integration test cho UNIQUE với hai request cạnh tranh.",
+        "Viết README để người khác tự chạy và một kế hoạch phục hồi thử."
+      ],
+      "quiz": [
+        {
+          "q": "Test cùng hàm hai lần tuần tự đã là test concurrency chưa?",
+          "choices": [
+            "Đã đủ",
+            "Chưa; cần tạo tình huống cạnh tranh thật phù hợp",
+            "Chỉ cần tăng timeout"
+          ],
+          "correct": 1,
+          "why": "Hai lần tuần tự không mô phỏng việc cả hai cùng đọc trạng thái cũ rồi ghi. Phải kiểm chứng hành vi phối hợp với DB/isolation và xử lý conflict thật."
+        },
+        {
+          "q": "Giá trị VITE_* có nên giữ secret backend không?",
+          "choices": [
+            "Có vì nằm trong .env",
+            "Không vì có thể được đưa vào bundle client",
+            "Chỉ khi tên dài"
+          ],
+          "correct": 1,
+          "why": "Biến được build cho frontend có thể được đọc từ phía người dùng. File .env không tự biến dữ liệu đã gửi xuống client thành bí mật."
+        },
+        {
+          "q": "Backup có file tồn tại đã đủ chứng minh phục hồi chưa?",
+          "choices": [
+            "Có",
+            "Chưa; cần restore vào môi trường riêng và đối chiếu dữ liệu",
+            "Chỉ xem size"
+          ],
+          "correct": 1,
+          "why": "Khả năng phục hồi là hành vi phải diễn tập, kể cả schema,file và dữ liệu liên quan."
+        },
+        {
+          "q": "Unit fake xanh có chứng minh locking MySQL không?",
+          "choices": [
+            "Có",
+            "Không",
+            "Chỉ nếu nhiều test"
+          ],
+          "correct": 1,
+          "why": "Fake không chạy driver/isolation/constraints thực; cần test tích hợp theo workload phù hợp."
+        },
+        {
+          "q": "Log lỗi login nên chứa gì?",
+          "choices": [
+            "Password/token đầy đủ",
+            "Ngữ cảnh tối thiểu, mã request và lỗi đã làm sạch",
+            "Toàn bộ bảng users"
+          ],
+          "correct": 1,
+          "why": "Quan sát không được biến log thành nguồn lộ credential/dữ liệu riêng tư."
+        }
+      ],
+      "prerequisites": [
+        "debug"
+      ],
+      "group": "Kiểm chứng và bàn giao",
+      "deliverable": "Viết test trước/đúng/sau deadline bằng giờ cố định."
+    },
+    {
+      "id": "13",
+      "number": "13",
+      "short": "Bài tập & bảo vệ đồ án",
+      "title": "Tự sửa khi yêu cầu thay đổi mới là hiểu",
+      "source": "13-bai-tap-dap-an.md",
+      "lab": "oop",
+      "goal": "Tự triển khai một biến thể, trình bày quyết định và kiểm tra tác động.",
+      "question": "Cho phép nộp lại: có phải chỉ cần bỏ UNIQUE hay đổi một if không?",
+      "core": "Một yêu cầu mới có thể đổi ý nghĩa dữ liệu, trạng thái, quyền, API, UI và test. Nếu chỉ bỏ ràng buộc để request qua, báo cáo có thể không biết chọn lượt nào. Hãy mô tả lại quy tắc rồi đi qua từng phần bị tác động. Giải thích được đánh đổi và giới hạn quan trọng hơn nhớ lại nguyên văn một lời giải.",
+      "steps": [
+        "Tự làm trước, ghi điều chưa biết trước khi mở gợi ý.",
+        "Sau khi đối chiếu, đóng đáp án và viết lại một biến thể.",
+        "Bảo vệ quyết định bằng code, dữ liệu và kết quả kiểm tra."
+      ],
+      "trap": "Thuộc lời giải mẫu không chứng minh có thể xử lý yêu cầu mới. Dùng bài thay đổi yêu cầu để phát hiện phần còn phụ thuộc vào chép lại.",
+      "terms": [
+        [
+          "acceptance criteria",
+          "Các điều kiện quan sát được để kết luận một yêu cầu đã được đáp ứng."
+        ],
+        [
+          "fixture",
+          "Dữ liệu chuẩn bị cho một bài kiểm tra, nhỏ và đủ rõ để đối chiếu."
+        ],
+        [
+          "trade-off",
+          "Đánh đổi có chủ đích giữa các lựa chọn, kèm lý do và giới hạn."
+        ]
+      ],
+      "practice": [
+        "Làm bộ A trước khi mở đáp án.",
+        "Chọn một thay đổi về lượt làm hoặc quyền trợ giảng, viết tác động từng tầng.",
+        "Tự trả lời 20 câu bảo vệ và mở code chứng minh."
+      ],
+      "quiz": [
+        {
+          "q": "Đề bài đổi sang nhiều lượt nộp. Việc cần làm trước là gì?",
+          "choices": [
+            "Bỏ UNIQUE ngay",
+            "Chốt quy tắc lượt làm và tác động dữ liệu/API/báo cáo",
+            "Đổi màu nút"
+          ],
+          "correct": 1,
+          "why": "Cần biết số lượt, điều kiện tạo, lượt được tính điểm và cách đọc lịch sử. Sau đó mới thay ràng buộc phù hợp; bỏ UNIQUE riêng lẻ có thể phá invariant."
+        },
+        {
+          "q": "Sau khi đọc đáp án, bài kiểm tra hiểu hữu ích là gì?",
+          "choices": [
+            "Chép lại khi đáp án còn mở",
+            "Đóng đáp án và giải biến thể có điều kiện khác",
+            "Chỉ đếm số dòng đã đọc"
+          ],
+          "correct": 1,
+          "why": "Biến thể buộc bạn sử dụng mô hình đã hiểu thay vì nhớ vị trí từng dòng. Thử lỗi và giải thích kết quả giúp phát hiện lỗ hổng."
+        },
+        {
+          "q": "Sau khi đọc lời giải, cách chứng minh tốt hơn là gì?",
+          "choices": [
+            "Đóng lời giải, tự viết biến thể rồi kiểm",
+            "Đọc lại đến khi quen mắt",
+            "Đổi tên biến của source"
+          ],
+          "correct": 0,
+          "why": "Nhận diện code khác tạo được lời giải; biến thể buộc sử dụng lại hợp đồng và tư duy."
+        },
+        {
+          "q": "Bài chạy đúng đường vui nhưng user ngoài lớp đọc được có đạt không?",
+          "choices": [
+            "Có nếu đẹp",
+            "Chưa, lỗi quyền cốt lõi phải sửa trong phạm vi bài",
+            "Bù bằng thêm icon"
+          ],
+          "correct": 1,
+          "why": "Chức năng chứa dữ liệu riêng cần đúng cả từ chối, không chỉ success."
+        },
+        {
+          "q": "Chuyển sang hệ thống thư viện cần tự làm gì?",
+          "choices": [
+            "Chỉ đổi nhãn lớp thành sách",
+            "Phân tích bản sao,phiếu mượn,quyền,deadline và cạnh tranh",
+            "Giữ mọi rule lớp học"
+          ],
+          "correct": 1,
+          "why": "Miền mới cung cấp bài kiểm chuyển giao; schema và invariant phải xuất phát từ yêu cầu mới."
+        }
+      ],
+      "prerequisites": [
+        "10",
+        "11"
+      ],
+      "group": "Kiểm chứng và bàn giao",
+      "deliverable": "Làm bộ A trước khi mở đáp án."
+    },
+    {
+      "id": "delivery",
+      "number": "X3",
+      "short": "Bàn giao và tự làm đề mới",
+      "title": "Chứng minh kỹ năng ngoài ví dụ đã học",
+      "source": "20-ban-giao-va-chuyen-giao.md",
+      "lab": "http",
+      "goal": "Tự phát hành staging, phục hồi dữ liệu học và thực hiện một miền nghiệp vụ mới.",
+      "question": "Chạy được trên máy mình đã đủ để người khác dùng được chưa?",
+      "core": "Hệ thống cần môi trường có thể tái lập, cấu hình, migration, giám sát và phục hồi. Tự làm đề khác với yêu cầu thay đổi mới cho bằng chứng kỹ năng chuyển giao; không cần thuộc lòng mọi API.",
+      "terms": [
+        [
+          "staging",
+          "Môi trường dùng thử tách dữ liệu và cấu hình production."
+        ],
+        [
+          "restore",
+          "Phục hồi và kiểm dữ liệu thực tế; file backup tồn tại chưa đủ."
+        ],
+        [
+          "chuyển giao",
+          "Áp dụng cách phân tích vào miền/yêu cầu mới mà không có implementation sẵn."
+        ]
+      ],
+      "practice": [
+        "Viết README để người khác dựng môi trường sạch.",
+        "Phục hồi backup vào DB học mới và đối chiếu dữ liệu.",
+        "Tự làm hệ thống mượn sách từ đặc tả trắng và bảo vệ thiết kế."
+      ],
+      "quiz": [
+        {
+          "q": "Đổi VITE_API_URL trên host sau khi build có tự đổi bundle cũ không?",
+          "choices": [
+            "Có luôn",
+            "Thông thường không; biến được nhúng lúc build cần quy trình cấu hình phù hợp",
+            "Chỉ cần reload DB"
+          ],
+          "correct": 1,
+          "why": "Phân biệt build-time frontend config và runtime backend config; kiểm bundle đã phát hành."
+        },
+        {
+          "q": "localhost trong backend container thường chỉ đến đâu?",
+          "choices": [
+            "Container backend đó",
+            "Máy host luôn luôn",
+            "MySQL service chắc chắn"
+          ],
+          "correct": 0,
+          "why": "Container có namespace mạng; dùng hostname/service theo kiến trúc đã cấu hình."
+        },
+        {
+          "q": "Bài thư viện có nhiều bản sao của một tên sách. Chỉ đổi tên Class thành Book đủ chưa?",
+          "choices": [
+            "Đủ",
+            "Chưa; quan hệ, tồn kho và concurrency thay đổi",
+            "Chỉ cần đổi logo"
+          ],
+          "correct": 1,
+          "why": "Chuyển giao đòi tự mô hình hóa miền mới, không chỉ đổi nhãn ví dụ cũ."
+        }
+      ],
+      "steps": [
+        "Viết đầu vào, đầu ra và quy tắc bằng lời trước khi mở implementation.",
+        "Dự đoán một trường hợp đúng, một trường hợp sai và theo dấu dữ liệu.",
+        "Tự viết, chạy kiểm tra, sửa một biến thể rồi ghi bằng chứng."
+      ],
+      "trap": "Đọc hiểu và nhận ra đáp án chưa chứng minh tự làm. Chỉ tự đánh dấu khi đã viết, kiểm và giải thích một biến thể.",
+      "group": "Kiểm chứng và bàn giao",
+      "prerequisites": [
+        "12",
+        "13",
+        "workshop"
+      ],
+      "deliverable": "Viết README để người khác dựng môi trường sạch."
+    },
+    {
+      "id": "reference",
+      "number": "R1",
+      "short": "Tra cứu và bài luyện",
+      "title": "Tự tra đúng, thử nhỏ, rồi áp dụng",
+      "source": "22-tra-cuu-va-bai-luyen.md",
+      "lab": "memory",
+      "goal": "Đọc ký hiệu trong ngữ cảnh và chọn bài luyện cho điểm yếu cụ thể.",
+      "question": "Cùng dấu ngoặc nhọn, vì sao chỗ này tạo object còn chỗ kia không return?",
+      "core": "Ký hiệu phụ thuộc vị trí trong cấu trúc ngôn ngữ. Khi chưa hiểu, tách biểu thức, dùng dữ liệu giả nhỏ, dự đoán rồi chạy. Tra docs theo phiên bản và hợp đồng trước khi áp vào sản phẩm.",
+      "terms": [
+        [
+          "context",
+          "Ngữ cảnh cú pháp/quy tắc quyết định ý nghĩa của một ký hiệu."
+        ],
+        [
+          "minimal reproduction",
+          "Ví dụ nhỏ nhất còn thể hiện lỗi để điều tra."
+        ],
+        [
+          "contract",
+          "Đầu vào/đầu ra/quy tắc/tác dụng/lỗi được chốt cho một hành động."
+        ]
+      ],
+      "practice": [
+        "Giải thích 10 ký hiệu từ chính file đang học.",
+        "Dùng phiếu thiết kế cho một chức năng mới.",
+        "Tạo một lỗi nhỏ, tra docs và ghi lại phép thử xác nhận cách sửa."
+      ],
+      "quiz": [
+        {
+          "q": "task => ({id: task.id}) trả gì?",
+          "choices": [
+            "Một object theo biểu thức",
+            "Không return vì luôn là block",
+            "SQL row"
+          ],
+          "correct": 0,
+          "why": "Ngoặc tròn khiến object literal được đọc là biểu thức return ngầm của arrow."
+        },
+        {
+          "q": "Tra một API cần xác định gì trước?",
+          "choices": [
+            "Thư viện, phiên bản, input/output và lifecycle",
+            "Màu theme",
+            "Số inch màn"
+          ],
+          "correct": 0,
+          "why": "Một đoạn tutorial đúng ở môi trường khác có thể không khớp API/cấu hình của repo."
+        },
+        {
+          "q": "Sau khi xem đáp án, việc nào cho bằng chứng học tốt hơn?",
+          "choices": [
+            "Chép thêm một lần",
+            "Đóng đáp án rồi tự làm biến thể và giải thích",
+            "Đánh dấu mọi chương"
+          ],
+          "correct": 1,
+          "why": "Biến thể yêu cầu tái sử dụng tư duy, giảm việc chỉ nhớ hình dạng lời giải."
+        }
+      ],
+      "steps": [
+        "Viết đầu vào, đầu ra và quy tắc bằng lời trước khi mở implementation.",
+        "Dự đoán một trường hợp đúng, một trường hợp sai và theo dấu dữ liệu.",
+        "Tự viết, chạy kiểm tra, sửa một biến thể rồi ghi bằng chứng."
+      ],
+      "trap": "Đọc hiểu và nhận ra đáp án chưa chứng minh tự làm. Chỉ tự đánh dấu khi đã viết, kiểm và giải thích một biến thể.",
+      "group": "Tra cứu khi thực hành",
+      "prerequisites": [
+        "thinking"
+      ],
+      "deliverable": "Giải thích 10 ký hiệu từ chính file đang học."
+    }
+  ]
+}

@@ -1,0 +1,432 @@
+{
+  "lessons": {
+    "studio-start": {
+      "remember": "Bắt đầu bằng hành vi và ví dụ đúng/sai; công cụ được thêm khi có việc cần dùng.",
+      "do": "Viết năm ví dụ cho Sổ lớp trước khi mở source mẫu.",
+      "proof": "Giải thích kết quả của tên trắng, tên trùng và tìm không khớp; chốt quy tắc còn thiếu."
+    },
+    "bridge": {
+      "remember": "Giữ cách nghĩ Python; học cách viết JS trước, thêm kiểu TS sau.",
+      "do": "Chuyển một hàm lọc điểm Python sang JS bằng for/if, rồi thêm type.",
+      "proof": "Thử list rỗng, điểm 0 và đúng 5; giải thích được từng chỗ đổi cú pháp."
+    },
+    "api-reading": {
+      "remember": "Một API cần được hiểu bằng nguồn, input, output, tác dụng và lỗi.",
+      "do": "Chọn một hàm lạ, điền phiếu API và tự chạy một ví dụ nhỏ.",
+      "proof": "Đổi input, dự đoán kết quả rồi đối chiếu; lần được import hoặc tài liệu gốc."
+    },
+    "markup": {
+      "remember": "HTML giữ cấu trúc; CSS chọn phần tử và quyết định cách các hộp được bố trí.",
+      "do": "Tự dựng một card, nối style.css rồi đổi padding, gap và display từng cái.",
+      "proof": "Chỉ được hộp cha/con và luật đang áp; sửa được selector sai bằng DevTools."
+    },
+    "studio-web": {
+      "remember": "Một thao tác đi qua sự kiện → dữ liệu → render. Tìm kiếm không được xóa dữ liệu gốc.",
+      "do": "Từ thư mục trống, dựng trang thêm/tìm lớp bằng HTML, CSS và JS.",
+      "proof": "Tên trắng bị từ chối; tìm rồi xóa query hiện lại đủ lớp; tự lần được handler."
+    },
+    "studio-react": {
+      "remember": "State có một chủ; con nhận props và báo hành động qua callback.",
+      "do": "Chuyển Sổ lớp đã hiểu sang TS/React, tự tạo entry và tách danh sách.",
+      "proof": "Thêm/tìm vẫn đúng; chỉ được state ở đâu, ai cập nhật và file nào được nạp đầu."
+    },
+    "studio-python": {
+      "remember": "Tách file theo trách nhiệm khi có lý do thay đổi; giữ hành vi cũ bằng test.",
+      "do": "Viết create/list một file rồi tách domain, storage, use case và entry.",
+      "proof": "Cây import không vòng; test trước/sau qua; giải thích vì sao mỗi hàm ở file đó."
+    },
+    "studio-feature": {
+      "remember": "Chốt quyền và trạng thái trước; lần thay đổi qua cả UI, API, nghiệp vụ và DB.",
+      "do": "Tự thiết kế lưu trữ lớp, rồi đối chiếu các patch sau khi đã thử.",
+      "proof": "Giữ lịch sử, chặn đúng đường ghi, kiểm quyền chéo lớp và retry theo policy."
+    },
+    "studio-modules": {
+      "remember": "Module mới dùng lại cách phân tích hành động, dữ liệu, quyền và trạng thái.",
+      "do": "Làm điểm danh có hướng dẫn; tự điền thiết kế tài liệu rồi tự làm thông báo.",
+      "proof": "Kiểm ghi thiếu, revision cũ và retry; giải thích được tác dụng ngoài DB."
+    },
+    "studio-transfer": {
+      "remember": "Review phải chỉ ra một lỗi có bằng chứng và một bước sửa có thể kiểm.",
+      "do": "Nộp code tự viết, sửa sau review rồi xử lý một biến thể chưa xem mẫu.",
+      "proof": "Tái hiện lỗi trước sửa, chạy lại sau sửa và giải thích được lựa chọn cấu trúc."
+    },
+    "performance": {
+      "remember": "Capacity phải được đo với workload, dữ liệu và môi trường cụ thể.",
+      "do": "Đo một luồng nghiệp vụ, tìm một điểm nghẽn rồi so trước/sau.",
+      "proof": "Ghi latency, lỗi, rate đạt được và dữ liệu sau tải; nêu giới hạn của phép đo."
+    },
+    "release": {
+      "remember": "Code, dependency, artifact và schema phải khớp với bản đang phát hành.",
+      "do": "Dựng lab, đọc migration và thực hiện một lần quay bản có kế hoạch.",
+      "proof": "Người khác dựng được từ hướng dẫn; biết rollback code khác restore dữ liệu thế nào."
+    },
+    "operations": {
+      "remember": "Phiên, quyền, log và phục hồi phải được kiểm bằng tình huống cụ thể.",
+      "do": "Viết policy phiên và diễn tập một lỗi cùng một lần restore trên môi trường học.",
+      "proof": "Chỉ được nơi phát hiện lỗi, dữ liệu cần đối chiếu và bước khôi phục đã thử."
+    },
+    "capstone": {
+      "remember": "Mỗi tuyên bố về chất lượng cần một bằng chứng từ sản phẩm của mình.",
+      "do": "Bàn giao một luồng hoàn chỉnh và tự sửa một yêu cầu mới trong buổi bảo vệ.",
+      "proof": "Người khác chạy được; quyền/dữ liệu đúng; giải thích được cấu trúc và giới hạn."
+    },
+    "zero": {
+      "remember": "Đọc vế phải trước khi gán; tên biến, chuỗi và kết quả hiển thị là ba việc khác nhau.",
+      "do": "Tự gõ bốn dòng: tạo soBai = 2, tăng 1, hiển thị số mới và so sánh với 3.",
+      "proof": "Kết quả là 3 và true; đổi số đầu thành 5 phải tự dự đoán lại được."
+    },
+    "map": {
+      "remember": "Một tính năng cần người làm, hành động, dữ liệu, quy tắc và cách chứng minh.",
+      "do": "Vẽ bản đồ một luồng LMS rồi đánh dấu phần đã chạy, phần chỉ có giao diện.",
+      "proof": "Lần được từ thao tác tới dữ liệu và nêu rõ bằng chứng cho từng phần."
+    },
+    "tools": {
+      "remember": "Lệnh chạy phụ thuộc thư mục, interpreter và manifest đang dùng.",
+      "do": "Tự chạy một process học, đọc một lỗi và quan sát một request.",
+      "proof": "Nói rõ lệnh đứng ở đâu, dùng Python/Node nào và xem kết quả ở cửa sổ nào."
+    },
+    "00": {
+      "remember": "Debug bắt đầu bằng giả thuyết và phép thử; mỗi lần chỉ đổi một nguyên nhân.",
+      "do": "Lần một request và ghi báo cáo lỗi với expected/actual.",
+      "proof": "Chỉ được bước đầu tiên khác dự kiến và ca kiểm xác nhận nguyên nhân."
+    },
+    "01": {
+      "remember": "Đầu vào/đầu ra và thứ tự chạy quyết định cách dùng vòng lặp, hàm và callback.",
+      "do": "Tự viết lọc, đếm và cập nhật danh sách nhiệm vụ.",
+      "proof": "Thử rỗng, điểm 0 và trạng thái lạ; chỉ được return và input có bị sửa không."
+    },
+    "thinking": {
+      "remember": "Viết input/output, ví dụ và cách làm bằng lời trước khi chọn cú pháp.",
+      "do": "Tự biến đề đếm bài chưa nộp thành thuật toán, code và bảng vết.",
+      "proof": "Giải thích đúng từng lượt, cả list rỗng và vị trí return."
+    },
+    "02": {
+      "remember": "TypeScript mô tả kiểu; dữ liệu HTTP vẫn cần kiểm ở thời điểm chạy.",
+      "do": "Viết type, parser và xử lý tải/thành công/rỗng/lỗi cho một response.",
+      "proof": "Body sai kiểu bị từ chối; lỗi mạng khác HTTP lỗi; điểm 0 không bị coi là thiếu."
+    },
+    "03": {
+      "remember": "Chọn layout từ quan hệ cha/con và không gian có sẵn; đọc computed styles khi sai.",
+      "do": "Dựng form/list rồi thêm bố cục hai cột và responsive.",
+      "proof": "Chữ dài, màn hẹp và bàn phím vẫn dùng được; giải thích box model và trục flex."
+    },
+    "04": {
+      "remember": "Render đọc snapshot state; effect dùng cho đồng bộ ngoài render khi cần.",
+      "do": "Làm list/search/create với loading, error, empty và success.",
+      "proof": "Một nguồn state; input không mất khi lỗi; response cũ không ghi đè phiên mới."
+    },
+    "python": {
+      "remember": "Hàm có input/return rõ; module và exception giữ luồng chương trình dễ lần.",
+      "do": "Tự viết hàm, tách module và thêm unittest từ dữ liệu nhỏ.",
+      "proof": "Phân biệt print/return, mutable default và nơi bắt lỗi; chạy bằng đúng interpreter."
+    },
+    "05": {
+      "remember": "Class/composition phục vụ trách nhiệm và thay dependency, không để đủ số tầng.",
+      "do": "Viết một service dùng kho giả rồi đổi adapter.",
+      "proof": "Quy tắc giữ nguyên khi đổi kho; từ chối không ghi; giải thích self và object được lắp."
+    },
+    "06": {
+      "remember": "Ràng buộc giữ dữ liệu đúng; JOIN và mẫu số quyết định số liệu đúng.",
+      "do": "Thiết kế bảng lớp/bài nộp, viết SQL từ fixture tính tay rồi kiểm transaction.",
+      "proof": "PK/FK/UNIQUE có lý do; count không nhân hàng; lỗi bước sau không để nửa nghiệp vụ."
+    },
+    "07": {
+      "remember": "Router chuyển giao thức; service quyết định quy tắc; dependency lắp phần cần dùng.",
+      "do": "Tự dựng một API có schema, phạm vi và lỗi rõ.",
+      "proof": "Client không tự quyết owner; payload sai bị chặn; lần được request tới service."
+    },
+    "08": {
+      "remember": "Session giữ một phạm vi làm việc; commit thuộc ranh giới nghiệp vụ đã chốt.",
+      "do": "Lưu một nghiệp vụ nhiều bước và cố ý gây lỗi bước hai.",
+      "proof": "Đọc bằng Session mới để xác nhận rollback; query có scope và không commit lẻ."
+    },
+    "09": {
+      "remember": "Xác thực trả lời ai; phân quyền trả lời người đó được làm gì với tài nguyên này.",
+      "do": "Kiểm list/detail/write bằng hai tài khoản khác lớp.",
+      "proof": "Token hợp lệ vẫn không đọc chéo lớp; UI ẩn nút không thay kiểm quyền ở server."
+    },
+    "first": {
+      "remember": "Giá trị caller nhận do return của hàm được gọi quyết định.",
+      "do": "Lần một lượt đăng nhập từ form qua API client tới backend và quay lại.",
+      "proof": "Chỉ được res ở từng nơi chứa gì, nhánh thành công/lỗi và dữ liệu nào vẫn là mock."
+    },
+    "workshop": {
+      "remember": "Xây một lát cắt chạy được rồi mới mở rộng; mỗi checkpoint cần code do mình viết.",
+      "do": "Tự nối UI → API → DB cho lớp học, sau đó giao/nộp/chấm.",
+      "proof": "Reload và đổi tài khoản vẫn đúng; phân biệt test SQLite với kiểm engine thật."
+    },
+    "10": {
+      "remember": "Deadline, retry, quyền và công bố điểm là hợp đồng của toàn luồng.",
+      "do": "Làm cô giao → học sinh nộp → cô chấm và công bố.",
+      "proof": "Điểm 0 hợp lệ; retry không tạo trùng; điểm chưa công bố không lộ trong response."
+    },
+    "11": {
+      "remember": "Server quyết định thời gian/điểm; snapshot đề và mẫu số giữ lịch sử báo cáo.",
+      "do": "Làm một attempt một dạng câu, nộp/chấm và báo cáo từ fixture.",
+      "proof": "Đổi câu hỏi không đổi lịch sử; autosave có thứ tự; kết quả khớp phép tính tay."
+    },
+    "14": {
+      "remember": "Mỗi module cần dữ liệu, quyền, API, UI và ca kiểm cùng một hợp đồng.",
+      "do": "Chọn một lát cắt của lịch, file, thông báo hoặc quản trị rồi làm trọn luồng.",
+      "proof": "Nêu được trạng thái trước/sau và kiểm được lỗi, scope, retry liên quan."
+    },
+    "debug": {
+      "remember": "Sửa nguyên nhân bằng ca tái hiện; test phải thất bại khi lỗi còn tồn tại.",
+      "do": "Điều tra một lỗi do người khác đưa vào bản học.",
+      "proof": "Ghi giả thuyết, expected/actual và regression; không che lỗi bằng giá trị mặc định sai."
+    },
+    "12": {
+      "remember": "Test và CI chỉ chứng minh phạm vi được kiểm; cấu hình và phục hồi cần thử riêng.",
+      "do": "Tạo bộ kiểm cho một tính năng và một hướng dẫn chạy sạch.",
+      "proof": "Test bắt được lỗi đã nêu; lệnh/exit code rõ; có bước đối chiếu sau restore."
+    },
+    "13": {
+      "remember": "Đề mới kiểm cách nghĩ và cách sửa, không chỉ mức quen với code mẫu.",
+      "do": "Tự làm một bài tổng hợp, bảo vệ quyết định và nhận biến thể.",
+      "proof": "Có đặc tả, code, test và lý do đặt file; ghi đúng mức hỗ trợ đã dùng."
+    },
+    "delivery": {
+      "remember": "Bàn giao được khi người khác dựng và kiểm được sản phẩm từ hướng dẫn.",
+      "do": "Dựng một môi trường học khác và làm đề mượn sách.",
+      "proof": "Chạy từ README, phục hồi dữ liệu và xử lý được yêu cầu mới trong miền thư viện."
+    },
+    "reference": {
+      "remember": "Ký hiệu đổi nghĩa theo vị trí; tra xong phải quay về input/output của đoạn code.",
+      "do": "Chọn một ký hiệu hoặc lỗi đang vướng rồi làm bài nhỏ tương ứng.",
+      "proof": "Giải thích trong ngữ cảnh thật và đổi một input để kiểm cách hiểu."
+    },
+    "product": {
+      "remember": "Một lát cắt phải nối hành động người dùng với dữ liệu thật và policy nhất quán.",
+      "do": "Tự chạy core loop bằng các vai trò khác nhau và đối chiếu ma trận nghiệm thu.",
+      "proof": "Reload vẫn đúng, quyền đúng và trạng thái công bố thể hiện cả ở API lẫn UI."
+    },
+    "clean": {
+      "remember": "Refactor đổi tổ chức nội bộ và giữ hợp đồng đã chọn bằng test.",
+      "do": "Tách một trách nhiệm hoặc dependency có vấn đề rồi so diff trước/sau.",
+      "proof": "Một thay đổi mới có nơi sửa rõ; test hành vi cũ qua; không tạo tầng chỉ chuyển tiếp."
+    }
+  },
+  "sections": {
+    "zero": {
+      "0": {
+        "remember": "Chỉ đọc đủ để làm một việc nhỏ ngay sau đó.",
+        "do": "Chọn mục 2 để thử dòng JS đầu tiên.",
+        "proof": "Đổi được dữ liệu và tự nói vì sao output thay đổi."
+      },
+      "1": {
+        "remember": "Cùng một ý có thể viết bằng Python và JavaScript; cú pháp của chúng khác nhau.",
+        "do": "Đọc hai dòng hiển thị số và chỉ ra phần đổi cách viết.",
+        "proof": "Biết dòng JS nào tương đương print(2)."
+      },
+      "2": {
+        "remember": "console.log(...) hiển thị giá trị đưa vào ngoặc.",
+        "do": "Đổi ví dụ để hiển thị số 9.",
+        "proof": "Chạy ra 9, rồi đổi sang một số khác mà không sửa tên console.log.",
+        "drill": {
+          "task": "Chỉ đổi số trong ngoặc để hiển thị 9.",
+          "starter": "console.log(2);",
+          "output": [
+            "9"
+          ],
+          "hint": "Giữ console.log và hai ngoặc; thay đúng một số.",
+          "solution": "console.log(9);",
+          "explain": "Số 9 được đưa vào log. Dòng này chỉ hiển thị, chưa tạo biến."
+        }
+      },
+      "3": {
+        "remember": "Biểu thức được tính trước; log nhận kết quả để hiển thị.",
+        "do": "Tự chọn hai số cộng lại bằng 8.",
+        "proof": "Giải thích được vì sao output là 8, không phải chữ phép tính.",
+        "drill": {
+          "task": "Thay hai số để tổng được hiển thị là 8.",
+          "starter": "console.log(2 + 3);",
+          "output": [
+            "8"
+          ],
+          "hint": "Ví dụ chọn 3 và 5; tự thử một cặp khác sau đó.",
+          "solution": "console.log(3 + 5);",
+          "explain": "Máy tính 3 + 5 trước, rồi log hiển thị số 8."
+        }
+      },
+      "4": {
+        "remember": "Có nháy là chuỗi; không nháy có thể là số hoặc tên biến.",
+        "do": "Hiển thị đúng dòng chữ 2 + 3.",
+        "proof": "Bỏ nháy thì ra 5; giữ nháy thì ra chữ 2 + 3.",
+        "drill": {
+          "task": "Hiển thị đúng chữ 2 + 3, không tính ra 5.",
+          "starter": "console.log(2 + 3);",
+          "output": [
+            "2 + 3"
+          ],
+          "hint": "Văn bản cần một cặp nháy thẳng bao quanh.",
+          "solution": "console.log('2 + 3');",
+          "explain": "Cặp nháy biến phần bên trong thành chuỗi, nên dấu cộng ở đây là chữ được in."
+        }
+      },
+      "5": {
+        "remember": "let tạo tên; đọc tên không có nháy sẽ lấy giá trị của biến.",
+        "do": "Tạo soBai bằng 3 rồi hiển thị nó.",
+        "proof": "Tên biến soBai và chuỗi soBai cho hai kết quả khác nhau.",
+        "drill": {
+          "task": "Tạo soBai bằng 3 rồi hiển thị giá trị của biến.",
+          "starter": "let soBai = 3;\n",
+          "output": [
+            "3"
+          ],
+          "variables": {
+            "soBai": 3
+          },
+          "hint": "Dòng thứ hai gọi log với tên soBai không có nháy.",
+          "solution": "let soBai = 3;\nconsole.log(soBai);",
+          "explain": "Khai báo tạo biến nhưng chưa in. Log đọc giá trị 3 qua tên soBai."
+        }
+      },
+      "6": {
+        "remember": "Gán lại dùng tên đã có; không khai báo let lần thứ hai.",
+        "do": "Tạo diem bằng 7, đổi thành 9 rồi hiển thị.",
+        "proof": "Biến cuối là 9; hai dòng gán chưa tự tạo output.",
+        "drill": {
+          "task": "Đổi diem thành 9 ở dòng thứ hai, sau đó hiển thị.",
+          "starter": "let diem = 7;\ndiem = 8;\nconsole.log(diem);",
+          "output": [
+            "9"
+          ],
+          "variables": {
+            "diem": 9
+          },
+          "hint": "Không thêm let; sửa giá trị gán cho biến đã có.",
+          "solution": "let diem = 7;\ndiem = 9;\nconsole.log(diem);",
+          "explain": "Lần gán sau thay giá trị hiện tại. Dòng log đọc 9."
+        }
+      },
+      "7": {
+        "remember": "Đọc giá trị cũ ở vế phải → tính → gán lại vào vế trái.",
+        "do": "Tạo diem bằng 4 rồi tăng thêm 2.",
+        "proof": "Giải thích được đường 4 → 6 trước khi nhìn kết quả.",
+        "drill": {
+          "task": "Giữ điểm đầu là 4; tăng thêm 2 bằng giá trị cũ rồi hiển thị.",
+          "starter": "let diem = 4;\ndiem = diem + 1;\nconsole.log(diem);",
+          "output": [
+            "6"
+          ],
+          "variables": {
+            "diem": 6
+          },
+          "trace_values": {
+            "diem": [
+              4,
+              6
+            ]
+          },
+          "hint": "Ở vế phải, cộng thêm 2 thay vì 1.",
+          "solution": "let diem = 4;\ndiem = diem + 2;\nconsole.log(diem);",
+          "explain": "Đọc diem là 4 ở vế phải; 4 + 2 thành 6; gán lại, rồi log."
+        }
+      },
+      "8": {
+        "remember": "const cấm gán lại tên; dùng let khi bài toán cần đổi giá trị.",
+        "do": "Giữ hai lần gán tên An rồi Bình, sửa khai báo để chạy được.",
+        "proof": "Đọc được lỗi const và giải thích vì sao đổi sang let hợp lý ở đây.",
+        "drill": {
+          "task": "Giữ cả ba dòng và hai lần đặt tên; chọn khai báo cho phép đổi An thành Bình.",
+          "starter": "const ten = 'An';\nten = 'Bình';\nconsole.log(ten);",
+          "output": [
+            "Bình"
+          ],
+          "variables": {
+            "ten": "Bình"
+          },
+          "trace_values": {
+            "ten": [
+              "An",
+              "Bình"
+            ]
+          },
+          "hint": "Biến cần gán lại thì dùng let thay const.",
+          "solution": "let ten = 'An';\nten = 'Bình';\nconsole.log(ten);",
+          "explain": "Cách đặt tên ban đầu cho phép gán lại. const sẽ từ chối dòng thứ hai."
+        }
+      },
+      "9": {
+        "remember": "Ngoặc thay thứ tự tính; chuỗi cộng số có thể thành nối chữ.",
+        "do": "Sửa phép tính để (2 + 3) nhân 4 và giữ ví dụ nối chữ.",
+        "proof": "Hai dòng lần lượt là 20 và 21; chỉ được nguyên nhân khác nhau.",
+        "drill": {
+          "task": "Thêm ngoặc để dòng đầu ra 20. Dòng nối chữ bên dưới vẫn ra 21.",
+          "starter": "console.log(2 + 3 * 4);\nconsole.log('2' + 1);",
+          "output": [
+            "20",
+            "21"
+          ],
+          "hint": "Ép tính tổng 2 + 3 trước rồi mới nhân 4.",
+          "solution": "console.log((2 + 3) * 4);\nconsole.log('2' + 1);",
+          "explain": "Ngoặc cho 5 rồi nhân 4. Dòng sau nối chuỗi 2 với 1 thành chữ 21."
+        }
+      },
+      "10": {
+        "remember": "= là gán; === là hỏi bằng nhau và trả true/false.",
+        "do": "Với diem bằng 7, hỏi có bằng 7 và có lớn hơn 8 không.",
+        "proof": "Hai dòng là true và false; phân biệt boolean với chuỗi chữ.",
+        "drill": {
+          "task": "Điền hai phép so sánh: diem bằng 7 và diem lớn hơn 8.",
+          "starter": "let diem = 7;\nconsole.log(diem);\nconsole.log(diem);",
+          "output": [
+            "true",
+            "false"
+          ],
+          "variables": {
+            "diem": 7
+          },
+          "hint": "Trong hai log, dùng diem === 7 và diem > 8.",
+          "solution": "let diem = 7;\nconsole.log(diem === 7);\nconsole.log(diem > 8);",
+          "explain": "Hai câu hỏi lần lượt đúng và sai. Chúng không đổi diem."
+        }
+      },
+      "11": {
+        "remember": "Đọc vị trí lỗi rồi sửa một chỗ; chưa thay cả đoạn code.",
+        "do": "Sửa ngoặc bị thiếu trong ví dụ đang có.",
+        "proof": "Code chạy được và nêu rõ đã thêm dấu nào, ở đâu.",
+        "drill": {
+          "task": "Sửa đúng một dấu để dòng này hiển thị 2.",
+          "starter": "console.log(2;",
+          "output": [
+            "2"
+          ],
+          "hint": "Mở ngoặc thì phải đóng ngoặc trước dấu ;.",
+          "solution": "console.log(2);",
+          "explain": "Thiếu ) làm câu lệnh không đủ cú pháp. Thêm đúng dấu đó, không cần đổi số."
+        }
+      },
+      "12": {
+        "remember": "Học if/for/hàm sau khi tự đọc được biến, biểu thức và thứ tự chạy.",
+        "do": "Chọn tiếp F0 hoặc chương JS theo đúng phần còn vướng.",
+        "proof": "Biết bài nào học tiếp và một việc cụ thể sẽ tự làm."
+      },
+      "13": {
+        "remember": "Tự làm lại bằng input mới mới kiểm được cách hiểu.",
+        "do": "Từ ô trống: soBai = 2, tăng 1, hiển thị số và so sánh với 3.",
+        "proof": "Biến cuối là 3; output là 3 và true; sau đó tự đổi số đầu thành 5.",
+        "drill": {
+          "task": "Từ ô trống: tạo soBai = 2, tăng 1, hiển thị số mới rồi so sánh nó với 3.",
+          "starter": "",
+          "output": [
+            "3",
+            "true"
+          ],
+          "variables": {
+            "soBai": 3
+          },
+          "trace_values": {
+            "soBai": [
+              2,
+              3
+            ]
+          },
+          "hint": "Dùng let một lần, gán lại một lần, rồi hai dòng console.log.",
+          "solution": "let soBai = 2;\nsoBai = soBai + 1;\nconsole.log(soBai);\nconsole.log(soBai === 3);",
+          "explain": "Biến đi qua 2 rồi 3. Log đầu đọc số 3; log sau hiển thị kết quả so sánh true."
+        }
+      }
+    }
+  }
+}

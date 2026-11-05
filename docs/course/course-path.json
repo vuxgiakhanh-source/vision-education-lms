@@ -1,0 +1,751 @@
+{
+  "start": "studio-start",
+  "scope": "Học từ nền Python qua dự án nhỏ, tự chia cấu trúc, mở rộng LMS và kiểm chứng bằng code của chính mình.",
+  "stages": [
+    {
+      "name": "0 · Biết mình sẽ làm gì",
+      "lessons": [
+        "studio-start"
+      ],
+      "outcome": "Chốt đề nhỏ, cách học và bằng chứng để đi tiếp."
+    },
+    {
+      "name": "1 · Nối nền Python sang web",
+      "lessons": [
+        "bridge",
+        "api-reading",
+        "markup"
+      ],
+      "outcome": "Tự viết JS cơ bản, đọc API và hiểu HTML/CSS. Phần TS của F0 quay lại ở G2."
+    },
+    {
+      "name": "2 · Tự dựng trang từ thư mục trống",
+      "lessons": [
+        "studio-web"
+      ],
+      "outcome": "Sổ lớp HTML/CSS/JS có sự kiện, render, tìm kiếm và module."
+    },
+    {
+      "name": "3 · Thêm TypeScript và React",
+      "lessons": [
+        "studio-react"
+      ],
+      "outcome": "Tạo môi trường, giải thích entry/import, chia component và state."
+    },
+    {
+      "name": "4 · Tự tổ chức code Python",
+      "lessons": [
+        "studio-python"
+      ],
+      "outcome": "Bản một file → thay yêu cầu → tách file có lý do, giữ hành vi bằng test."
+    },
+    {
+      "name": "5 · Làm một tính năng xuyên hệ thống",
+      "lessons": [
+        "studio-feature"
+      ],
+      "outcome": "Phân tích yêu cầu → API/DB/quyền/UI → thay đổi lưu trữ lớp."
+    },
+    {
+      "name": "6 · Từ một lát cắt đến LMS",
+      "lessons": [
+        "studio-modules"
+      ],
+      "outcome": "Điểm danh có hướng dẫn, tài liệu bớt gợi ý và thông báo tự thiết kế."
+    },
+    {
+      "name": "7 · Tự làm, review và sửa",
+      "lessons": [
+        "studio-transfer"
+      ],
+      "outcome": "Nộp code/bằng chứng, nhận phản hồi có bước sửa và xử lý một đề mới."
+    },
+    {
+      "name": "8 · Chuẩn bị cho người dùng thật",
+      "lessons": [
+        "performance",
+        "release",
+        "operations",
+        "capstone"
+      ],
+      "outcome": "Đo tải, phát hành, phục hồi và nghiệm thu trên môi trường thực tế."
+    }
+  ],
+  "primary_milestones": [
+    "studio-orientation",
+    "python-to-frontend",
+    "html-css-foundation",
+    "studio-vanilla",
+    "studio-react",
+    "studio-python",
+    "studio-feature",
+    "studio-modules",
+    "studio-transfer",
+    "capacity",
+    "releases",
+    "resilience",
+    "graduation"
+  ],
+  "lessons": [
+    {
+      "id": "studio-start",
+      "number": "G0",
+      "short": "Cách học để tự xây",
+      "title": "Từ biết Python đến tự thiết kế dự án",
+      "source": "G0-cach-hoc-de-tu-xay.md",
+      "lab": "syntax",
+      "group": "Đường học chính",
+      "goal": "Chọn một đề nhỏ và hiểu cách đi từ làm cùng đến tự thiết kế, tự kiểm và sửa.",
+      "question": "Làm sao biết mình tự làm được khi đóng lời giải?",
+      "core": "Mỗi chặng có code do chính người học viết và một lần thay yêu cầu. Đường học chính chỉ thêm công cụ khi có việc cần dùng; thư viện chuyên đề để tra ngay lúc vướng. Cấu trúc dự án được suy ra từ trách nhiệm và thay đổi cụ thể.",
+      "steps": [
+        "Viết ví dụ đầu vào/đầu ra của Sổ lớp trước khi code.",
+        "Làm cùng, bớt gợi ý, tự làm rồi xử lý thay đổi.",
+        "Giữ code/kết quả/lý do thiết kế để nhận phản hồi và sửa."
+      ],
+      "trap": "Đọc hiểu và chạy code tham chiếu chưa cho biết mình tự thiết kế được một đề mới.",
+      "terms": [
+        [
+          "yêu cầu",
+          "Hành vi cần đạt, gồm người thao tác, dữ liệu, quy tắc và ví dụ."
+        ],
+        [
+          "ranh giới trách nhiệm",
+          "Phần code sở hữu một quy tắc hoặc một việc có lý do thay đổi rõ."
+        ],
+        [
+          "bằng chứng",
+          "Code tự viết, kết quả kiểm và giải thích có thể đối chiếu."
+        ]
+      ],
+      "practice": [
+        "Chốt năm ví dụ của Sổ lớp.",
+        "Ghi mức hỗ trợ đã dùng khi làm một bài.",
+        "Phân biệt lỗi cú pháp, chạy môi trường và quy tắc sản phẩm."
+      ],
+      "prerequisites": [],
+      "deliverable": "Đề nhỏ, thư mục học riêng và nhật ký cách tự kiểm.",
+      "quiz": [
+        {
+          "q": "Đổi RAM sang DB, điều gì cần xem lại trước?",
+          "choices": [
+            "Trách nhiệm lưu dữ liệu và hợp đồng mà nghiệp vụ cần",
+            "Đổi tên mọi biến",
+            "Thêm interface cho mọi hàm"
+          ],
+          "correct": 0,
+          "why": "Thay cách lưu là một lý do tách adapter; quy tắc tên rỗng có thể giữ nguyên."
+        },
+        {
+          "q": "Đã chạy được code mẫu thì ghi mức nào?",
+          "choices": [
+            "Đã tự thiết kế toàn bộ",
+            "Đã chạy tham chiếu; cần tự viết và làm biến thể để kiểm năng lực",
+            "Không cần làm bài nữa"
+          ],
+          "correct": 1,
+          "why": "Chạy tham chiếu là bằng chứng về mẫu và môi trường, chưa là bài tự làm."
+        },
+        {
+          "q": "Gặp method không có trong bộ tra của sách, nên làm gì?",
+          "choices": [
+            "Bỏ tính năng",
+            "Đoán tác dụng từ tên",
+            "Tìm nguồn/import/docs, đọc input/output/tác dụng và thử nhỏ"
+          ],
+          "correct": 2,
+          "why": "Mục tiêu là tự tra được API mới; bộ tra chọn lọc không chứa mọi thư viện."
+        }
+      ]
+    },
+    {
+      "id": "studio-web",
+      "number": "G1",
+      "short": "Trang web từ thư mục trống",
+      "title": "Tự tạo Sổ lớp bằng HTML, CSS và JavaScript",
+      "source": "G1-trang-web-tu-thu-muc-trong.md",
+      "lab": "css",
+      "group": "Đường học chính",
+      "goal": "Tự tạo từng file và hiểu sự kiện → dữ liệu → render trước framework.",
+      "question": "Bấm Thêm lớp thì ai đọc input, dữ liệu đổi ở đâu và màn hình được vẽ lại thế nào?",
+      "core": "HTML giữ cấu trúc, CSS bố trí hộp, JavaScript nối sự kiện với dữ liệu và render. Viết từng phần chạy được trước khi tách module; kiểm Console/DOM và giữ nội dung người dùng ở textContent.",
+      "steps": [
+        "Dựng một card, toolbar rồi danh sách; quan sát CSS từng thuộc tính.",
+        "Từ click/submit lần theo hàm xử lý, dữ liệu và render.",
+        "Tách data/app bằng export/import rồi làm biến thể ít gợi ý."
+      ],
+      "trap": "Thay DOM không tự thay dữ liệu gốc; dùng hai danh sách độc lập dễ làm tìm kiếm và thêm lớp lệch nhau.",
+      "terms": [
+        [
+          "DOM",
+          "Các phần tử trang mà JavaScript có thể tìm, đọc và cập nhật."
+        ],
+        [
+          "event handler",
+          "Hàm được gọi khi một sự kiện xảy ra; khai báo hàm chưa tự đăng ký sự kiện."
+        ],
+        [
+          "module",
+          "File xuất/nhập những tên cần dùng, có đường dẫn và điểm bắt đầu rõ."
+        ]
+      ],
+      "practice": [
+        "Tự tạo HTML/CSS/JS từ thư mục rỗng.",
+        "Thêm tên hợp lệ, thử trắng và tìm không có kết quả.",
+        "Sửa một import sai rồi giải thích đường nạp file."
+      ],
+      "prerequisites": [
+        "bridge",
+        "markup",
+        "api-reading"
+      ],
+      "deliverable": "Sổ lớp vanilla tự viết, bảng kiểm đầu vào/DOM và một biến thể.",
+      "quiz": [
+        {
+          "q": "Chỉ khai báo function handleSubmit có tự lắng nghe form không?",
+          "choices": [
+            "Có",
+            "Chưa; phải nối hàm với sự kiện",
+            "Chỉ khi tên hàm có Submit"
+          ],
+          "correct": 1,
+          "why": "Hàm là một giá trị; addEventListener nhận nó để gọi vào lúc có sự kiện."
+        },
+        {
+          "q": "Đặt tên lớp người dùng nhập vào nội dung thẻ bằng gì ở bài này?",
+          "choices": [
+            "textContent",
+            "Ghép thẳng vào innerHTML",
+            "eval"
+          ],
+          "correct": 0,
+          "why": "Tên lớp là dữ liệu chữ, không cần phân tích thành HTML có thể thực thi."
+        },
+        {
+          "q": "Reload mất lớp trong bài RAM có phải DB hỏng không?",
+          "choices": [
+            "Có",
+            "Do CSS",
+            "Không; bản này chưa lưu dữ liệu bền"
+          ],
+          "correct": 2,
+          "why": "Phải biết vòng đời dữ liệu của phiên bản đang xây trước khi chẩn đoán."
+        }
+      ]
+    },
+    {
+      "id": "studio-react",
+      "number": "G2",
+      "short": "Từ JS sang TypeScript/React",
+      "title": "Tự tạo project React và hiểu cách chia component",
+      "source": "G2-tu-js-sang-react.md",
+      "lab": "state",
+      "group": "Đường học chính",
+      "goal": "Tạo manifest/config/entry, thêm kiểu và viết lại cùng nghiệp vụ bằng React.",
+      "question": "Khi form và danh sách đều cần dữ liệu lớp, state nên thuộc component nào và vì sao?",
+      "core": "Giữ nghiệp vụ đã hiểu từ G1, thêm TypeScript để mô tả dữ liệu rồi React để render theo state. Parent sở hữu dữ liệu dùng chung; child nhận props/callback. Cấu trúc đến từ dữ liệu và trách nhiệm, không từ việc mỗi thẻ HTML phải thành một component.",
+      "steps": [
+        "Lần đường index.html → main.tsx → App và CSS.",
+        "Đọc kiểu dữ liệu, props, sự kiện và cập nhật state qua một lượt thêm lớp.",
+        "Tách component khi có trách nhiệm rõ; tự thêm biến thể và kiểm build."
+      ],
+      "trap": "TypeScript build qua không tự chứng minh JSON runtime đúng hoặc quy tắc nghiệp vụ đủ.",
+      "terms": [
+        [
+          "entry",
+          "File đầu được môi trường nạp để lắp và khởi chạy ứng dụng."
+        ],
+        [
+          "props",
+          "Dữ liệu/hàm parent truyền cho component con trong một lần render."
+        ],
+        [
+          "state owner",
+          "Component giữ nguồn dữ liệu cần cập nhật và chia cho các con."
+        ]
+      ],
+      "practice": [
+        "Tạo từng file project React mới theo bài.",
+        "Giải thích callback từ con về cha và một lần state đổi.",
+        "Tự thêm hành vi rồi chạy build và kiểm trên trình duyệt."
+      ],
+      "prerequisites": [
+        "studio-web"
+      ],
+      "deliverable": "React Sổ lớp tự viết, sơ đồ component/state và kết quả build/hành vi.",
+      "quiz": [
+        {
+          "q": "Form và list cùng cần danh sách lớp, nên bắt đầu giữ state ở đâu?",
+          "choices": [
+            "Hai bản sao riêng",
+            "Cha chung gần nhất cần phối hợp hai phần",
+            "Trong file CSS"
+          ],
+          "correct": 1,
+          "why": "Một nguồn dữ liệu giúp hai phần nhìn cùng trạng thái; callback cho phép child yêu cầu thay đổi."
+        },
+        {
+          "q": "Một prop callback onCreate được gọi lúc nào?",
+          "choices": [
+            "Khi handler gọi nó với dữ liệu đã đọc",
+            "Ngay khi đặt tên file",
+            "Mỗi lần import type"
+          ],
+          "correct": 0,
+          "why": "Truyền một hàm khác với gọi hàm; lần theo handler tới nơi gọi cụ thể."
+        },
+        {
+          "q": "Đổi một chuỗi thành number bằng type annotation có đủ không?",
+          "choices": [
+            "Có",
+            "React tự đổi",
+            "Không; kiểu không thay thế kiểm/chuyển dữ liệu runtime"
+          ],
+          "correct": 2,
+          "why": "Annotation mô tả kỳ vọng trong lúc kiểm kiểu, không tự chạy parser."
+        }
+      ]
+    },
+    {
+      "id": "studio-python",
+      "number": "G3",
+      "short": "Một file → nhiều module",
+      "title": "Tự tổ chức Python qua từng lần thay yêu cầu",
+      "source": "G3-python-tu-mot-file-den-module.md",
+      "lab": "oop",
+      "group": "Đường học chính",
+      "goal": "Từ dict/hàm quen thuộc suy ra ranh giới domain/storage/use case và nối import.",
+      "question": "Khi nào tách file giúp một thay đổi dễ kiểm hơn, và code nào nên giữ chung?",
+      "core": "Bắt đầu với một file nhỏ để thấy luồng. Khi nhiều lối vào dùng cùng quy tắc hoặc cách lưu thay đổi, tách theo trách nhiệm. So hành vi trước/sau và sửa import từng lần; chỉ thêm abstraction khi nó giải quyết một nhu cầu có thật.",
+      "steps": [
+        "Viết create/list/archive trong một file và kiểm hợp đồng.",
+        "Chỉ ra áp lực thay đổi rồi rút từng trách nhiệm sang module.",
+        "Chạy entry/test từ đúng thư mục và tự thêm một yêu cầu mới."
+      ],
+      "trap": "Nhiều thư mục hơn không tự làm code clean; import vòng thường cho thấy trách nhiệm đang lẫn.",
+      "terms": [
+        [
+          "domain rule",
+          "Quy tắc của bài toán, ví dụ tên rỗng bị từ chối."
+        ],
+        [
+          "use case",
+          "Hàm điều phối một hành động theo quyền và quy tắc đã chọn."
+        ],
+        [
+          "dependency direction",
+          "Chiều một phần code biết và gọi phần khác; cần tránh vòng import."
+        ]
+      ],
+      "practice": [
+        "Tự dựng bản một file trước khi mở reference.",
+        "Vẽ cây file/import trước/sau khi tách.",
+        "Chứng minh từ chối không làm thay đổi dữ liệu."
+      ],
+      "prerequisites": [
+        "studio-start"
+      ],
+      "deliverable": "Hai bản trước/sau, test hành vi và lý do đặt từng hàm.",
+      "quiz": [
+        {
+          "q": "Nên tách quy tắc tên khỏi terminal khi nào?",
+          "choices": [
+            "Khi CLI và HTTP đều cần dùng cùng quy tắc",
+            "Khi muốn đủ số file",
+            "Khi chưa biết hàm làm gì"
+          ],
+          "correct": 0,
+          "why": "Nhiều lối vào dùng cùng quy tắc là một lý do cụ thể để tách và dùng chung."
+        },
+        {
+          "q": "Refactor đúng cần giữ gì?",
+          "choices": [
+            "Chỉ tên file",
+            "Hành vi/hợp đồng đã chốt và kiểm được",
+            "Số dòng code"
+          ],
+          "correct": 1,
+          "why": "Đổi tổ chức nội bộ cần kiểm lại đường đúng, từ chối và dữ liệu sau thao tác."
+        },
+        {
+          "q": "domain import main, main lại import domain thường gợi ý điều gì?",
+          "choices": [
+            "Cấu trúc luôn đúng",
+            "Cần đổi tên extension",
+            "Trách nhiệm hoặc chiều phụ thuộc cần xem lại"
+          ],
+          "correct": 2,
+          "why": "Entry lắp các phần; quy tắc không cần biết entry để chạy."
+        }
+      ]
+    },
+    {
+      "id": "studio-feature",
+      "number": "G4",
+      "short": "Thiết kế xuyên UI/API/DB",
+      "title": "Từ yêu cầu lớp học đến một thay đổi xuyên hệ thống",
+      "source": "G4-thiet-ke-tinh-nang-xuyen-he-thong.md",
+      "lab": "transaction",
+      "group": "Đường học chính",
+      "goal": "Suy ra hợp đồng/quyền/dữ liệu/file cần đổi và kiểm hành vi bằng request/DB/UI.",
+      "question": "Người dùng nói lưu trữ lớp: cần chốt gì trước khi thêm một cột và một nút?",
+      "core": "Dịch yêu cầu thành trạng thái và hành động có quyền rõ. Lần một request tạo/đổi tên qua router/schema/service/repository trước; rồi thêm lưu trữ lớp, giữ lịch sử và xét mọi đường ghi liên quan. Transaction và scope thuộc hợp đồng, không chỉ giao diện.",
+      "steps": [
+        "Viết ví dụ trước/sau, actor và quy tắc từ chối.",
+        "Lần create/rename thật qua các file, hiểu dữ liệu ở mỗi boundary.",
+        "Thiết kế lưu trữ lớp và đối chiếu patch sau khi tự thử."
+      ],
+      "trap": "Ẩn nút tạo bài không chặn request trực tiếp; lưu trữ lớp cần chốt cả retry, đọc lịch sử và các đường ghi.",
+      "terms": [
+        [
+          "DTO/schema",
+          "Hợp đồng dữ liệu đi qua API, có thể khác bảng DB."
+        ],
+        [
+          "transaction",
+          "Nhóm thay đổi cần được xác nhận hoặc hủy theo một nghiệp vụ."
+        ],
+        [
+          "composition root",
+          "Chỗ tạo và nối các object dùng chung dependency phù hợp."
+        ]
+      ],
+      "practice": [
+        "Vẽ một request từ handler tới DB và ngược lại.",
+        "Lập bảng chỗ cần đổi cho lưu trữ lớp.",
+        "Kiểm quyền chéo lớp và dữ liệu khi từ chối."
+      ],
+      "prerequisites": [
+        "studio-react",
+        "studio-python"
+      ],
+      "deliverable": "Đặc tả, cây trách nhiệm, tính năng xuyên hệ thống và bằng chứng kiểm.",
+      "quiz": [
+        {
+          "q": "Ẩn nút trên lớp đã lưu trữ có đủ thực hiện policy không?",
+          "choices": [
+            "Có",
+            "Chưa; backend phải kiểm đường ghi theo policy",
+            "Chỉ cần CSS disabled"
+          ],
+          "correct": 1,
+          "why": "Client khác hoặc request thủ công vẫn gọi được API; quy tắc cần ở nơi thực hiện hành động."
+        },
+        {
+          "q": "Ai quyết định teacher_id của thao tác có quyền?",
+          "choices": [
+            "Actor được backend xác minh và policy",
+            "Mọi giá trị client gửi",
+            "Tên file router"
+          ],
+          "correct": 0,
+          "why": "Dữ liệu client không tự chứng minh danh tính hoặc phạm vi được thao tác."
+        },
+        {
+          "q": "Thêm archived ở DB là xong tính năng chưa?",
+          "choices": [
+            "Đã xong",
+            "Chỉ cần đổi type TS",
+            "Chưa; cần hợp đồng API/UI/quyền/migration và kiểm hành vi liên quan"
+          ],
+          "correct": 2,
+          "why": "Một thay đổi trạng thái ảnh hưởng các hành động; phải lần cả đường đọc và ghi theo policy."
+        }
+      ]
+    },
+    {
+      "id": "studio-modules",
+      "number": "G5",
+      "short": "Mở rộng thành toàn LMS",
+      "title": "Dùng cùng cách thiết kế để xây các module LMS",
+      "source": "G5-tu-lat-cat-den-toan-bo-lms.md",
+      "lab": "permission",
+      "group": "Đường học chính",
+      "goal": "Làm điểm danh có hướng dẫn rồi giảm hỗ trợ khi thiết kế tài liệu/thông báo và các module khác.",
+      "question": "Một buổi điểm danh cần giữ những gì để hai giáo viên không vô tình ghi đè nhau?",
+      "core": "Mỗi module bắt đầu từ hành động, dữ liệu, quyền và trạng thái; kiểm bằng ví dụ trước code. Điểm danh là bài làm cùng khác CRUD; tài liệu giảm gợi ý; thông báo là đề tự thiết kế. Mở rộng từng module và nghiệm thu luồng, rồi mới thêm vận hành phù hợp workload.",
+      "steps": [
+        "Chốt policy và dựng điểm danh từng phần có kết quả kiểm.",
+        "Tự điền ranh giới còn thiếu ở tài liệu/file trước khi xem thiết kế gợi ý.",
+        "Tự phân tích thông báo và lập kế hoạch module theo sự phụ thuộc."
+      ],
+      "trap": "Có các màn hình của mọi module chưa chứng minh dữ liệu, quyền và nghiệp vụ đã chạy xuyên suốt.",
+      "terms": [
+        [
+          "snapshot",
+          "Bản chụp dữ liệu liên quan ở một thời điểm để giữ lịch sử theo policy."
+        ],
+        [
+          "revision",
+          "Phiên bản dùng phát hiện cập nhật dựa trên dữ liệu cũ."
+        ],
+        [
+          "side effect",
+          "Tác dụng như ghi file/gửi thông báo cần xét lỗi và retry ngoài thay đổi dữ liệu thuần."
+        ]
+      ],
+      "practice": [
+        "Làm điểm danh và thử stale revision/ghi thiếu học sinh.",
+        "Thiết kế file có quyền tải và xử lý lỗi lưu ngoài DB.",
+        "Tự thiết kế thông báo với retry và phạm vi rõ."
+      ],
+      "prerequisites": [
+        "studio-feature"
+      ],
+      "deliverable": "Module điểm danh, phiếu thiết kế module thứ hai/thứ ba và kế hoạch LMS theo luồng.",
+      "quiz": [
+        {
+          "q": "Hai người cùng sửa buổi điểm danh từ revision cũ cần policy nào?",
+          "choices": [
+            "Ai gửi sau luôn âm thầm thắng",
+            "Phát hiện xung đột và xử lý theo hợp đồng",
+            "Chỉ đổi màu nút"
+          ],
+          "correct": 1,
+          "why": "Revision và điều kiện ghi giúp phát hiện stale update; phải kiểm nguyên tử ở nơi lưu thật."
+        },
+        {
+          "q": "Giữ roster snapshot để làm gì?",
+          "choices": [
+            "Giữ danh sách thuộc buổi theo policy lịch sử đã chọn",
+            "Thay toàn bộ xác thực",
+            "Làm CSS dễ hơn"
+          ],
+          "correct": 0,
+          "why": "Thành viên lớp về sau có thể đổi; báo cáo cần biết đối tượng được xét ở buổi đó."
+        },
+        {
+          "q": "DB commit thành công có chắc email đã đến không?",
+          "choices": [
+            "Chắc chắn",
+            "Nếu đặt tên send_mail",
+            "Không; cần trạng thái/tác vụ ngoài DB và cách xử lý retry/lỗi"
+          ],
+          "correct": 2,
+          "why": "Tác dụng ngoài DB không tự cùng transaction; phải chốt cách giao nhận và quan sát."
+        }
+      ]
+    },
+    {
+      "id": "studio-transfer",
+      "number": "G6",
+      "short": "Tự làm và nhận phản hồi",
+      "title": "Chứng minh tự thiết kế qua bài mới và vòng review",
+      "source": "G6-tu-lam-va-duoc-phan-hoi.md",
+      "lab": "permission",
+      "group": "Đường học chính",
+      "goal": "Tự nộp một tính năng từ đề trắng, nhận xét theo bằng chứng và sửa được biến thể.",
+      "question": "Một lời nhận xét phải chỉ ra lỗi và bước sửa nào để giúp mình tiến bộ?",
+      "core": "Tách bằng chứng chạy mẫu khỏi code tự viết. Review đối chiếu hợp đồng, trách nhiệm, quyền, dữ liệu và ca kiểm; mỗi nhận xét cần vị trí, ví dụ lỗi và cách kiểm sau sửa. Mở gợi ý theo mức, làm lại biến thể và ghi hỗ trợ đã dùng.",
+      "steps": [
+        "Chấm một lời giải có lỗi bằng ca đầu vào cụ thể.",
+        "Nộp đề/quyết định/code/lệnh kiểm/kết quả thay vì ảnh màn hình đơn lẻ.",
+        "Sửa theo nhận xét rồi tự làm đề thay đổi có tài liệu tra cứu."
+      ],
+      "trap": "Sách tĩnh chưa tự xem/chấm project riêng; tiêu chí tick và trắc nghiệm không thay buổi review code thực.",
+      "terms": [
+        [
+          "rubric",
+          "Tiêu chí đối chiếu sản phẩm, kèm dấu hiệu lỗi và bước sửa."
+        ],
+        [
+          "regression case",
+          "Ca kiểm chứng minh lỗi đã sửa và phát hiện khi nó quay lại."
+        ],
+        [
+          "transfer",
+          "Vận dụng cách nghĩ vào yêu cầu/miền mới thay vì chỉ đổi tên ví dụ."
+        ]
+      ],
+      "practice": [
+        "Tìm lỗi một thiết kế và đưa ca chứng minh.",
+        "Gửi gói bài thực hành để review theo mẫu.",
+        "Tự làm biến thể rồi giải thích những chỗ phải sửa."
+      ],
+      "prerequisites": [
+        "studio-modules"
+      ],
+      "deliverable": "Bài tự làm, nhận xét có bằng chứng, diff sửa và biến thể chưa xem mẫu.",
+      "quiz": [
+        {
+          "q": "Nhận xét nào giúp sửa code cụ thể?",
+          "choices": [
+            "Chưa clean",
+            "Validation diễn ra sau append; thử tên trắng và kiểm list giữ nguyên sau khi sửa",
+            "Thêm nhiều thư mục"
+          ],
+          "correct": 1,
+          "why": "Nhận xét có vị trí/nguyên nhân/ca kiểm dẫn tới một bước sửa kiểm được."
+        },
+        {
+          "q": "Tự làm có được tra docs của một API không?",
+          "choices": [
+            "Được; hiểu hợp đồng, tự chọn cách dùng và ghi nguồn hỗ trợ",
+            "Không bao giờ",
+            "Chỉ khi nhớ toàn bộ thư viện"
+          ],
+          "correct": 0,
+          "why": "Năng lực gồm đọc tài liệu và áp dụng; xem trọn implementation rồi chép là mức hỗ trợ khác."
+        },
+        {
+          "q": "Sau sửa theo review, bằng chứng tốt tiếp theo là gì?",
+          "choices": [
+            "Tick mọi mốc",
+            "Đổi tên file",
+            "Chạy ca đã lỗi và tự xử lý một biến thể mới"
+          ],
+          "correct": 2,
+          "why": "Cần kiểm lời sửa và khả năng vận dụng, không suy từ tiến độ tự đánh dấu."
+        }
+      ]
+    }
+  ],
+  "milestones": [
+    {
+      "id": "studio-orientation",
+      "name": "G0 · Chốt đề và cách tự kiểm",
+      "lessons": [
+        "studio-start"
+      ],
+      "task": "Viết hợp đồng nhỏ của Sổ lớp trước khi mở lời giải.",
+      "checks": [
+        "Có ví dụ đúng/sai/biên và policy trùng tên.",
+        "Có thư mục học riêng, biết code chạy ở đâu.",
+        "Ghi rõ mức hỗ trợ và bằng chứng cần nộp."
+      ],
+      "change": "Người dùng muốn cấm trùng tên: xác định phạm vi trước khi đổi code.",
+      "artifact": "Đề, bảng ví dụ và điểm bắt đầu của buổi học."
+    },
+    {
+      "id": "studio-vanilla",
+      "name": "G1 · Sổ lớp từ thư mục trắng",
+      "lessons": [
+        "studio-web"
+      ],
+      "task": "Tự tạo và nối HTML/CSS/JS để thêm/tìm lớp trong RAM.",
+      "checks": [
+        "Giải thích sự kiện → dữ liệu → render bằng source tự viết.",
+        "Chữ dài/màn hẹp/tên trắng có kết quả rõ.",
+        "Tự sửa import/selector sai và làm bài bớt gợi ý."
+      ],
+      "change": "Thêm đổi tên hoặc trạng thái mới theo hợp đồng bài.",
+      "artifact": "Các file tự tạo, bảng kiểm và nhật ký debug."
+    },
+    {
+      "id": "studio-react",
+      "name": "G2 · React với state có chủ",
+      "lessons": [
+        "studio-react"
+      ],
+      "task": "Tự tạo project và chuyển Sổ lớp sang TypeScript/React.",
+      "checks": [
+        "Lần đúng entry/import/config/script từ thư mục mới.",
+        "State có một chủ, props/callback và cập nhật giữ hành vi.",
+        "Build qua và thao tác tạo/tìm/lỗi được kiểm thực tế."
+      ],
+      "change": "Thêm hành vi mới rồi giải thích component nào cần đổi.",
+      "artifact": "Project React, sơ đồ state và kết quả build/browser."
+    },
+    {
+      "id": "studio-python",
+      "name": "G3 · Tách module có lý do",
+      "lessons": [
+        "studio-python"
+      ],
+      "task": "Tự viết bản một file rồi tách trách nhiệm sau một yêu cầu đổi.",
+      "checks": [
+        "Giải thích được nơi sở hữu từng quy tắc.",
+        "Import không vòng, entry chạy từ thư mục ghi trong README.",
+        "Hành vi trước/sau và dữ liệu khi từ chối được kiểm."
+      ],
+      "change": "Thêm lối vào mới hoặc đổi kho lưu theo đề mà giữ quy tắc.",
+      "artifact": "Hai cây file, code, test và lý do quyết định."
+    },
+    {
+      "id": "studio-feature",
+      "name": "G4 · Yêu cầu → thay đổi xuyên hệ thống",
+      "lessons": [
+        "studio-feature"
+      ],
+      "task": "Từ policy lưu trữ lớp suy ra dữ liệu, quyền, API, UI và test.",
+      "checks": [
+        "Lần request tạo/đổi tên thật qua từng boundary.",
+        "Liệt kê và xử lý các đường đọc/ghi bị policy ảnh hưởng.",
+        "Chứng minh lịch sử giữ nguyên, scope đúng và retry theo hợp đồng."
+      ],
+      "change": "Đổi một policy sau lưu trữ, giải thích và sửa các nơi liên quan.",
+      "artifact": "Đặc tả, patch tự viết, ma trận kiểm và kết quả thực tế."
+    },
+    {
+      "id": "studio-modules",
+      "name": "G5 · Mở rộng có giảm gợi ý",
+      "lessons": [
+        "studio-modules"
+      ],
+      "task": "Làm điểm danh rồi thiết kế hai module với mức hỗ trợ giảm dần.",
+      "checks": [
+        "Điểm danh xử lý snapshot/status/revision và lỗi không ghi nửa chừng.",
+        "Tài liệu có quyền và policy cho file/DB không cùng tác dụng.",
+        "Thông báo có thiết kế độc lập và kế hoạch kiểm retry/phạm vi."
+      ],
+      "change": "Thành viên đổi hoặc hai người cùng cập nhật; giữ đúng policy lịch sử.",
+      "artifact": "Code/test module, phiếu API/dữ liệu/quyền và thiết kế độc lập."
+    },
+    {
+      "id": "studio-transfer",
+      "name": "G6 · Bài mới qua review và biến thể",
+      "lessons": [
+        "studio-transfer"
+      ],
+      "task": "Nộp bài từ đề trắng, sửa nhận xét có bằng chứng rồi xử lý yêu cầu mới.",
+      "checks": [
+        "Code và lý do đặt file do mình tự giải thích.",
+        "Nhận xét dẫn tới một ca lỗi và bước sửa kiểm được.",
+        "Biến thể mới chạy đúng, ghi mức hỗ trợ và giới hạn."
+      ],
+      "change": "Đổi miền bài toán hoặc quy tắc dữ liệu theo đề G6.",
+      "artifact": "Gói bài, review, diff sửa và kết quả ca mới."
+    }
+  ],
+  "sources": [
+    "studio/README.md",
+    "studio/attendance/README.md",
+    "studio/attendance/core.py",
+    "studio/attendance/demo.py",
+    "studio/attendance/renewal_reference.py",
+    "studio/attendance/review_lab.py",
+    "studio/attendance/storage.py",
+    "studio/attendance/test_attendance.py",
+    "studio/attendance/test_review_lab.py",
+    "studio/backend/.gitignore",
+    "studio/backend/README.md",
+    "studio/backend/archive-solution.patch",
+    "studio/backend/archive_migration_test_solution.py",
+    "studio/backend/archive_test_solution.py",
+    "studio/backend/class-feature-split.patch",
+    "studio/backend/domain.py",
+    "studio/backend/main.py",
+    "studio/backend/prepare_workshop.py",
+    "studio/backend/singlefile.py",
+    "studio/backend/storage.py",
+    "studio/backend/test_use_cases.py",
+    "studio/backend/use_cases.py",
+    "studio/frontend/README.md",
+    "studio/frontend/react/.gitignore",
+    "studio/frontend/react/App.tsx",
+    "studio/frontend/react/ClassList.tsx",
+    "studio/frontend/react/assets.d.ts",
+    "studio/frontend/react/data.ts",
+    "studio/frontend/react/index.html",
+    "studio/frontend/react/main.tsx",
+    "studio/frontend/react/package-lock.json",
+    "studio/frontend/react/package.json",
+    "studio/frontend/react/style.css",
+    "studio/frontend/react/tsconfig.json",
+    "studio/frontend/react/vite.config.ts",
+    "studio/frontend/vanilla/app.js",
+    "studio/frontend/vanilla/data.js",
+    "studio/frontend/vanilla/index.html",
+    "studio/frontend/vanilla/style.css"
+  ]
+}

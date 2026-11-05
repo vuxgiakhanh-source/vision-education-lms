@@ -1,0 +1,123 @@
+{
+  "lessons": [
+    {
+      "id": "product", "number": "P0", "short": "Sản phẩm xuyên suốt",
+      "title": "Xây luồng giao, nộp, chấm và công bố có thể nghiệm thu",
+      "source": "23-san-pham-hoan-chinh.md", "lab": "transaction",
+      "group": "Từ bản học đến sản phẩm",
+      "goal": "Chạy core loop bằng hai tài khoản và kiểm quyền, retry, deadline, điểm chưa công bố.",
+      "question": "Một màn hình báo đã nộp phải có những bằng chứng nào trước khi gọi là hoàn thành?",
+      "core": "Hoàn chỉnh phải gắn với phiên bản, phạm vi và hành vi quan sát được. Đi từ contract đến schema, service, API và UI; kiểm DB bằng Session mới và response của đúng vai trò. Lab đã có core loop để đối chiếu, các module khác vẫn cần tự triển khai theo phạm vi đã chốt.",
+      "steps": ["Viết rule, fixture và ma trận quyền trước code.", "Lần theo một lần nộp qua form, DTO, service, transaction và DB.", "Dùng nhiều tài khoản, refresh và tình huống lỗi để nghiệm thu."],
+      "trap": "Code lớp học hoặc core loop chưa phải toàn bộ LMS. Giao diện và unit test không tự chứng minh browser/MySQL hay mọi module đã xong.",
+      "terms": [["acceptance matrix", "Bảng yêu cầu, tình huống, kết quả và bằng chứng để nghiệm thu một phiên bản."], ["invariant", "Điều phải luôn đúng sau nghiệp vụ, như một bản nộp cuối cho mỗi cặp bài và học sinh."], ["ADR", "Ghi vấn đề, lựa chọn kiến trúc, hậu quả và điều kiện xét lại quyết định."]],
+      "practice": ["Chạy giao → nộp → chấm 0 chưa công bố → công bố bằng hai browser profile.", "Kiểm trực tiếp JSON học sinh và row DB sau retry cùng/khác nội dung.", "Tự thêm nháp/công bố bài tập và kiểm mọi đường đọc/ghi liên quan."],
+      "prerequisites": ["workshop", "10", "09"],
+      "deliverable": "Core loop, ma trận nghiệm thu, Network ẩn token và test dữ liệu sau lỗi.",
+      "quiz": [
+        {"q":"Cô đã chấm 0 nhưng chưa công bố. API học sinh nên trả gì theo lab?", "choices":["Điểm 0 rồi dùng CSS ẩn", "score=null theo DTO được phép", "Toàn bộ ORM record"], "correct":1, "why":"Quyền dữ liệu nằm ở response server. Client nhận điểm thật rồi ẩn UI vẫn là lộ dữ liệu."},
+        {"q":"Sau mất response, nộp lại cùng nội dung đã trim. Invariant nào cần kiểm?", "choices":["Id và timestamp cũ, một row", "Tạo row mới để dễ retry", "Đổi timestamp thành giờ retry"], "correct":0, "why":"Hợp đồng lab trả bản đã xác nhận. Kiểm cả response và DB, không chỉ thông báo thành công."},
+        {"q":"SELECT FOR UPDATE trong SQLite test có chứng minh khóa MySQL đúng không?", "choices":["Có nếu tests xanh", "Không, cần kiểm MySQL với Session cạnh tranh", "Có nếu thêm nhiều unit test"], "correct":1, "why":"Hành vi locking/isolation khác DB. Lab giữ UNIQUE và có test MySQL opt-in để kiểm điều đó."},
+        {"q":"Thêm trạng thái nháp bài tập chỉ cần sửa nơi nào?", "choices":["Chỉ card React", "Chỉ một cột DB", "Schema/migration, quyền, API, UI và tests theo tác động"], "correct":2, "why":"Bài nháp cần bị chặn ở API, submission và các đường tài liệu liên quan; ẩn card không đủ."}
+      ]
+    },
+    {
+      "id":"clean", "number":"P1", "short":"Clean code & refactor",
+      "title":"Refactor với hợp đồng và test bảo vệ", "source":"24-clean-code-refactor.md", "lab":"oop",
+      "group":"Từ bản học đến sản phẩm", "goal":"Giảm phụ thuộc service vào chi tiết repository và chứng minh hành vi giữ đúng.",
+      "question":"Tách một class thành năm class đã làm code dễ bảo trì hơn chưa?",
+      "core":"Đánh giá clean code bằng khả năng tìm rule, hiểu tác dụng, thay yêu cầu và kiểm lỗi. Refactor ClassService dùng Transaction dependency thay repository.db; composition root vẫn phải lắp cùng Session. Kiến trúc cần trách nhiệm có thật và mức tách phù hợp.",
+      "steps":["Ghi hợp đồng và test behavior trước refactor.", "Đổi dependency nhỏ, giữ query/API/quyền khi chưa có yêu cầu khác.", "Review diff rồi chạy tests rollback, scope và workflow."],
+      "trap":"Thêm interface không tự bảo đảm atomic. Repository và transaction dùng Session khác nhau vẫn sai dù tên class đẹp.",
+      "terms":[["refactor", "Đổi cấu trúc nội bộ với hợp đồng hành vi được bảo vệ."],["composition root", "Nơi lắp dependency cụ thể cho use case; phải giữ lifecycle và Session đúng."],["transaction boundary", "Phạm vi nghiệp vụ cùng thành công hoặc rollback, không phải commit riêng từng repository."]],
+      "practice":["Làm lại before/after ClassService bằng Transaction Protocol.","Tách workflow thành module nhỏ mà giữ API contract.","Gây lỗi lắp hai Session và viết integration test phát hiện."],
+      "prerequisites":["05","08","product"], "deliverable":"Diff refactor, lý do tách trách nhiệm và test trước/sau.",
+      "quiz":[
+        {"q":"Sau refactor, điều gì bảo đảm hai repository ghi atomic?", "choices":["Tên UnitOfWork", "Cùng Session/transaction và không commit riêng", "Mỗi class có interface"], "correct":1, "why":"Atomic phụ thuộc transaction thực, không phải tên pattern."},
+        {"q":"Test nào bắt được orphan sau lỗi bước hai tốt hơn?", "choices":["Assert commit gọi một lần", "Đếm số class", "Session mới kiểm dữ liệu không còn"], "correct":2, "why":"Quan sát dữ liệu đã commit kiểm được effect thực; mock cuộc gọi có thể bỏ sót commit sớm."},
+        {"q":"Service dùng Transaction nhưng vẫn tạo ORM model. Nên mô tả thế nào?", "choices":["Đã độc lập hoàn toàn ORM", "Đã tách commit/rollback nhưng còn phụ thuộc ORM", "Không có cải thiện nào"], "correct":1, "why":"Nói chính xác mức tách; chỉ thêm domain mapping khi lợi ích đủ rõ."},
+        {"q":"Khi nào thêm abstraction có lý do?", "choices":["Khi cần thay/test một dependency có contract rõ", "Mọi hàm bắt buộc thành class", "Để tăng số folder"], "correct":0, "why":"Abstraction giải quyết trách nhiệm/thay thế thật; nhiều lớp có thể làm luồng khó hiểu hơn."}
+      ]
+    },
+    {
+      "id":"performance", "number":"P2", "short":"Đo tải & mở rộng",
+      "title":"Đo được workload, tìm nghẽn và kiểm dữ liệu sau tải", "source":"25-hieu-nang-chiu-tai.md", "lab":"transaction",
+      "group":"Từ bản học đến sản phẩm", "goal":"Chạy k6 có threshold, phân biệt offered/achieved rate và so tối ưu có bằng chứng.",
+      "question":"Có 10.000 tài khoản nghĩa là server đang xử lý 10.000 request cùng lúc không?",
+      "core":"Định nghĩa user hoạt động, nhịp thao tác, mix đọc/ghi, dữ liệu và burst. Đo p95/p99, lỗi, business checks, dropped iterations và tài nguyên. Chỉ kết luận cho workload/cấu hình đã đo, đồng thời kiểm không trùng/mất/lộ dữ liệu.",
+      "steps":["Chốt workload và mục tiêu, dựng dataset/fixture riêng.","Smoke rồi baseline/stress/soak theo mục tiêu; giữ log và cấu hình.","Tối ưu một nguyên nhân, đo lại cùng điều kiện và kiểm DB."],
+      "trap":"Đặt RATE=100 không chứng minh phục vụ 100 request/giây nếu generator bỏ iteration hoặc endpoint chỉ trả lỗi nhanh.",
+      "terms":[["p95", "Phân vị 95 của thời gian phản hồi trong tập mẫu đã đo; không thay thế p99 và tỉ lệ lỗi."],["offered rate", "Nhịp công việc muốn phát; cần so với nhịp thực sự đạt và iteration bị bỏ."],["pool budget", "Tổng connection theo replica × worker × (pool_size + max_overflow), cộng các client khác."]],
+      "practice":["Chạy read/submit baseline và điền REPORT với cấu hình thật.","Test hai Session MySQL cạnh tranh và kiểm invariant sau tải.","Tìm bottleneck khóa assignment, tối ưu rồi so trước/sau."],
+      "prerequisites":["product","06","08","12"], "deliverable":"Script/scenario, report, EXPLAIN, diff tối ưu và kiểm DB sau tải.",
+      "quiz":[
+        {"q":"k6 có checks nhưng không đặt threshold cho checks. Business check sai có chắc exit lỗi không?", "choices":["Luôn chắc", "Không; cần threshold quyết định pass/fail", "Chỉ cần nhiều VU"], "correct":1, "why":"Check quan sát assertion, threshold quyết định tiêu chí toàn lượt đo."},
+        {"q":"Hai worker, mỗi worker pool 5 và overflow 5 có trần API connection lý thuyết bao nhiêu?", "choices":["5", "10", "20"], "correct":2, "why":"Pool riêng theo process: 2 × (5+5)=20, còn phải cộng migration/jobs/admin và xét DB headroom."},
+        {"q":"MODE submit lần sau chủ yếu trả bản đã có. Kết quả chứng minh gì?", "choices":["Benchmark insert mới", "Workload retry theo dataset đó", "Toàn hệ thống chịu mọi kiểu tải"], "correct":1, "why":"Retry và insert có chi phí khác; báo cáo phải ghi đúng workload."},
+        {"q":"Sau tối ưu latency, query nào cần kiểm?", "choices":["Invariant không trùng và dữ liệu đúng chủ/nội dung", "Chỉ số dòng code", "Chỉ /health"], "correct":0, "why":"Hiệu năng không được làm sai correctness/quyền; kiểm response và trạng thái DB."}
+      ]
+    },
+    {
+      "id":"release", "number":"P3", "short":"Triển khai & CI/CD",
+      "title":"Phát hành tái lập, migration và kế hoạch quay lại", "source":"26-trien-khai-ci-cd.md", "lab":"http",
+      "group":"Từ bản học đến sản phẩm", "goal":"Dựng deployment lab và biết source, artifact, schema của release.",
+      "question":"Quay lại image cũ có tự lấy lại dữ liệu đã bị migration xóa không?",
+      "core":"Release gồm source, dependency, artifact và schema. Đưa migration vào job riêng, kiểm readiness và smoke nghiệp vụ, giữ bản trước. Rollback code và phục hồi dữ liệu là hai thao tác khác, phải thử trên môi trường riêng.",
+      "steps":["Đọc Dockerfile/Compose/proxy và dựng lab từ môi trường sạch.","Chạy migration, kiểm version rồi smoke nhiều tài khoản.","Gây lỗi staging, quay image và restore DB mới theo runbook."],
+      "trap":"Healthcheck xanh không thay smoke nghiệp vụ, và unhealthy không mặc nhiên được Compose restart.",
+      "terms":[["artifact", "Image/bundle cụ thể đã build và kiểm; lưu digest/version cho release."],["readiness", "Khả năng phục vụ theo dependency cần thiết; khác liveness process."],["expand/contract", "Thay schema qua bước tương thích, backfill, chuyển code rồi mới bỏ phần cũ."]],
+      "practice":["Build/start Compose lab riêng rồi kiểm /api/ready và core loop.","Review migration và giữ release record đủ bốn loại version.","Restore DB mới và diễn tập quay lại image trước."],
+      "prerequisites":["product","12","delivery"], "deliverable":"Staging README, release record, migration/rollback/restore evidence.",
+      "quiz":[
+        {"q":"Mỗi API worker startup cùng chạy migration có nên là mặc định?", "choices":["Có để chạy nhanh", "Không; dùng job riêng có thứ tự và kiểm kết quả", "Không cần migration"], "correct":1, "why":"Tránh nhiều process đồng thời thay schema; migration cần review và điều phối."},
+        {"q":"Đổi file .env VITE_* sau khi frontend đã build có tự đổi bundle không?", "choices":["Không; cần quy trình build/runtime config phù hợp", "Luôn đổi ngay", "Chỉ đổi nếu reload browser"], "correct":0, "why":"Giá trị được nhúng lúc build trong lab, không tự đọc env server lúc browser chạy."},
+        {"q":"Code cũ có tạo lại dữ liệu đã drop được không?", "choices":["Có nếu tag đúng", "Có nếu health xanh", "Không; cần kế hoạch restore/forward fix dữ liệu"], "correct":2, "why":"Rollback artifact không đảo ngược dữ liệu đã mất."},
+        {"q":"depends_on service_healthy có thay được giám sát lúc vận hành không?", "choices":["Có cho mọi sự cố", "Không, chủ yếu điều phối readiness khởi động", "Có nếu tăng retries"], "correct":1, "why":"Cần alert/runbook và thử phục hồi dependency sau khởi động."}
+      ]
+    },
+    {
+      "id":"operations", "number":"P4", "short":"Bảo mật & vận hành",
+      "title":"Chốt vòng đời phiên, quan sát và phục hồi qua sự cố", "source":"27-bao-mat-va-van-hanh.md", "lab":"permission",
+      "group":"Từ bản học đến sản phẩm", "goal":"Viết policy phiên có test và diễn tập lỗi/restore theo mục tiêu đo được.",
+      "question":"JWT còn hạn có chắc tiếp tục dùng được sau khi khóa tài khoản hoặc reset password không?",
+      "core":"Xác thực, phiên và quyền tài nguyên phải giữ đúng qua thay đổi. Threat model bao phủ mọi đường API/file/job/cache. Quan sát lỗi bằng request/log/metrics, đặt alert có hành động, đo restore theo RPO/RTO; chưa triển khai một policy thì không đánh dấu đã có.",
+      "steps":["Chốt tài sản, điểm vào, policy storage/expiry/revocation.","Test sai/hết hạn/nhận lặp/cạnh tranh và thu hồi quyền.","Gây lỗi staging, tìm request và phục hồi/đối chiếu dữ liệu."],
+      "trap":"Fixture token CLI không phải login production. Một file backup tồn tại chưa chứng minh phục hồi đúng hoặc đúng hạn.",
+      "terms":[["revocation", "Thu hồi quyền dùng phiên/token theo policy server, không chỉ xóa token ở client."],["RPO", "Mức mất dữ liệu tối đa chấp nhận theo thời gian, cần cơ chế backup/PITR phù hợp."],["RTO", "Thời gian mục tiêu khôi phục dịch vụ, phải được diễn tập và đo."]],
+      "practice":["Thiết kế refresh/reset single-use và test hai request cạnh tranh.","Dò một lỗi bằng X-Request-ID mà không log token/body riêng tư.","Restore DB học mới, kiểm dữ liệu và đo RPO/RTO thực tế."],
+      "prerequisites":["09","debug","release"], "deliverable":"Threat model, policy/tests phiên, runbook và kết quả diễn tập.",
+      "quiz":[
+        {"q":"Logout client có tự thu hồi JWT server còn chấp nhận không?", "choices":["Luôn có", "Không; cần policy/cơ chế thu hồi server", "Chỉ cần xóa cookie ở UI"], "correct":1, "why":"Xóa bản token ở client không làm bản sao đã cấp mất hiệu lực trên server."},
+        {"q":"Refresh token single-use cần test nào?", "choices":["Chỉ request đúng tuần tự", "Chỉ form đẹp", "Hai request cùng token và response bị mất sau rotation"], "correct":2, "why":"Concurrency và retry quyết định phiên có bị cấp trùng hoặc khóa nhầm không."},
+        {"q":"Nên dùng request_id làm label metrics theo route không?", "choices":["Không, cardinality tăng theo từng request", "Có để có nhiều đồ thị", "Có thay mọi log"], "correct":0, "why":"Log giữ id cụ thể; metrics nên dùng label hữu hạn như route pattern/status."},
+        {"q":"Backup mỗi ngày có tự đáp ứng RPO 5 phút không?", "choices":["Có nếu file lớn", "Không, cần cơ chế/phép đo phù hợp mục tiêu", "Có nếu dùng Docker"], "correct":1, "why":"Tần suất và khả năng phục hồi quyết định cửa sổ mất dữ liệu, không phải công cụ đóng gói."}
+      ]
+    },
+    {
+      "id":"capstone", "number":"P5", "short":"Đồ án & nghiệm thu",
+      "title":"Chứng minh chất lượng bằng sản phẩm, báo cáo và biến thể", "source":"28-do-an-va-nghiem-thu.md", "lab":"grading",
+      "group":"Từ bản học đến sản phẩm", "goal":"Nộp hồ sơ đồ án có rubric, kiểm UX/accessibility và tự sửa rule mới.",
+      "question":"Dashboard đẹp, nhiều test và nhiều công nghệ đã đủ để dự án được đánh giá cao chưa?",
+      "core":"Reviewer cần thấy việc người dùng hoàn thành, dữ liệu/quyền đúng, code bảo trì được và vận hành có bằng chứng. Chốt phạm vi và rubric; liên kết acceptance với tests/demo/report đúng version. Mốc tải/restore cần phép đo riêng, không bù bằng điểm giao diện.",
+      "steps":["Chốt brief, scope và bộ bằng chứng cho từng yêu cầu.","Cho người dùng thử tác vụ, kiểm keyboard/zoom/error và sửa vấn đề.","Demo nhiều tài khoản rồi tự thực hiện biến thể với test phản chứng."],
+      "trap":"Rubric tự học không bảo đảm điểm của mọi hội đồng. Đọc sách/tick checklist chưa chứng minh năng lực.",
+      "terms":[["rubric", "Tiêu chí chấm có trọng số và bằng chứng quan sát được."],["usability task", "Công việc cụ thể người dùng thử tự hoàn thành, có ghi lỗi/trợ giúp."],["release evidence", "Kết quả kiểm tra gắn đúng commit/artifact/schema của bản được nghiệm thu."]],
+      "practice":["Điền hồ sơ/rubric và đánh dấu những gate chưa có bằng chứng.","Quan sát vài người dùng thử luồng mà không chỉ từng cú bấm.","Bảo vệ bằng một thay đổi quyền hoặc policy điểm và test trước sửa."],
+      "prerequisites":["clean","performance","release","operations"], "deliverable":"Hồ sơ đồ án, demo, báo cáo UX/tải/restore và biến thể tự làm.",
+      "quiz":[
+        {"q":"Một report tải bản cũ có nghiệm thu bản mới vừa đổi query không?", "choices":["Có vì cùng project", "Không tự động; cần kiểm tác động và đo lại phù hợp", "Có nếu screenshot đẹp"], "correct":1, "why":"Bằng chứng gắn version; thay đổi liên quan làm kết luận cũ cần được đánh giá lại."},
+        {"q":"Cách thử UX nào cho thấy người dùng hiểu luồng?", "choices":["Đưa tác vụ cụ thể rồi quan sát mà không chỉ từng cú bấm", "Tự demo thay người dùng", "Chỉ xem dashboard"], "correct":0, "why":"Hoàn thành tác vụ và chỗ cần trợ giúp cho bằng chứng hành vi."},
+        {"q":"Tool accessibility tự động xanh có đủ ghi đạt mọi tiêu chí không?", "choices":["Đủ hoàn toàn", "Đủ nếu nhiều test", "Không, cần kiểm thủ công/assistive technology theo scope"], "correct":2, "why":"Tool phát hiện một phần, không tự chứng minh keyboard/focus/screen reader của toàn luồng."},
+        {"q":"Dự án còn đọc chéo điểm nhưng đủ tổng điểm đề xuất. Nên nghiệm thu thế nào?", "choices":["Bù bằng UI", "Chặn nghiệm thu lỗi nghiêm trọng đó và sửa/test lại", "Ẩn nút là xong"], "correct":1, "why":"Rubric có gate correctness/quyền; tổng điểm không xóa lỗi ảnh hưởng dữ liệu."}
+      ]
+    }
+  ],
+  "milestones": [
+    {"id":"product-loop","name":"M12 · Nghiệm thu core loop","lessons":["product"],"task":"Chạy giao/nộp/chấm/công bố bằng nhiều tài khoản trên DB học.","checks":["Refresh giữ dữ liệu; điểm0/chưa công bố đúng JSON.","Retry cùng/khác nội dung, deadline, scope và lỗi sau flush được kiểm.","Ghi rõ lab core loop khác toàn bộ module sản phẩm."],"change":"Thêm nháp/công bố bài tập và bảo vệ mọi đường liên quan.","artifact":"Code, acceptance matrix, Network/DB evidence và biến thể."},
+    {"id":"maintainability","name":"M13 · Refactor có test bảo vệ","lessons":["clean"],"task":"Tách transaction dependency rồi tổ chức lại module mà giữ behavior.","checks":["Ghi hợp đồng trước và chạy tests sau refactor.","Composition root lắp repository/transaction cùng Session.","Review diff giải thích được lợi ích và phần vẫn còn phụ thuộc ORM."],"change":"Thêm điểm Decimal hoặc GradeRevision có kế hoạch migration.","artifact":"Before/after diff, tests và nhận xét review."},
+    {"id":"capacity","name":"M14 · Đo tải và tìm nghẽn","lessons":["performance"],"task":"Đo read/submit trên MySQL học, tối ưu một nguyên nhân.","checks":["Report ghi workload/dataset/cấu hình và offered/achieved rate.","Threshold latency/lỗi/checks/dropped được đánh giá, dữ liệu sau tải đúng.","MySQL cạnh tranh và tối ưu trước/sau có kết quả thực."],"change":"Burst cuối hạn hoặc workload có trang sâu/nhiều lớp.","artifact":"Scenario, report, EXPLAIN/diff và DB assertions."},
+    {"id":"releases","name":"M15 · Dựng và quay release","lessons":["release"],"task":"Dựng deployment lab, review migration và diễn tập rollback.","checks":["Source/lock/artifact/schema gắn đúng release.","Pipeline và readiness/smoke nhiều tài khoản qua.","Quay code và restore DB mới theo các kế hoạch riêng."],"change":"Migration thêm cột/bảng với code cũ còn chạy.","artifact":"CI result, staging/runbook và release/restore evidence."},
+    {"id":"resilience","name":"M16 · Phiên và vận hành qua sự cố","lessons":["operations"],"task":"Test policy phiên và xử lý lỗi staging bằng request/log/metrics.","checks":["Refresh/reset/revocation có contract và test cạnh tranh phù hợp.","Threat model bao phủ file/export/job/cache và không lộ secret qua log.","Restore/smoke được đo theo RPO/RTO, alert có hành động."],"change":"Thu hồi quyền trong lúc refresh hoặc job export đang chờ.","artifact":"Policy, tests, threat model, runbook và diễn tập."},
+    {"id":"graduation","name":"M17 · Bảo vệ sản phẩm","lessons":["capstone"],"task":"Nộp hồ sơ đồ án, demo và xử lý yêu cầu mới.","checks":["Rubric/bằng chứng gắn đúng version, gate nghiêm trọng không còn mở.","Người dùng thử tác vụ và keyboard/zoom/error đã được ghi nhận.","Tự thay rule với test phản chứng và người khác chạy README được."],"change":"Reviewer chọn quyền trợ giảng, điểm Decimal hoặc công bố theo đợt.","artifact":"Hồ sơ, demo, report UX/tải/restore và biến thể tự làm."}
+  ]
+}

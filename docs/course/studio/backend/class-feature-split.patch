@@ -1,0 +1,347 @@
+diff --git a/lms_lab/app.py b/lms_lab/app.py
+--- a/lms_lab/app.py
++++ b/lms_lab/app.py
+@@ -1,13 +1,9 @@
+-from fastapi import Depends, FastAPI, HTTPException, Path, Query
++from fastapi import Depends, FastAPI, HTTPException
+ from fastapi.middleware.cors import CORSMiddleware
+ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+ from jose import JWTError, jwt
+ from .database import session_factory
+ from .models import User
+-from .repository import ClassRepository
+-from .schemas import ClassInput, ClassOutput
+-from .service import ClassService, Forbidden, NotFound
+-from .unit_of_work import SqlTransaction
+ 
+ 
+ def create_app(engine, secret: str, origins=()):
+@@ -45,38 +41,12 @@
+             raise HTTPException(403, 'Tài khoản không được phép dùng bài học này')
+         return actor
+ 
+-    def service(db=Depends(get_db)):
+-        return ClassService(ClassRepository(db), SqlTransaction(db))
+-
+-    def translate(call):
+-        try:
+-            return call()
+-        except Forbidden:
+-            raise HTTPException(403, 'Không có quyền thực hiện') from None
+-        except NotFound:
+-            raise HTTPException(404, 'Không tìm thấy lớp trong phạm vi được phép') from None
+-
+     @app.get('/health')
+     def health():
+         return {'status': 'ok'}
+ 
+-    @app.get('/classes', response_model=list[ClassOutput])
+-    def list_classes(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100),
+-                     actor=Depends(current_user), classes=Depends(service)):
+-        return classes.list_visible(actor, page, page_size)
+-
+-    @app.post('/classes', response_model=ClassOutput, status_code=201)
+-    def create_class(payload: ClassInput, actor=Depends(current_user), classes=Depends(service)):
+-        return translate(lambda: classes.create(actor, payload.title))
+-
+-    @app.get('/classes/{class_id}', response_model=ClassOutput)
+-    def read_class(class_id: int = Path(gt=0), actor=Depends(current_user), classes=Depends(service)):
+-        return translate(lambda: classes.read(actor, class_id))
+-
+-    @app.patch('/classes/{class_id}', response_model=ClassOutput)
+-    def rename_class(payload: ClassInput, class_id: int = Path(gt=0),
+-                     actor=Depends(current_user), classes=Depends(service)):
+-        return translate(lambda: classes.rename(actor, class_id, payload.title))
++    from .classes.router import install_classes
++    install_classes(app, get_db, current_user)
+ 
+     from .workflow import install_workflow
+     install_workflow(app, get_db, current_user)
+diff --git a/lms_lab/classes/__init__.py b/lms_lab/classes/__init__.py
+new file mode 100644
+--- /dev/null
++++ b/lms_lab/classes/__init__.py
+@@ -0,0 +1 @@
++"""Classroom feature: HTTP contracts, use cases and data access."""
+diff --git a/lms_lab/classes/router.py b/lms_lab/classes/router.py
+new file mode 100644
+--- /dev/null
++++ b/lms_lab/classes/router.py
+@@ -0,0 +1,36 @@
++from fastapi import Depends, HTTPException, Path, Query
++from .repository import ClassRepository
++from .schemas import ClassInput, ClassOutput
++from .service import ClassService, Forbidden, NotFound
++from ..unit_of_work import SqlTransaction
++
++
++def install_classes(app, get_db, current_user):
++    def service(db=Depends(get_db)):
++        return ClassService(ClassRepository(db), SqlTransaction(db))
++
++    def translate(call):
++        try:
++            return call()
++        except Forbidden:
++            raise HTTPException(403, 'Không có quyền thực hiện') from None
++        except NotFound:
++            raise HTTPException(404, 'Không tìm thấy lớp trong phạm vi được phép') from None
++
++    @app.get('/classes', response_model=list[ClassOutput])
++    def list_classes(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100),
++                     actor=Depends(current_user), classes=Depends(service)):
++        return classes.list_visible(actor, page, page_size)
++
++    @app.post('/classes', response_model=ClassOutput, status_code=201)
++    def create_class(payload: ClassInput, actor=Depends(current_user), classes=Depends(service)):
++        return translate(lambda: classes.create(actor, payload.title))
++
++    @app.get('/classes/{class_id}', response_model=ClassOutput)
++    def read_class(class_id: int = Path(gt=0), actor=Depends(current_user), classes=Depends(service)):
++        return translate(lambda: classes.read(actor, class_id))
++
++    @app.patch('/classes/{class_id}', response_model=ClassOutput)
++    def rename_class(payload: ClassInput, class_id: int = Path(gt=0),
++                     actor=Depends(current_user), classes=Depends(service)):
++        return translate(lambda: classes.rename(actor, class_id, payload.title))
+diff --git a/lms_lab/classes/schemas.py b/lms_lab/classes/schemas.py
+new file mode 100644
+--- /dev/null
++++ b/lms_lab/classes/schemas.py
+@@ -0,0 +1,18 @@
++from pydantic import BaseModel, ConfigDict, Field, field_validator
++
++
++class ClassInput(BaseModel):
++    model_config = ConfigDict(extra='forbid')
++    title: str = Field(min_length=1, max_length=200)
++
++    @field_validator('title', mode='before')
++    @classmethod
++    def normalize_title(cls, value):
++        return value.strip() if isinstance(value, str) else value
++
++
++class ClassOutput(BaseModel):
++    model_config = ConfigDict(from_attributes=True)
++    id: int
++    title: str
++    teacher_id: int
+diff --git a/lms_lab/classes/repository.py b/lms_lab/classes/repository.py
+new file mode 100644
+--- /dev/null
++++ b/lms_lab/classes/repository.py
+@@ -0,0 +1,27 @@
++from sqlalchemy import select
++from ..models import Classroom, Membership
++
++
++class ClassRepository:
++    def __init__(self, db):
++        self.db = db
++
++    def list_visible(self, actor, offset: int, limit: int):
++        query = select(Classroom)
++        if actor.role == 'teacher':
++            query = query.where(Classroom.teacher_id == actor.id)
++        else:
++            query = query.join(Membership).where(Membership.student_id == actor.id)
++        return list(self.db.scalars(query.order_by(Classroom.id).offset(offset).limit(limit)))
++
++    def find(self, class_id: int):
++        return self.db.get(Classroom, class_id)
++
++    def is_member(self, class_id: int, actor_id: int) -> bool:
++        query = select(Membership.id).where(
++            Membership.class_id == class_id, Membership.student_id == actor_id)
++        return self.db.scalar(query) is not None
++
++    def add(self, classroom):
++        self.db.add(classroom)
++        self.db.flush()
+diff --git a/lms_lab/classes/service.py b/lms_lab/classes/service.py
+new file mode 100644
+--- /dev/null
++++ b/lms_lab/classes/service.py
+@@ -0,0 +1,59 @@
++from ..models import Classroom
++from ..unit_of_work import Transaction
++
++
++class Forbidden(Exception):
++    pass
++
++
++class NotFound(Exception):
++    pass
++
++
++class ClassService:
++    def __init__(self, repository, transaction: Transaction):
++        self.repository = repository
++        self.transaction = transaction
++
++    def list_visible(self, actor, page: int, page_size: int):
++        return self.repository.list_visible(actor, (page - 1) * page_size, page_size)
++
++    def read(self, actor, class_id: int):
++        classroom = self.repository.find(class_id)
++        if classroom is None:
++            raise NotFound()
++        visible = classroom.teacher_id == actor.id if actor.role == 'teacher' else (
++            self.repository.is_member(class_id, actor.id))
++        if not visible:
++            raise NotFound()
++        return classroom
++
++    def create(self, actor, title: str):
++        if actor.role != 'teacher':
++            raise Forbidden()
++        title = title.strip()
++        if not 1 <= len(title) <= 200:
++            raise ValueError('Tên lớp không hợp lệ')
++        classroom = Classroom(title=title, teacher_id=actor.id)
++        try:
++            self.repository.add(classroom)
++            self.transaction.commit()
++        except Exception:
++            self.transaction.rollback()
++            raise
++        return classroom
++
++    def rename(self, actor, class_id: int, title: str):
++        classroom = self.read(actor, class_id)
++        if actor.role != 'teacher' or classroom.teacher_id != actor.id:
++            raise Forbidden()
++        title = title.strip()
++        if not 1 <= len(title) <= 200:
++            raise ValueError('Tên lớp không hợp lệ')
++        try:
++            classroom.title = title
++            self.transaction.commit()
++        except Exception:
++            self.transaction.rollback()
++            raise
++        return classroom
+diff --git a/lms_lab/schemas.py b/lms_lab/schemas.py
+--- a/lms_lab/schemas.py
++++ b/lms_lab/schemas.py
+@@ -1,18 +1,2 @@
+-from pydantic import BaseModel, ConfigDict, Field, field_validator
+-
+-
+-class ClassInput(BaseModel):
+-    model_config = ConfigDict(extra='forbid')
+-    title: str = Field(min_length=1, max_length=200)
+-
+-    @field_validator('title', mode='before')
+-    @classmethod
+-    def normalize_title(cls, value):
+-        return value.strip() if isinstance(value, str) else value
+-
+-
+-class ClassOutput(BaseModel):
+-    model_config = ConfigDict(from_attributes=True)
+-    id: int
+-    title: str
+-    teacher_id: int
++"""Compatibility import while callers move into the classes feature."""
++from .classes.schemas import ClassInput, ClassOutput
+diff --git a/lms_lab/repository.py b/lms_lab/repository.py
+--- a/lms_lab/repository.py
++++ b/lms_lab/repository.py
+@@ -1,27 +1,2 @@
+-from sqlalchemy import select
+-from .models import Classroom, Membership
+-
+-
+-class ClassRepository:
+-    def __init__(self, db):
+-        self.db = db
+-
+-    def list_visible(self, actor, offset: int, limit: int):
+-        query = select(Classroom)
+-        if actor.role == 'teacher':
+-            query = query.where(Classroom.teacher_id == actor.id)
+-        else:
+-            query = query.join(Membership).where(Membership.student_id == actor.id)
+-        return list(self.db.scalars(query.order_by(Classroom.id).offset(offset).limit(limit)))
+-
+-    def find(self, class_id: int):
+-        return self.db.get(Classroom, class_id)
+-
+-    def is_member(self, class_id: int, actor_id: int) -> bool:
+-        query = select(Membership.id).where(
+-            Membership.class_id == class_id, Membership.student_id == actor_id)
+-        return self.db.scalar(query) is not None
+-
+-    def add(self, classroom):
+-        self.db.add(classroom)
+-        self.db.flush()
++"""Compatibility import while callers move into the classes feature."""
++from .classes.repository import ClassRepository
+diff --git a/lms_lab/service.py b/lms_lab/service.py
+--- a/lms_lab/service.py
++++ b/lms_lab/service.py
+@@ -1,59 +1,2 @@
+-from .models import Classroom
+-from .unit_of_work import Transaction
+-
+-
+-class Forbidden(Exception):
+-    pass
+-
+-
+-class NotFound(Exception):
+-    pass
+-
+-
+-class ClassService:
+-    def __init__(self, repository, transaction: Transaction):
+-        self.repository = repository
+-        self.transaction = transaction
+-
+-    def list_visible(self, actor, page: int, page_size: int):
+-        return self.repository.list_visible(actor, (page - 1) * page_size, page_size)
+-
+-    def read(self, actor, class_id: int):
+-        classroom = self.repository.find(class_id)
+-        if classroom is None:
+-            raise NotFound()
+-        visible = classroom.teacher_id == actor.id if actor.role == 'teacher' else (
+-            self.repository.is_member(class_id, actor.id))
+-        if not visible:
+-            raise NotFound()
+-        return classroom
+-
+-    def create(self, actor, title: str):
+-        if actor.role != 'teacher':
+-            raise Forbidden()
+-        title = title.strip()
+-        if not 1 <= len(title) <= 200:
+-            raise ValueError('Tên lớp không hợp lệ')
+-        classroom = Classroom(title=title, teacher_id=actor.id)
+-        try:
+-            self.repository.add(classroom)
+-            self.transaction.commit()
+-        except Exception:
+-            self.transaction.rollback()
+-            raise
+-        return classroom
+-
+-    def rename(self, actor, class_id: int, title: str):
+-        classroom = self.read(actor, class_id)
+-        if actor.role != 'teacher' or classroom.teacher_id != actor.id:
+-            raise Forbidden()
+-        title = title.strip()
+-        if not 1 <= len(title) <= 200:
+-            raise ValueError('Tên lớp không hợp lệ')
+-        try:
+-            classroom.title = title
+-            self.transaction.commit()
+-        except Exception:
+-            self.transaction.rollback()
+-            raise
+-        return classroom
++"""Compatibility import while callers move into the classes feature."""
++from .classes.service import ClassService, Forbidden, NotFound

@@ -1,0 +1,62 @@
+name: vision-course-lab
+x-api: &api
+  image: vision-course-api:${LAB_RELEASE:-local}
+  build:
+    context: ..
+    dockerfile: deploy/Dockerfile.api
+  environment: &api-env
+    LAB_SECRET: ${LAB_SECRET:?Set a random lab signing secret}
+    LAB_DB_HOST: db
+    LAB_DB_NAME: lms_lab
+    LAB_DB_USER: lab
+    LAB_DB_PASSWORD: ${LAB_DB_PASSWORD:?Set a random lab database password}
+    LAB_POOL_SIZE: "5"
+    LAB_MAX_OVERFLOW: "5"
+  depends_on:
+    db:
+      condition: service_healthy
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: lms_lab
+      MYSQL_USER: lab
+      MYSQL_PASSWORD: ${LAB_DB_PASSWORD:?Set a random lab database password}
+      MYSQL_ROOT_PASSWORD: ${LAB_DB_ROOT_PASSWORD:?Set a separate root password}
+    volumes: [lab_mysql:/var/lib/mysql]
+    healthcheck:
+      test: [CMD-SHELL, 'MYSQL_PWD="$${MYSQL_PASSWORD}" mysql --protocol=TCP -h 127.0.0.1 -u "$${MYSQL_USER}" -D "$${MYSQL_DATABASE}" -e "SELECT 1" >/dev/null']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+  migrate:
+    <<: *api
+    command: [python, -m, alembic, -c, deploy/alembic.ini, upgrade, head]
+    restart: "no"
+  api:
+    <<: *api
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=7)"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+  web:
+    image: vision-course-web:${LAB_RELEASE:-local}
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    ports: ["127.0.0.1:8088:80"]
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  lab_mysql:

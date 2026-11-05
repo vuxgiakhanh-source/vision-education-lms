@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { DashboardLayout } from '../components/DashboardLayout'
 import { WelcomeBanner } from '../components/WelcomeBanner'
 import { KpiStatCards } from '../components/KpiStatCards'
@@ -6,16 +6,35 @@ import { TaskListCard } from '../components/TaskListCard'
 import { MiniCalendarCard } from '../components/MiniCalendarCard'
 import { RecentDocumentsCard } from '../components/RecentDocumentsCard'
 import {
-  mockUserProfile,
   mockKpiStats,
   mockTasks,
   mockDocuments,
   mockCalendarDays,
 } from '../mock/dashboard.mock'
+import { meService } from '../../auth/me/services/meService'
+import { getShortName } from '../../../utils/getShortName'
+import type { MeResponse } from '../../auth/me/types/meTypes'
 
 export const StudentDashboardPage: React.FC = () => {
+  const [user, setUser] = useState<MeResponse | null>(null)
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const profile = await meService.getMe()
+        setUser(profile)
+      } catch (error) {
+        console.error('Không tải được hồ sơ: ', error)
+      }
+    }
+
+    loadUser()
+  }, [])
+
+  const displayName = user ? getShortName(user.full_name) : 'Đang tải...'
+  const fullName = user ? user.full_name : 'Đang tải...'
+
   return (
-    <DashboardLayout user={mockUserProfile}>
+    <DashboardLayout user={{ name: fullName, role: user?.role }}>
       <div
         className="student-dashboard flex-1 flex flex-col w-full"
         style={{ rowGap: 'var(--gap-main)' }}
@@ -23,7 +42,7 @@ export const StudentDashboardPage: React.FC = () => {
         {/* Banner chào mừng */}
         <div className="dashboard-banner min-w-0 wide:shrink-0">
           <WelcomeBanner
-            userName={mockUserProfile.name}
+            userName={displayName}
             taskCount={mockTasks.length}
           />
         </div>

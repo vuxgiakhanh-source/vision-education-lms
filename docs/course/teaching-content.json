@@ -1,0 +1,782 @@
+{
+  "examples": {
+    "thinking": {
+      "title": "Đếm bài chưa nộp: viết cách nghĩ trước",
+      "language": "javascript",
+      "intro": "Có ba bài theo thứ tự pending, graded, pending. Ta cần trả số 2 mà không sửa danh sách. Hãy đọc một lượt như máy sẽ thực hiện.",
+      "code": "function countPending(tasks) {\n  let count = 0;\n  for (const task of tasks) {\n    if (task.status === 'pending') {\n      count = count + 1;\n    }\n  }\n  return count;\n}",
+      "lines": [
+        {
+          "title": "Đặt tên một công việc",
+          "explanation": "function định nghĩa hàm. tasks là tham số sẽ nhận danh sách khi gọi. Dòng này chưa tự chạy thân hàm.",
+          "value": "Đầu vào dự kiến: array các task."
+        },
+        {
+          "title": "Chuẩn bị bộ đếm",
+          "explanation": "let cho phép gán lại count. Bắt đầu từ 0 vì trước vòng lặp chưa xét bài nào.",
+          "value": "count = 0"
+        },
+        {
+          "title": "Xét một bài mỗi lượt",
+          "explanation": "for...of lần lượt đưa từng phần tử vào tên task. Nó không tự tạo bản sao sâu của phần tử.",
+          "value": "Lượt đầu: task.status = 'pending'."
+        },
+        {
+          "title": "Đặt điều kiện được tính",
+          "explanation": "Dấu chấm đọc thuộc tính; === so sánh nghiêm ngặt. Chỉ pending đi vào khối tăng đếm.",
+          "value": "pending === pending → true"
+        },
+        {
+          "title": "Cập nhật từ giá trị cũ",
+          "explanation": "Tính vế phải count + 1 trước, rồi gán kết quả lại vào count. Dấu = là gán, không phải phép so sánh.",
+          "value": "Lượt đầu: 0 + 1 → count = 1."
+        },
+        {
+          "title": "Kết thúc nhánh",
+          "explanation": "Dấu } đóng if. Nếu điều kiện false, máy bỏ qua dòng tăng và đi tiếp.",
+          "value": "Bài graded giữ count như trước."
+        },
+        {
+          "title": "Kết thúc phần thân vòng lặp",
+          "explanation": "Nếu còn task, vòng lặp tiếp tục. Khi đã xét hết ba bài, mới đi xuống return.",
+          "value": "Sau ba lượt: count = 2."
+        },
+        {
+          "title": "Đưa kết quả về người gọi",
+          "explanation": "return kết thúc lần gọi và đưa số đếm ra ngoài. Đặt nó trong vòng lặp có thể kết thúc quá sớm.",
+          "value": "countPending(tasks) trả 2."
+        },
+        {
+          "title": "Đóng hàm",
+          "explanation": "Các biến local thuộc lần gọi này. Lần gọi mới lại khởi tạo count từ 0.",
+          "value": "Input rỗng bỏ qua for và trả 0."
+        }
+      ],
+      "trace": {
+        "headers": [
+          "Bài đang xét",
+          "Có tính không?",
+          "count sau lượt"
+        ],
+        "rows": [
+          [
+            "pending",
+            "Có",
+            "1"
+          ],
+          [
+            "graded",
+            "Không",
+            "1"
+          ],
+          [
+            "pending",
+            "Có",
+            "2"
+          ]
+        ]
+      },
+      "predict": {
+        "question": "Nếu đưa return count vào trong for, danh sách [graded, pending] trả gì?",
+        "answer": "Trả 0 ngay lượt đầu. Bài pending phía sau chưa được xét. Với input rỗng, hàm sai đó còn có thể trả undefined."
+      },
+      "practice": [
+        "Điền: thay pending bằng một tham số status muốn đếm.",
+        "Tự viết: đếm theo từng trạng thái, chưa xem code tham chiếu.",
+        "Thử lỗi: kiểm rỗng, một bài, trạng thái lạ và không sửa input."
+      ],
+      "section": "3. Viết thuật toán"
+    },
+    "01": {
+      "title": "Một callback được filter gọi như thế nào?",
+      "language": "javascript",
+      "intro": "tasks có ba bài: Hàm số đang pending, Tích phân đã graded, Hình học đang pending. Đích là lấy tên hai bài chưa nộp.",
+      "code": "function isPending(task) {\n  return task.status === 'pending';\n}\nconst pending = tasks.filter(isPending);\nconst titles = pending.map(task => task.title);",
+      "lines": [
+        {
+          "title": "Tạo một hàm để hỏi về từng task",
+          "explanation": "isPending nhận một task và sẽ trả boolean. Khai báo hàm chỉ chuẩn bị công việc, chưa tự duyệt danh sách.",
+          "value": "Đầu vào một lượt: { title: 'Hàm số', status: 'pending' }."
+        },
+        {
+          "title": "Câu trả lời là true hoặc false",
+          "explanation": "Đọc status, so với chuỗi pending rồi return. Filter dùng câu trả lời này để quyết định giữ phần tử.",
+          "value": "Với Hàm số: true. Với Tích phân: false."
+        },
+        {
+          "title": "Kết thúc hàm nhỏ",
+          "explanation": "Tên task chỉ là tham số local. Nó không cần tồn tại như một biến toàn cục ở ngoài.",
+          "value": "Một lần gọi isPending đã có kết quả."
+        },
+        {
+          "title": "Truyền hàm, để filter gọi",
+          "explanation": "Không viết isPending() ở đây: filter cần nhận một hàm và tự truyền từng phần tử cho nó. Array pending mới vẫn giữ các object đã khớp.",
+          "value": "pending có Hàm số và Hình học; tasks vẫn có ba bài."
+        },
+        {
+          "title": "Biến từng object thành tên",
+          "explanation": "task => task.title là một hàm mũi tên có return ngầm. map gọi nó với từng phần tử trong pending và gom kết quả thành array mới.",
+          "value": "titles = ['Hàm số', 'Hình học']."
+        }
+      ],
+      "trace": {
+        "headers": [
+          "filter nhận task",
+          "isPending trả",
+          "Được giữ?"
+        ],
+        "rows": [
+          [
+            "Hàm số / pending",
+            "true",
+            "Có"
+          ],
+          [
+            "Tích phân / graded",
+            "false",
+            "Không"
+          ],
+          [
+            "Hình học / pending",
+            "true",
+            "Có"
+          ]
+        ]
+      },
+      "predict": {
+        "question": "Đổi callback thành task => { task.status === 'pending' } thì sao?",
+        "answer": "Có ngoặc nhọn là thân khối, nên phải return rõ. Hàm hiện trả undefined; filter không giữ phần tử nào. Viết task => task.status === 'pending' hoặc thêm return trong khối."
+      },
+      "practice": [
+        "Điền: viết isGraded và dùng filter truyền tên hàm.",
+        "Tự viết: lấy tên bài khớp query đã trim, không phân biệt hoa thường.",
+        "Thử lỗi: query rỗng, không khớp, hoa/thường và object gốc không bị sửa."
+      ],
+      "section": "Bài 01.4"
+    },
+    "02": {
+      "title": "Đi theo giá trị qua await và return",
+      "language": "typescript",
+      "intro": "Client của bài học có method get trả Promise của một response. Giả sử body đúng hợp đồng là { title: 'Đại số' }. Đây là đoạn minh họa, không gửi request trong sách.",
+      "code": "async function loadTitle(client: Client) {\n  const response = await client.get('/classes/7');\n  const title = response.data.title;\n  return title;\n}",
+      "lines": [
+        {
+          "title": "Định nghĩa một hàm bất đồng bộ",
+          "explanation": "async khiến lời gọi trả Promise. Client là tên kiểu của hợp đồng giả định trong bài; cần định nghĩa/import nó khi viết một chương trình hoàn chỉnh.",
+          "value": "loadTitle(client) trả Promise, chưa phải chuỗi title ngay."
+        },
+        {
+          "title": "Chờ kết quả ở đúng vị trí",
+          "explanation": "client.get bắt đầu thao tác theo implementation. await tạm dừng phần tiếp theo của hàm này; nếu Promise reject, đường chạy ném lỗi thay vì đọc data.",
+          "value": "Resolve thành response có data. Rejection bỏ các dòng sau cho tới handler phù hợp."
+        },
+        {
+          "title": "Lấy field từ body đã nhận",
+          "explanation": "response và response.data là hai mức khác nhau. Trong code thật, cần kiểm hợp đồng dữ liệu mạng trước khi tin field này.",
+          "value": "title = 'Đại số' theo fixture đã giả định."
+        },
+        {
+          "title": "Quyết định bên gọi nhận gì",
+          "explanation": "return đưa title vào kết quả hoàn tất của Promise. Bên gọi await loadTitle nhận chuỗi, không nhận nguyên response.",
+          "value": "await loadTitle(client) → 'Đại số'."
+        },
+        {
+          "title": "Kết thúc lần gọi",
+          "explanation": "await không khóa toàn bộ trình duyệt. Tác vụ khác vẫn có thể chạy trong lúc thao tác đang chờ.",
+          "value": "Không gán TypeScript type rồi bỏ qua validation runtime."
+        }
+      ],
+      "trace": {
+        "headers": [
+          "Nơi quan sát",
+          "Giá trị theo fixture",
+          "Điều cần phân biệt"
+        ],
+        "rows": [
+          [
+            "client.get(...) chưa await",
+            "Promise",
+            "Công việc đang chờ"
+          ],
+          [
+            "response sau await",
+            "{ data: { title: 'Đại số' } }",
+            "Response của client bài học"
+          ],
+          [
+            "return title",
+            "'Đại số'",
+            "Giá trị hàm đưa về caller"
+          ]
+        ]
+      },
+      "predict": {
+        "question": "Nếu get reject do mất mạng, dòng response.data.title có chạy không?",
+        "answer": "Không. Await ném lỗi theo đường rejection. Caller hoặc catch phù hợp phải xử lý; không được suy từ lỗi mạng rằng mật khẩu sai hay token hết hạn."
+      },
+      "practice": [
+        "Điền: mô tả kiểu Client và response giả định.",
+        "Tự viết: một hàm tải danh sách, nhận unknown rồi parse dữ liệu.",
+        "Thử lỗi: response thiếu field, success rỗng, HTTP lỗi và chưa có response."
+      ],
+      "section": "Bài 02.4"
+    },
+    "04": {
+      "title": "Hai yêu cầu cập nhật được xếp hàng",
+      "language": "tsx",
+      "intro": "Component React thật cần import useState. Ví dụ này dùng updater để cộng hai lần; mô phỏng React state trong phòng thực hành giúp so với cách dùng count + 1.",
+      "code": "import { useState } from 'react';\nexport function Counter() {\n  const [count, setCount] = useState(0);\n  function addTwo() {\n    setCount(previous => previous + 1);\n    setCount(previous => previous + 1);\n  }\n  return <button onClick={addTwo}>{count}</button>;\n}",
+      "lines": [
+        {
+          "title": "Lấy hook từ module React",
+          "explanation": "Import nối đến API thư viện. Nó không tự render một nút hoặc tăng số đếm.",
+          "value": "useState là hàm do React cung cấp."
+        },
+        {
+          "title": "Component là một hàm",
+          "explanation": "React gọi component để nhận mô tả UI. Export cho module khác import; tên viết hoa dùng cho component JSX.",
+          "value": "Mỗi lần render tạo các giá trị/handler thuộc lần đó."
+        },
+        {
+          "title": "Nhận giá trị và setter",
+          "explanation": "Destructuring array lấy hai phần: count dùng để render, setCount đề nghị cập nhật. Giá trị đầu là 0.",
+          "value": "Render đầu: count = 0."
+        },
+        {
+          "title": "Chuẩn bị event handler",
+          "explanation": "Khai báo addTwo chưa gọi nó. Nó sẽ chạy khi event của nút gọi handler.",
+          "value": "Chưa có yêu cầu cập nhật từ việc khai báo."
+        },
+        {
+          "title": "Yêu cầu cộng lần thứ nhất",
+          "explanation": "Truyền một updater. React đưa giá trị trước đó trong hàng đợi vào previous; tên previous do bạn đặt.",
+          "value": "Từ 0 → đề nghị 1."
+        },
+        {
+          "title": "Yêu cầu cộng lần thứ hai",
+          "explanation": "Updater thứ hai nhận kết quả trước nó trong hàng đợi, nên có thể mô tả hai lần cộng liên tiếp.",
+          "value": "Từ 1 → đề nghị 2."
+        },
+        {
+          "title": "Kết thúc handler",
+          "explanation": "Biến count trong handler hiện tại không tự đổi ngay thành kết quả mới chỉ vì đã gọi setter.",
+          "value": "UI mới sẽ phản ánh cập nhật khi React render phù hợp."
+        },
+        {
+          "title": "Truyền handler và hiển thị state",
+          "explanation": "onClick={addTwo} truyền hàm. onClick={addTwo()} sẽ gọi ngay khi render. {count} đưa biểu thức vào JSX.",
+          "value": "Sau một click và cập nhật: nút hiển thị 2."
+        },
+        {
+          "title": "Đóng component",
+          "explanation": "Đừng thêm state cho một giá trị tính được từ count nếu không có lý do phải nhớ riêng.",
+          "value": "Component tự giữ số đếm theo instance trong cây React."
+        }
+      ],
+      "trace": {
+        "headers": [
+          "Yêu cầu",
+          "Nhận đầu vào",
+          "Đề nghị giá trị"
+        ],
+        "rows": [
+          [
+            "Updater 1",
+            "0",
+            "1"
+          ],
+          [
+            "Updater 2",
+            "1",
+            "2"
+          ]
+        ]
+      },
+      "predict": {
+        "question": "Thay cả hai updater bằng setCount(count + 1), với snapshot count = 0 thì sao?",
+        "answer": "Cả hai biểu thức cùng tính 0 + 1. Chúng đề nghị thay bằng 1 hai lần, không diễn đạt hai lần cộng nối tiếp như updater."
+      },
+      "practice": [
+        "Điền: tạo nút đặt về 0.",
+        "Tự viết: bộ lọc danh sách với query state, kết quả tính trực tiếp.",
+        "Thử lỗi: handler bị gọi trong render hoặc effect dùng dependency thiếu."
+      ],
+      "section": "Bài 04.2"
+    },
+    "python": {
+      "title": "Giữ điểm 0, bỏ điểm chưa chấm",
+      "language": "python",
+      "intro": "Đầu vào chỉ chứa số hợp lệ hoặc None. Với [0, None, 10], đáp án là 5. Ta viết vòng lặp rõ trước khi rút gọn thành comprehension.",
+      "code": "def average_graded(scores):\n    graded = []\n    for score in scores:\n        if score is not None:\n            graded.append(score)\n    if not graded:\n        return None\n    return sum(graded) / len(graded)",
+      "lines": [
+        {
+          "title": "Một hàm có đầu vào rõ",
+          "explanation": "def định nghĩa hàm; scores là tham số. Dấu hai chấm mở khối và Python dùng thụt lề cho cấu trúc.",
+          "value": "scores = [0, None, 10]."
+        },
+        {
+          "title": "Tạo một danh sách mới",
+          "explanation": "Đây là nơi gom các điểm đã chấm. Nó khác danh sách đầu vào và mới cho mỗi lần gọi.",
+          "value": "graded = []."
+        },
+        {
+          "title": "Duyệt từng giá trị",
+          "explanation": "score lần lượt nhận 0, None rồi 10. Vòng lặp không tự bỏ phần tử nào.",
+          "value": "Lượt đầu: score = 0."
+        },
+        {
+          "title": "Bỏ đúng giá trị mang nghĩa chưa chấm",
+          "explanation": "is not None giữ cả 0. Viết if score sẽ gộp điểm 0 với các giá trị falsy và làm sai hợp đồng.",
+          "value": "0 được giữ; None bị bỏ."
+        },
+        {
+          "title": "Thêm điểm đã chấm",
+          "explanation": "append sửa danh sách graded do hàm tạo, không phải tự xóa/sửa scores.",
+          "value": "Sau các lượt: graded = [0, 10]."
+        },
+        {
+          "title": "Kiểm danh sách rỗng trước khi chia",
+          "explanation": "List rỗng là falsy. Điều kiện này bảo vệ trường hợp không có điểm và tránh chia cho 0.",
+          "value": "Với [0,10] điều kiện false."
+        },
+        {
+          "title": "Không có điểm là None",
+          "explanation": "Return sớm kết thúc lần gọi cho trường hợp rỗng. Không tự đổi chưa chấm thành 0.",
+          "value": "[None] hoặc [] → None."
+        },
+        {
+          "title": "Tính theo đúng mẫu số",
+          "explanation": "Tổng điểm đã chấm chia cho số điểm đã chấm. Không chia cho len(scores), vì input còn có None.",
+          "value": "(0 + 10) / 2 → 5.0."
+        }
+      ],
+      "trace": {
+        "headers": [
+          "score",
+          "Được giữ?",
+          "graded sau lượt"
+        ],
+        "rows": [
+          [
+            "0",
+            "Có",
+            "[0]"
+          ],
+          [
+            "None",
+            "Không",
+            "[0]"
+          ],
+          [
+            "10",
+            "Có",
+            "[0,10]"
+          ]
+        ]
+      },
+      "predict": {
+        "question": "Nếu thay is not None bằng if score, kết quả [0,None,10] thành bao nhiêu?",
+        "answer": "0 bị bỏ, chỉ còn [10], nên kết quả thành 10. Đó là sai ý nghĩa dữ liệu, dù code không ném exception."
+      },
+      "practice": [
+        "Điền: test cho [] và [0].",
+        "Tự viết: trả thêm số điểm đã chấm và điểm cao nhất.",
+        "Thử lỗi: input sai kiểu theo hợp đồng bạn tự chốt, không biến lỗi thành điểm 0."
+      ],
+      "section": "5. Viết vòng lặp"
+    },
+    "05": {
+      "title": "self và dependency đang chỉ tới object nào?",
+      "language": "python",
+      "intro": "NameService cần một đối tượng biết find(user_id). Đối tượng đó có thể là fake lúc học hoặc repository thật khi ghép app. Ở đây ta chỉ theo dõi hợp đồng đọc tên.",
+      "code": "class NameService:\n    def __init__(self, reader):\n        self.reader = reader\n    def label(self, user_id):\n        user = self.reader.find(user_id)\n        if user is None:\n            return None\n        return user.name",
+      "lines": [
+        {
+          "title": "Định nghĩa một loại object",
+          "explanation": "Class gom hành vi cần một dependency. Nó chưa tạo instance hoặc tìm user nào.",
+          "value": "NameService là class."
+        },
+        {
+          "title": "Khởi tạo instance với thành phần cần dùng",
+          "explanation": "Khi tạo NameService(reader), self là instance đang được khởi tạo, reader là đối số bạn đưa vào.",
+          "value": "service và reader là hai object khác trách nhiệm."
+        },
+        {
+          "title": "Giữ reference để dùng ở method khác",
+          "explanation": "self.reader gắn dependency vào instance. Nó không copy dữ liệu DB, không mở kết nối một cách thần kỳ.",
+          "value": "service → reader đã được truyền vào."
+        },
+        {
+          "title": "Method nhận đối tượng và tham số",
+          "explanation": "service.label(2) đưa service vào self, 2 vào user_id. Tên self là quy ước của Python cho instance method.",
+          "value": "user_id = 2 theo lời gọi mẫu."
+        },
+        {
+          "title": "Nhờ dependency tìm dữ liệu",
+          "explanation": "Service dùng thao tác find mà nó cần. Cách tìm cụ thể ở adapter; đây là composition, không phải service kế thừa repository.",
+          "value": "reader.find(2) → user hoặc None."
+        },
+        {
+          "title": "Xét tình huống không tìm thấy",
+          "explanation": "Không được giả định mọi id đều tồn tại. Kiểm None trước khi truy cập thuộc tính.",
+          "value": "Nếu missing, đi nhánh return None."
+        },
+        {
+          "title": "Giữ nghĩa không tìm thấy",
+          "explanation": "Hàm này chọn trả None theo hợp đồng bài học. API thật có thể ánh xạ một exception/kết quả phù hợp thành HTTP.",
+          "value": "Không có user → không có name."
+        },
+        {
+          "title": "Trả dữ liệu khi có",
+          "explanation": "Chỉ sau kiểm tồn tại mới đọc user.name. Caller nhận chuỗi tên, không nhận toàn bộ repository.",
+          "value": "Fixture user có name 'An' → trả 'An'."
+        }
+      ],
+      "trace": {
+        "headers": [
+          "Đối tượng",
+          "Giữ hoặc làm gì?",
+          "Không tự làm gì?"
+        ],
+        "rows": [
+          [
+            "service",
+            "Quy tắc đọc nhãn, giữ reader",
+            "Không tự điều hướng UI"
+          ],
+          [
+            "reader",
+            "find theo hợp đồng",
+            "Không tự quyết mọi quyền HTTP"
+          ],
+          [
+            "user",
+            "Dữ liệu tìm được",
+            "Không phải response mặc định"
+          ]
+        ]
+      },
+      "predict": {
+        "question": "Đổi reader bộ nhớ sang reader SQL có bắt buộc đổi label không?",
+        "answer": "Nếu adapter mới giữ đúng hợp đồng find, label có thể giữ nguyên. Vẫn phải kiểm cách adapter xử lý missing/error và lifecycle; cùng tên method chưa đủ chứng minh cùng hành vi."
+      },
+      "practice": [
+        "Điền: viết reader giả có một user và trường hợp thiếu user.",
+        "Tự viết: service nghiệp vụ dùng dependency qua hợp đồng nhỏ.",
+        "Thử lỗi: tạo hai instance để kiểm không chia sẻ nhầm dict class attribute."
+      ],
+      "section": "Bài 05.5"
+    },
+    "06": {
+      "title": "Vì sao LEFT JOIN tìm được người chưa nộp?",
+      "language": "sql",
+      "intro": "Fixture: memberships của lớp 7 có An và Bình; assignment 10 chỉ có submission của An. Ta bắt đầu từ toàn bộ thành viên cần xét, không bắt đầu từ bài đã nộp.",
+      "code": "SELECT m.student_id, s.id AS submission_id\nFROM memberships m\nLEFT JOIN submissions s\n  ON s.student_id = m.student_id\n  AND s.assignment_id = 10\nWHERE m.class_id = 7\n  AND s.id IS NULL;",
+      "lines": [
+        {
+          "title": "Chọn hai cột để quan sát",
+          "explanation": "m và s là alias sẽ đặt ở FROM/JOIN. AS đặt tên cột kết quả, không tạo một bảng mới.",
+          "value": "student_id và submission_id."
+        },
+        {
+          "title": "Chọn tập người cần xét",
+          "explanation": "Mỗi membership thuộc một lớp/học sinh theo schema bài học. Bắt đầu ở đây mới có người chưa nộp.",
+          "value": "An và Bình đều nằm trong tập trái."
+        },
+        {
+          "title": "Giữ cả hàng bên trái không khớp",
+          "explanation": "LEFT JOIN vẫn giữ membership khi không có submission tương ứng. Cột bảng phải cho hàng đó thành NULL.",
+          "value": "Bình vẫn còn dù chưa có submission."
+        },
+        {
+          "title": "Ghép bài của đúng học sinh",
+          "explanation": "Điều kiện ON xác định hàng nào khớp, không chỉ nối hai bảng theo tên giống nhau.",
+          "value": "Submission của An không được ghép cho Bình."
+        },
+        {
+          "title": "Chỉ xét bài tập đang hỏi",
+          "explanation": "Đặt điều kiện assignment trong ON để một bài nộp của assignment khác không làm học sinh bị tính là đã nộp bài 10.",
+          "value": "Đúng assignment 10 mới được khớp."
+        },
+        {
+          "title": "Giới hạn lớp đang xét",
+          "explanation": "Filter trên memberships giữ đúng tập cần báo cáo. API thật còn cần scope của actor đã xác minh.",
+          "value": "Chỉ thành viên lớp 7."
+        },
+        {
+          "title": "Giữ người không có submission khớp",
+          "explanation": "IS NULL kiểm thiếu kết quả JOIN, khác so bằng = NULL. Kết quả là người chưa nộp theo hợp đồng fixture.",
+          "value": "Còn Bình; An bị loại vì s.id có giá trị."
+        }
+      ],
+      "trace": {
+        "headers": [
+          "Sau LEFT JOIN",
+          "submission_id",
+          "Qua điều kiện IS NULL?"
+        ],
+        "rows": [
+          [
+            "An",
+            "11",
+            "Không"
+          ],
+          [
+            "Bình",
+            "NULL",
+            "Có"
+          ]
+        ]
+      },
+      "predict": {
+        "question": "Đổi LEFT JOIN thành INNER JOIN thì có tìm được Bình bằng s.id IS NULL không?",
+        "answer": "Không trong mô hình này: INNER JOIN đã loại Bình vì không có submission khớp. Điều kiện sau đó không thể lấy lại hàng đã mất."
+      },
+      "practice": [
+        "Điền: thêm Chi chưa nộp vào fixture và tính kết quả bằng tay.",
+        "Tự viết: báo cáo đếm đã nộp/chưa nộp theo lớp và bài.",
+        "Thử lỗi: assignment khác, lớp khác, NULL và JOIN gây nhân hàng."
+      ],
+      "section": "Bài 06.4"
+    },
+    "08": {
+      "title": "Flush có id rồi thì vì sao vẫn rollback được?",
+      "language": "python",
+      "intro": "Đoạn minh họa nhận Session cùng hai object ORM đã tạo. Nghiệp vụ cần lưu cả lớp và membership, hoặc không lưu phần nào. Không chạy đoạn này vào DB sản phẩm.",
+      "code": "def save_pair(db, classroom, membership):\n    try:\n        db.add(classroom)\n        db.flush()\n        membership.class_id = classroom.id\n        db.add(membership)\n        db.commit()\n    except Exception:\n        db.rollback()\n        raise",
+      "lines": [
+        {
+          "title": "Nhận tài nguyên và dữ liệu rõ ràng",
+          "explanation": "Caller phải xác minh quyền/rule và cung cấp đúng object/Session. Hàm này chỉ minh họa transaction ghi hai phần liên quan.",
+          "value": "Cùng một Session cho cả hai object."
+        },
+        {
+          "title": "Theo dõi lỗi trong nhóm ghi",
+          "explanation": "Nếu một thao tác trong try ném lỗi, luồng chuyển sang except. Không coi ghi được bước đầu là thành công cả nghiệp vụ.",
+          "value": "Đường thành công và đường lỗi được phân biệt."
+        },
+        {
+          "title": "Đưa lớp vào Session",
+          "explanation": "add khiến Session theo dõi object. Nó chưa tự cam kết transaction.",
+          "value": "classroom đang được theo dõi để ghi."
+        },
+        {
+          "title": "Gửi SQL trong transaction",
+          "explanation": "Flush có thể INSERT và nhận id do DB cấp. Transaction vẫn chưa được xác nhận thành công.",
+          "value": "classroom.id có thể đã có; chưa đồng nghĩa committed."
+        },
+        {
+          "title": "Dùng id cho liên kết",
+          "explanation": "Membership tham chiếu lớp vừa tạo. Phải tôn trọng schema/constructor của model thật khi ghép vào project.",
+          "value": "membership.class_id = id của lớp trong transaction này."
+        },
+        {
+          "title": "Thêm bước ghi thứ hai",
+          "explanation": "Nếu constraint hoặc flush sau đó lỗi, cả nhóm cần rollback. Repository không nên commit bước đầu riêng khi service cần atomic.",
+          "value": "Hai phần cùng một đơn vị làm việc."
+        },
+        {
+          "title": "Xác nhận khi toàn nhóm hợp lệ",
+          "explanation": "Commit flush thay đổi còn chờ và xác nhận transaction. Sau đó đọc bằng Session/request mới để kiểm lưu bền.",
+          "value": "Thành công: cả lớp và membership được lưu."
+        },
+        {
+          "title": "Bắt để dọn transaction",
+          "explanation": "Bắt Exception ở đây nhằm rollback rồi ném lại, không giả mọi lỗi thành lỗi do người dùng hoặc HTTP200.",
+          "value": "Bước2 lỗi → đi nhánh này."
+        },
+        {
+          "title": "Hủy phần chưa commit",
+          "explanation": "Rollback hủy thay đổi trong transaction phù hợp. Nó không hủy một commit riêng đã làm trước đó hoặc xóa email/file ngoài DB.",
+          "value": "Không giữ riêng lớp nếu nhóm chưa được commit."
+        },
+        {
+          "title": "Giữ thông tin lỗi cho lớp xử lý phù hợp",
+          "explanation": "raise không kèm giá trị ném lại exception đang được xử lý. Caller/router có thể ánh xạ lỗi đã biết, log lỗi chưa dự kiến.",
+          "value": "Không trả một kết quả thành công giả."
+        }
+      ],
+      "trace": {
+        "headers": [
+          "Thời điểm",
+          "Có thể đã có id?",
+          "Đã xác nhận toàn nhóm?"
+        ],
+        "rows": [
+          [
+            "Sau add",
+            "Chưa chắc",
+            "Chưa"
+          ],
+          [
+            "Sau flush lớp",
+            "Có",
+            "Chưa"
+          ],
+          [
+            "Sau commit thành công",
+            "Có",
+            "Có"
+          ],
+          [
+            "Bước2 lỗi trước commit",
+            "Có thể từng có",
+            "Không; rollback nhóm"
+          ]
+        ]
+      },
+      "predict": {
+        "question": "Nếu repository lớp tự commit trước khi thêm membership, rollback sau đó có hủy lớp đã commit không?",
+        "answer": "Không. Đó là lý do phải thống nhất transaction boundary cho toàn nghiệp vụ. Dùng Session mới kiểm dữ liệu sau lỗi, không chỉ assert rằng rollback được gọi."
+      },
+      "practice": [
+        "Điền: ghi chú thao tác nào có thể ném lỗi và trạng thái mong đợi.",
+        "Tự viết: nghiệp vụ hai bước với transaction boundary rõ.",
+        "Thử lỗi: gây lỗi sau flush và kiểm dữ liệu bằng Session mới trên DB học."
+      ],
+      "section": "Bài 08.3"
+    }
+  },
+  "syntax": [
+    {
+      "token": "=",
+      "name": "Gán một giá trị",
+      "meaning": "Tính vế phải rồi gán vào tên hoặc thuộc tính bên trái. Nó không phải phép so bằng.",
+      "example": "count = count + 1",
+      "trap": "Đọc là 'count nhận kết quả count cũ cộng 1'."
+    },
+    {
+      "token": "===",
+      "name": "So sánh nghiêm ngặt trong JavaScript",
+      "meaning": "So sánh theo ngữ nghĩa strict equality, không chuyển chuỗi '0' thành số 0 để coi chúng bằng nhau.",
+      "example": "0 === '0' // false",
+      "trap": "Python dùng == cho so giá trị; không có ===."
+    },
+    {
+      "token": "()",
+      "name": "Ngoặc tròn theo ngữ cảnh",
+      "meaning": "Có thể chứa tham số ở định nghĩa, đối số ở lời gọi, hoặc nhóm một biểu thức.",
+      "example": "average([0, 10])",
+      "trap": "Truyền handleClick và gọi handleClick() là hai việc khác nhau."
+    },
+    {
+      "token": "{}",
+      "name": "Object, khối hoặc biểu thức JSX",
+      "meaning": "Ý nghĩa phụ thuộc vị trí: object literal lưu field, block chứa câu lệnh, JSX dùng ngoặc nhọn đưa biểu thức vào UI.",
+      "example": "task => ({ id: task.id })",
+      "trap": "Arrow có block { ... } không tự return một biểu thức bên trong."
+    },
+    {
+      "token": "[]",
+      "name": "Danh sách, truy cập hoặc destructuring",
+      "meaning": "Có thể tạo array/list, lấy phần tử theo index, hoặc lấy các vị trí trong destructuring JavaScript.",
+      "example": "const [count, setCount] = useState(0)",
+      "trap": "Index bắt đầu từ 0; truy cập array rỗng cần xét giá trị thiếu."
+    },
+    {
+      "token": "=>",
+      "name": "Hàm mũi tên JavaScript",
+      "meaning": "Định nghĩa callback. Thân biểu thức có return ngầm; thân khối cần return rõ khi muốn trả giá trị.",
+      "example": "task => task.title",
+      "trap": "Không phải dấu so sánh hoặc một lệnh gọi API."
+    },
+    {
+      "token": "return",
+      "name": "Đưa kết quả về và kết thúc lần gọi",
+      "meaning": "Caller nhận giá trị này. Những câu lệnh sau return trên cùng đường chạy không được thực hiện.",
+      "example": "return total / count",
+      "trap": "console.log chỉ quan sát, không thay return."
+    },
+    {
+      "token": "...",
+      "name": "Spread hoặc rest trong JavaScript",
+      "meaning": "Spread đưa phần tử/field ra chỗ dùng; rest gom phần còn lại theo vị trí cú pháp.",
+      "example": "const next = { ...task, status: 'submitted' }",
+      "trap": "Spread tạo copy nông; object con có thể vẫn dùng chung."
+    },
+    {
+      "token": "??",
+      "name": "Giá trị dự phòng khi nullish",
+      "meaning": "Dùng vế phải khi vế trái là null hoặc undefined; giữ được số 0.",
+      "example": "score ?? 'Chưa chấm'",
+      "trap": "|| còn thay cả 0, chuỗi rỗng và các giá trị falsy khác."
+    },
+    {
+      "token": "?.",
+      "name": "Truy cập có điều kiện nullish",
+      "meaning": "Dừng truy cập ở bước có giá trị null/undefined thay vì đọc tiếp thuộc tính đó.",
+      "example": "user.profile?.avatarUrl",
+      "trap": "Không tự validate một JSON bất kỳ đúng schema."
+    },
+    {
+      "token": "async / await",
+      "name": "Theo dõi kết quả bất đồng bộ",
+      "meaning": "Async trả Promise; await tạm dừng phần tiếp theo của hàm đó đến khi kết quả hoàn tất hoặc ném lỗi.",
+      "example": "const result = await load()",
+      "trap": "Await không dừng cả trình duyệt và không tự làm DB sync thành async."
+    },
+    {
+      "token": "try / catch",
+      "name": "Hai đường thực hiện",
+      "meaning": "Lỗi được ném trong đường đang xử lý có thể chuyển đến catch phù hợp; finally dùng cho bước dọn.",
+      "example": "try { await save(); } catch (error) { showError(); }",
+      "trap": "Bắt lỗi rồi báo thành công có thể che mất tác dụng đã thất bại."
+    },
+    {
+      "token": "self",
+      "name": "Instance nhận lời gọi trong Python",
+      "meaning": "Tham số quy ước của instance method. obj.method(x) truyền obj vào tham số self của method đó.",
+      "example": "self.repository = repository",
+      "trap": "Không phải tên chung cho mọi instance; self.answers khác dict dùng chung ở class."
+    },
+    {
+      "token": "None / null",
+      "name": "Giá trị chưa có theo hợp đồng",
+      "meaning": "Python dùng None, JavaScript dùng null; ý nghĩa nghiệp vụ phải do hợp đồng dữ liệu xác định.",
+      "example": "score is None",
+      "trap": "Điểm 0 không đồng nghĩa chưa có điểm."
+    },
+    {
+      "token": "raise",
+      "name": "Ném lỗi trong Python",
+      "meaning": "Bỏ đường thực hiện bình thường cho đến handler phù hợp. Raise không có đối số trong except ném lại lỗi đang xử lý.",
+      "example": "raise ValueError('Tên rỗng')",
+      "trap": "Không catch mọi lỗi để trả thành công giả."
+    },
+    {
+      "token": "yield",
+      "name": "Tạm dừng và tiếp tục một generator",
+      "meaning": "Khác return kết thúc lần gọi thông thường. Trong dependency/context phù hợp có thể cấp tài nguyên rồi dọn sau đó.",
+      "example": "yield db",
+      "trap": "Đóng Session sau yield không tự chứng minh đã commit nghiệp vụ."
+    },
+    {
+      "token": ": / ->",
+      "name": "Annotation và cấu trúc Python/TypeScript",
+      "meaning": "Dấu hai chấm có thể mở block Python, mô tả field hoặc annotation tùy ngữ cảnh; -> mô tả kiểu return Python.",
+      "example": "def label(user_id: int) -> str:",
+      "trap": "Annotation Python không tự chặn mọi kiểu sai ở runtime."
+    },
+    {
+      "token": "JOIN / NULL",
+      "name": "Ghép quan hệ và nhận biết hàng không khớp",
+      "meaning": "LEFT JOIN giữ hàng trái không khớp, cho cột phải NULL; IS NULL dùng để xét thiếu giá trị theo SQL.",
+      "example": "LEFT JOIN submissions s ON ...",
+      "trap": "Đưa điều kiện bảng phải vào WHERE có thể loại hàng NULL ngoài ý muốn."
+    },
+    {
+      "token": "flush / commit",
+      "name": "Gửi thay đổi và xác nhận transaction",
+      "meaning": "Flush có thể gửi SQL và nhận id trong transaction; commit xác nhận nhóm thay đổi theo lifecycle đang dùng.",
+      "example": "db.flush(); db.commit()",
+      "trap": "Có id sau flush chưa chứng minh dữ liệu đã commit."
+    },
+    {
+      "token": "Depends",
+      "name": "Lắp dependency trong FastAPI",
+      "meaning": "FastAPI giải quyết provider trong ngữ cảnh request/dependency để cung cấp thành phần cho endpoint.",
+      "example": "service = Depends(get_service)",
+      "trap": "Gọi hàm Python bình thường không tự khiến FastAPI chạy dependency graph."
+    }
+  ]
+}

@@ -155,3 +155,95 @@ hai request đồng thời. Các query trong tài liệu chưa được chạy t
 lần soạn giáo án; bạn cần kiểm tra bằng fixture của database học.
 
 Tham khảo: [MySQL Tutorial](https://dev.mysql.com/doc/refman/8.0/en/tutorial.html).
+
+## Xưởng — Từ câu chuyện đến bảng, từng bước
+
+Một cô quản lý nhiều lớp; một học sinh học nhiều lớp. Bảng classes giữ một
+teacher_id cho bản đầu; memberships biểu diễn nhiều-nhiều student–class.
+Nếu sau này một lớp nhiều cô, đó là thay đổi quan hệ cần migration và policy,
+không nhét danh sách id thành chuỗi phân tách dấu phẩy trong một cột.
+
+```sql
+CREATE TABLE learning_classes (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(200) NOT NULL,
+  teacher_id BIGINT NOT NULL,
+  INDEX ix_learning_classes_teacher (teacher_id)
+);
+```
+
+Chỉ chạy trong DB học mới sau khi đọc lệnh. Ví dụ bảng độc lập này chưa có FK
+vì chưa tạo users tương ứng; schema đầy đủ phải thêm FK đúng kiểu/engine và
+quy tắc xóa. PK định danh row; index không tự cấp quyền; NOT NULL không ngăn
+chuỗi rỗng; UNIQUE title chỉ thêm nếu nghiệp vụ thật cấm trùng trong phạm vi đó.
+
+Học kiểu: integer cho id/count theo miền, VARCHAR cho chuỗi giới hạn, TEXT cho
+nội dung theo nhu cầu, DECIMAL cho số chính xác có precision/scale đã chọn,
+thời gian với policy timezone rõ. Đừng mặc định float cho mọi điểm hoặc TEXT
+cho mọi thứ. Xem utf8mb4/collation và kiểm cách so tên có dấu/hoa thường trên DB thật.
+
+## Xưởng — Viết SELECT trước ORM
+
+```sql
+SELECT id, title, teacher_id
+FROM learning_classes
+WHERE teacher_id = 1
+ORDER BY id
+LIMIT 20 OFFSET 0;
+```
+
+SELECT chọn cột; FROM chọn nguồn; WHERE lọc hàng; ORDER BY đặt thứ tự; LIMIT
+giới hạn. Không có ORDER BY thì không hứa thứ tự ổn định. Parameter user đưa
+vào phải bind, không nối chuỗi. Identifier sort không bind như giá trị: dùng
+allowlist field và hướng sort hợp lệ, không chèn raw input.
+
+Aggregation: WHERE lọc trước nhóm; GROUP BY tạo nhóm; HAVING lọc kết quả nhóm.
+COUNT(*) đếm hàng,COUNT(column) bỏ NULL; AVG bỏ NULL nên phải định nghĩa rõ
+chưa làm bài có được tính điểm 0 hay không. Đừng dùng AVG để tự quyết định
+chính sách báo cáo chưa chốt.
+
+## Xưởng — JOIN và nhân hàng
+
+Một lớp có10 thành viên và4 bài tập; JOIN cả hai bảng con độc lập có thể tạo40 hàng,
+làm COUNT sai. Tính tay fixture 2 thành viên×3 bài=6 trước khi viết query. Có thể
+tổng hợp từng tập trước rồi JOIN, hoặc truy vấn riêng theo mục tiêu; DISTINCT
+không phải thuốc chữa mọi loại nhân hàng và có thể che sai mô hình.
+
+Với LEFT JOIN, chuyển điều kiện bảng phải từ ON sang WHERE có thể loại hàng
+NULL và làm mất người chưa nộp. Bài: lấy đủ thành viên của một lớp, chỉ khớp
+submission của assignment được chọn, rồi WHERE submission.id IS NULL.
+
+## Xưởng — Transaction và cạnh tranh
+
+```text
+T1 kiểm chưa có bài       T2 kiểm chưa có bài
+T1 INSERT                T2 INSERT
+         UNIQUE(assignment_id,student_id) quyết định bản trùng
+```
+
+Hai lần SELECT trước INSERT không ngăn race. Cần constraint và hợp đồng xử lý
+IntegrityError/retry, kiểm lại sau rollback bằng transaction phù hợp. Isolation
+và khóa ảnh hưởng điều nhìn thấy; phải thử MySQL và driver thật. Với bản cuối
+của thư viện hoặc giới hạn số học sinh, cần xét atomic update/lock phù hợp,
+không chỉ đếm rồi insert ở hai transaction riêng.
+
+Một transaction nhóm thay đổi DB, không rollback email/file đã gửi ra ngoài.
+Outbox/cleanup cần thiết khi phối hợp tài nguyên khác. Commit xác nhận nhưng
+client mất response vẫn có thể không biết tác dụng đã xảy ra.
+
+## Xưởng — Index, EXPLAIN và migration
+
+Đọc query hay dùng trước khi thêm index. Compound index có thứ tự cột và tradeoff
+ghi/storage. EXPLAIN giúp xem plan; đo với dữ liệu đại diện. OFFSET rất lớn có
+thể cần cursor pagination, nhưng phải thiết kế ordering ổn định và tie-breaker.
+
+Chuẩn hóa tránh lặp thông tin gây update lệch; snapshot có chủ ý như title câu
+hỏi lúc thi là bài toán khác. Soft delete cần chính sách scope/unique/lịch sử;
+không cứ thêm deleted_at là mọi query tự đúng.
+
+**Điền:** tạo fixture 3 lớp,2 cô,4 học sinh; viết SELECT đúng phạm vi.
+
+**Trắng:** ERD bài tập/bài nộp/điểm và báo cáo người chưa nộp; tính tay trước query.
+
+**Sửa lỗi:** báo cáo đếm trùng sau JOIN; chứng minh bằng fixture tối thiểu, sửa
+và thêm test0hàng,NULL,trùng tên,điểm 0 và nhiều bản ghi con.
