@@ -7,6 +7,8 @@ from alembic import context
 
 from app.core.base import Base
 from app.models.user import User
+from app.models.classroom import Class, ClassEnrollment
+from app.models.schedule import ClassSession
 
 from app.core.config import settings
 

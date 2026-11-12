@@ -29,12 +29,9 @@ export const StudentDashboardPage: React.FC = () => {
 
     loadUser()
   }, [])
-
   const displayName = user ? getShortName(user.full_name) : 'Đang tải...'
-  const fullName = user ? user.full_name : 'Đang tải...'
-
   return (
-    <DashboardLayout user={{ name: fullName, role: user?.role }}>
+    <DashboardLayout user={{ name: displayName }}>
       <div
         className="student-dashboard flex-1 flex flex-col w-full"
         style={{ rowGap: 'var(--gap-main)' }}

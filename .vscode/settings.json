@@ -73,5 +73,6 @@
   "geminicodeassist.inlineSuggestions.enableAuto": false,
   "geminicodeassist.inlineSuggestions.enable": false,
   "geminicodeassist.displayInlineContextHint": false,
-  "geminicodeassist.autoComplete.enable": false
+  "geminicodeassist.autoComplete.enable": false,
+  "python.REPL.enableREPLSmartSend": false
 }
