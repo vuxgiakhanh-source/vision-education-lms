@@ -1,10 +1,13 @@
 # Hồ sơ dự án Vision Education LMS
 
-Cập nhật ngày 11/11/2026. Dự án phục vụ trung tâm Toán của cô người dùng. Người dùng tự code khoảng một tiếng mỗi ngày, Codex hướng dẫn và review theo [luật làm việc](../AGENTS.md).
+Cập nhật ngày 13/11/2026. Dự án phục vụ trung tâm Toán của cô người dùng. Người dùng tự code khoảng một tiếng mỗi ngày, Codex hướng dẫn và review theo [luật làm việc](../AGENTS.md).
+
+Người dùng muốn LMS phục vụ công việc thật của trung tâm và làm tốt hơn các phần mềm bán sẵn trong những luồng cô thực sự cần. Luồng đổi ca tạm là đề xuất đầu tiên để đối chiếu với công cụ có sẵn và đo số bước cô phải xử lý thủ công.
 
 ## Nghiệp vụ đã chốt
 
-- Trung tâm chia học sinh theo khối. Mỗi khối có nhiều lớp. Học sinh đăng ký một lớp với lịch cố định, chỉ học môn Toán, đúng một buổi mỗi tuần.
+- Trung tâm thường tổ chức thi online. Người dùng ưu tiên máy chủ đủ tài nguyên cho các ca thi thật, đặc biệt khi nhiều học sinh mở đề và nộp bài cùng lúc. Chưa chốt cấu hình hoặc số học sinh thi đồng thời.
+- Trung tâm chỉ dạy ba khối 10, 11 và 12. Cô nhập khối khi tạo hồ sơ học sinh và có thể xếp lớp sau. Khối của học sinh lấy từ hồ sơ `students.grade`. Học sinh chưa được xếp lớp vẫn xem được lịch cả khối. Mỗi khối có nhiều lớp. Khi đã xếp lớp, học sinh đăng ký một lớp với lịch cố định, chỉ học môn Toán, đúng một buổi mỗi tuần.
 - **Ca** là khung giờ. **Lịch cố định của lớp** gồm thứ trong tuần và ca. **Buổi học** là lần học cụ thể, có ngày, giờ và nội dung, dùng để lập danh sách tham dự và điểm danh. Các khung giờ đã bàn để minh họa là sáng 07:30–10:30, chiều 14:00–17:00 và tối 18:00–21:00. Dữ liệu buổi học phân loại nội dung Toán bằng chủ đề (`topic`) và các cờ chuyên đề: Đại số (`has_algebra`), Hình học (`has_geometry`), Ôn tập (`is_review`).
 - Trang **Lịch học** hiển thị số tuần học và khoảng ngày, cho học sinh chọn tuần. Học sinh xem các buổi theo ngày và ca, có giờ bắt đầu, giờ kết thúc và nội dung học. Giao diện chọn ca không cần hiện tên hoặc mã lớp.
 - Nút **Đổi lịch học** cho chọn **đổi tạm thời** hoặc **đổi cố định**.
@@ -13,8 +16,15 @@ Cập nhật ngày 11/11/2026. Dự án phục vụ trung tâm Toán của cô n
 
 ## Câu còn mở
 
+- Vận hành LMS khi cô và học sinh dùng thật. Người dùng muốn đánh giá phương án triển khai theo nhu cầu thực tế của trung tâm và chi phí duy trì. Người dùng thấy mức 300.000đ/tháng tiền VPS quá đắt và đang cân nhắc gói 4 GB RAM với kịch bản khoảng 300 học sinh thi online cùng lúc. Đây là mốc để dự toán và thử tải, chưa xác nhận lượng truy cập thực tế hoặc cấu hình hosting.
 - Mốc tính **Tuần học 1**. Ngày khai giảng của từng khóa là một đề xuất đang chờ chốt.
 - Quy trình **đổi cố định**. Cần xác nhận học sinh tự đổi hay cô hoặc trợ giảng duyệt.
+- Chuyển khối khi sang năm học mới. Người dùng đã cân nhắc tăng `grade` thêm 1 sau mỗi năm và quyết định để logic này làm sau khi có model `Student`. Chưa chốt mốc chuyển khối và cách thực hiện.
+
+## Thiết kế dữ liệu Lịch học đang bàn
+
+- Người dùng chốt tên `students.student_id` cho khóa chính kiêm khóa ngoại đến `users.id`. `grade` là số nguyên bắt buộc và giới hạn ở 10, 11, 12. `classes.grade` xác định lớp thuộc khối nào. `class_enrollments` xác định ca của học sinh tại thời điểm buổi học.
+- Các điểm đã được đề xuất để rà khi triển khai: cân nhắc cho `class_enrollments.student_id` trỏ đến `students.student_id`, kiểm tra khối của lớp khớp hồ sơ khi xếp lớp, tạo tài khoản và hồ sơ học sinh trong cùng transaction, và bổ sung hồ sơ cho tài khoản học sinh đã có bằng khối được xác nhận.
 
 ## Giao diện đang thiết kế
 
@@ -29,8 +39,11 @@ Cập nhật ngày 11/11/2026. Dự án phục vụ trung tâm Toán của cô n
 
 ## Điểm dừng
 
-- Dashboard đã lấy hồ sơ qua `/auth/me`. `MiniCalendarCard` đang hiển thị dữ liệu mẫu. Sidebar đã có mục **Lịch học**. Trang `/schedule` và luồng đổi lịch chưa được triển khai.
-- Người dùng đã chọn **Lịch học** làm tính năng tiếp theo. Mốc đầu đề xuất là người dùng tự dựng trang dùng chung khung dashboard, nối hai lối vào và hiển thị một tuần học mẫu. Kiểm tra bằng cách mở từ cả sidebar và lịch mini. Sau đó thiết kế dữ liệu lớp, lịch cố định và buổi cụ thể trước khi làm API đổi lịch.
+- Dashboard đã lấy hồ sơ qua `GET /me`. `MiniCalendarCard` đang hiển thị dữ liệu mẫu. Sidebar đã có mục **Lịch học**. Trang `/schedule` và luồng đổi lịch chưa được triển khai.
+- Đã có model và file migration cho `classes`, `class_enrollments` và `class_sessions`. Người dùng xác nhận mới tạo các migration này, chưa áp dụng vào MySQL. SQL sinh offline đến `head` chưa có bốn cột mà model `ClassSession` khai báo: `topic`, `has_algebra`, `has_geometry` và `is_review`. `ScheduleRepository.get_student_upcoming_sessions()` mới viết dở và chưa có API lịch học.
+- Người dùng quyết định hoãn áp dụng migration Lịch học vì chưa có dữ liệu thật.
+- File `backend/app/models/student.py` đã có model `Student` với `CheckConstraint` giới hạn khối 10, 11, 12. Bản trên đĩa hiện vẫn đặt tên khóa chính là `user_id`. Chưa có migration `students` và repository lịch chưa có hàm lấy khối. `class_enrollments.student_id` đang trỏ tới `users.id`. Backend sản phẩm chưa có API tạo/import học sinh. Script seed tạo tài khoản `User` vai trò `STUDENT`.
+- Người dùng đang tự code tiếp tính năng **Lịch học**. Mốc giao diện đề xuất là dựng trang dùng chung khung dashboard, nối hai lối vào và hiển thị một tuần học mẫu. Kiểm tra bằng cách mở từ cả sidebar và lịch mini.
 
 ## Việc kỹ thuật để xử lý sau
 
