@@ -3,36 +3,8 @@
 Ứng dụng quản lý học toán và luyện tập. Frontend: React, TypeScript, Vite,
 Tailwind CSS. Backend: FastAPI, SQLAlchemy, MySQL, Alembic.
 
-## Mở lại dự án: bắt đầu ở đây
-
-**Muốn học để tự code bằng tay:** mở [sách HTML tương tác](docs/course/GIAO-AN-LMS.html)
-bằng Chrome/Edge hoặc [giáo án Markdown và lộ trình thực hành](docs/course/README.md).
-Giáo án có cú pháp, tư duy xử lý, ví dụ, lỗi thường gặp, bài tập, gợi ý đáp án và
-ví dụ tham chiếu chạy được. Bắt đầu bằng khảo sát ở chương 00.
-
-Trong sách, mở **Lộ trình tự xây hệ thống** để học theo 12 mốc có sản phẩm và
-bằng chứng. Phần mới gồm bộ công cụ thật của repo, nền tảng lập trình/Python,
-xưởng UI–API–DB có quyền, debug, bàn giao và bài chuyển giao sang miền khác.
-
-1. Đọc [điểm dừng và nhật ký](docs/WORKLOG.md).
-2. Dùng [bản đồ code](docs/CODE_GUIDE.md) để tìm đúng file.
-3. Làm một việc nhỏ trong [lộ trình học và thực hành](docs/LEARNING_ROADMAP.md).
-4. Trước khi nghỉ, cập nhật nhật ký: đã làm gì, kiểm tra gì, tiếp theo làm gì.
-
-[Roadmap sản phẩm ban đầu](PROJECT_ROADMAP.md) chứa các ý tưởng tương lai;
-không dùng danh sách đó để kết luận chức năng đã hoàn thành.
-
-## Hiện trạng đã đọc từ code — 17/10/2026
-
-| Phần | Trạng thái |
-|---|---|
-| Đăng nhập, đổi mật khẩu, `/me` | Có backend và lớp gọi API frontend; cần chạy lại toàn luồng để xác nhận với database hiện tại |
-| Dashboard học sinh | Có giao diện responsive; dữ liệu nghiệp vụ vẫn là mock |
-| Phân quyền | Có enum 4 vai trò; chưa có cơ chế đầy đủ giới hạn quyền theo lớp |
-| Lớp học, giao/nộp/chấm bài, luyện thi | Chưa thấy module nghiệp vụ tương ứng trong backend |
-| Kiểm tra frontend | Có lệnh build và lint; chưa thấy bộ kiểm thử tự động/CI trong repo đã rà |
-
-Chi tiết và các nút chưa nối chức năng: [bản đồ code](docs/CODE_GUIDE.md).
+Nghiệp vụ đã chốt và điểm dừng hiện tại nằm trong [hồ sơ dự án](PROJECT_CONTEXT.md).
+Phạm vi dự kiến nằm trong [roadmap sản phẩm](PROJECT_ROADMAP.md).
 
 ## Chạy frontend
 

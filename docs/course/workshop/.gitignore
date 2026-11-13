@@ -1,9 +1,0 @@
-__pycache__/
-*.db
-*.sqlite*
-.env*
-frontend/node_modules/
-frontend/dist/
-perf/accounts.json
-perf/results/
-deploy/backups/
