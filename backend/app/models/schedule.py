@@ -19,3 +19,9 @@ class ClassSession(Base):
     starts_at = Column(DateTime, nullable=False)
     ends_at = Column(DateTime, nullable=False)
     status = Column(String(20), nullable=False, default="scheduled")
+
+class SessionsTransfer(Base):
+    __tablename__ = "sessions_transfers"
+    student_id = Column(Integer, ForeignKey("students.user_id"), primary_key=True)
+    original_session_id = Column(Integer, ForeignKey("class_sessions.id"), primary_key=True)
+    replacement_sessions_id = Column(Integer, ForeignKey("class_sessions.id"), nullable=True, default=None)

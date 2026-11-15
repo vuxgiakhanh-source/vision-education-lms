@@ -1,0 +1,2 @@
+class StudentGradeNotFoundException(Exception):
+    pass

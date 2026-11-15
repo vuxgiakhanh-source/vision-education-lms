@@ -13,7 +13,7 @@ class Class(Base):
 class ClassEnrollment(Base):
     __tablename__ = "class_enrollments"
     id = Column(Integer, primary_key=True)
-    student_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    student_id = Column(Integer, ForeignKey("students.user_id"), nullable=False)
     class_id = Column(Integer, ForeignKey("classes.id"), nullable=False)
     starts_at = Column(DateTime, nullable=False)
     ends_at = Column(DateTime, nullable=True)

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Home,
   FileText,
@@ -10,11 +11,13 @@ import {
   X,
 } from 'lucide-react'
 import logoImg from '../../../assets/images/logo.webp'
+import notebookImg from '../../../assets/images/graduation-cap.png'
 
 interface NavItem {
   id: string
   label: string
   icon: React.ElementType
+  path?: string
   active?: boolean
 }
 
@@ -24,15 +27,24 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
+  const location = useLocation()
+  const navigate = useNavigate()
+
   const navItems: NavItem[] = [
-    { id: 'home', label: 'Trang chủ', icon: Home, active: true },
-    { id: 'practice', label: 'Luyện đề', icon: FileText },
-    { id: 'schedule', label: 'Lịch học', icon: Calendar },
-    { id: 'exercises', label: 'Bài tập', icon: BookOpen },
-    { id: 'attendance', label: 'Điểm danh', icon: SquareCheck },
-    { id: 'summary', label: 'Tóm tắt kiến thức', icon: Lightbulb },
-    { id: 'settings', label: 'Cài đặt', icon: Settings },
+    { id: 'home', label: 'Trang chủ', icon: Home, path: '/dashboard' },
+    { id: 'practice', label: 'Luyện đề', icon: FileText, path: '/practice' },
+    { id: 'schedule', label: 'Lịch học', icon: Calendar, path: '/schedule' },
+    { id: 'exercises', label: 'Bài tập', icon: BookOpen, path: '/exercises' },
+    { id: 'attendance', label: 'Điểm danh', icon: SquareCheck, path: '/attendance' },
+    { id: 'summary', label: 'Tóm tắt kiến thức', icon: Lightbulb, path: '/summary' },
+    { id: 'settings', label: 'Cài đặt', icon: Settings, path: '/settings' },
   ]
+
+  const handleNavClick = (path?: string) => {
+    if (!path) return
+    navigate(path)
+    if (onClose) onClose()
+  }
 
   const sidebarContent = (
     <div className="flex flex-col h-full justify-between select-none py-1">
@@ -72,27 +84,44 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
         <nav className="mt-7 space-y-1.5 px-0.5">
           {navItems.map((item) => {
             const Icon = item.icon
+            const isActive =
+              item.path === '/dashboard'
+                ? location.pathname === '/dashboard' || location.pathname === '/'
+                : item.path
+                ? location.pathname.startsWith(item.path)
+                : false
+
             return (
               <button
                 key={item.id}
                 type="button"
+                onClick={() => handleNavClick(item.path)}
                 className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] wide:text-[15px] wide:py-3 transition-all cursor-pointer text-left ${
-                  item.active
+                  isActive
                     ? 'bg-[#EEF0FD] text-[#5553E6] font-semibold shadow-2xs'
                     : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/70 font-medium'
                 }`}
               >
                 <Icon
                   className={`w-[19px] h-[19px] shrink-0 ${
-                    item.active ? 'text-[#5553E6]' : 'text-slate-400'
+                    isActive ? 'text-[#5553E6]' : 'text-slate-400'
                   }`}
-                  strokeWidth={item.active ? 2.2 : 1.8}
+                  strokeWidth={isActive ? 2.2 : 1.8}
                 />
                 <span className="whitespace-nowrap tracking-tight">{item.label}</span>
               </button>
             )
           })}
         </nav>
+      </div>
+
+      {/* Góc dưới sidebar: Minh họa sách & học tập như trong ảnh */}
+      <div className="px-3 pb-2 pt-4 flex items-center justify-start opacity-90 hover:opacity-100 transition-opacity">
+        <img
+          src={notebookImg}
+          alt="Vision Education Learning"
+          className="w-16 h-auto object-contain drop-shadow-md select-none pointer-events-none"
+        />
       </div>
     </div>
   )

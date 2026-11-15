@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vision Education - Lịch học</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      letter-spacing: -0.01em;
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFD] text-[#1E293B] antialiased h-screen overflow-hidden m-0 selection:bg-[#EEF0FD] selection:text-[#5553E6]">
+  <div class="h-screen w-full max-w-[2000px] mx-auto bg-[#F8FAFD] flex overflow-hidden">
+    <!-- 1. Sidebar cố định bên trái (Desktop) -->
+    <aside class="hidden lg:flex w-[216px] bg-[#FAFBFD] h-screen border-r border-[#EAEFF5] flex-col justify-between p-3.5 shrink-0 select-none">
+      <div>
+        <div class="flex items-center gap-2.5 px-2 pt-3 pb-2">
+          <svg viewBox="0 0 120 80" class="h-[34px] w-auto shrink-0" fill="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="ve-grad-left" x1="8" y1="8" x2="62" y2="74" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#3B49FF" />
+                <stop offset="100%" stop-color="#2624D8" />
+              </linearGradient>
+              <linearGradient id="ve-grad-right" x1="56" y1="70" x2="112" y2="10" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#3B38EC" />
+                <stop offset="100%" stop-color="#7C5CFF" />
+              </linearGradient>
+            </defs>
+            <path d="M8 14C5 8 9 4 16 4H26C33 4 38 8 42 15L63 54L49 70C44 75 37 74 33 67L8 14Z" fill="url(#ve-grad-left)" />
+            <path d="M52 49L74 14C79 7 85 4 93 4H108C113 4 116 9 113 14L107 24C104 28 99 30 94 30H80L64 58C59 68 50 74 41 74C38 74 35 73 33 71C40 70 46 61 52 49Z" fill="url(#ve-grad-right)" />
+            <path d="M78 34H106C111 34 114 38 111 43L107 49C105 52 101 54 96 54H74C71 54 69 51 70 47L73 39C74 36 76 34 78 34Z" fill="url(#ve-grad-right)" />
+            <path d="M68 58H105C110 58 113 62 110 67L106 72C103 75 99 76 94 76H77C69 76 64 71 66 64L68 58Z" fill="url(#ve-grad-right)" />
+          </svg>
+          <div class="flex flex-col">
+            <span class="text-[16px] font-bold text-slate-900 leading-tight tracking-tight">Vision</span>
+            <span class="text-[13px] font-semibold text-slate-500 leading-tight tracking-tight">Education</span>
+          </div>
+        </div>
+
+        <nav class="mt-7 space-y-1.5 px-0.5">
+          <button type="button" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:text-slate-900 hover:bg-slate-100/70 font-medium transition-all cursor-pointer text-left">
+            <svg class="w-[19px] h-[19px] text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <span class="whitespace-nowrap">Trang chủ</span>
+          </button>
+          <button type="button" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:text-slate-900 hover:bg-slate-100/70 font-medium transition-all cursor-pointer text-left">
+            <svg class="w-[19px] h-[19px] text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+            <span class="whitespace-nowrap">Luyện đề</span>
+          </button>
+          <button type="button" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] bg-[#EEF0FD] text-[#5553E6] font-semibold shadow-sm transition-all cursor-pointer text-left">
+            <svg class="w-[19px] h-[19px] text-[#5553E6] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+            <span class="whitespace-nowrap">Lịch học</span>
+          </button>
+          <button type="button" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:text-slate-900 hover:bg-slate-100/70 font-medium transition-all cursor-pointer text-left">
+            <svg class="w-[19px] h-[19px] text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+            <span class="whitespace-nowrap">Bài tập</span>
+          </button>
+          <button type="button" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:text-slate-900 hover:bg-slate-100/70 font-medium transition-all cursor-pointer text-left">
+            <svg class="w-[19px] h-[19px] text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+            <span class="whitespace-nowrap">Điểm danh</span>
+          </button>
+          <button type="button" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:text-slate-900 hover:bg-slate-100/70 font-medium transition-all cursor-pointer text-left">
+            <svg class="w-[19px] h-[19px] text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+            <span class="whitespace-nowrap">Tóm tắt kiến thức</span>
+          </button>
+          <button type="button" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:text-slate-900 hover:bg-slate-100/70 font-medium transition-all cursor-pointer text-left">
+            <svg class="w-[19px] h-[19px] text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span class="whitespace-nowrap">Cài đặt</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="px-2 pb-2 flex items-end">
+        <img src="/graduation-cap.png" alt="Vision Education" class="w-[76px] h-auto object-contain select-none pointer-events-none drop-shadow-md ml-1" />
+      </div>
+    </aside>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-drawer" class="fixed inset-0 z-50 lg:hidden hidden">
+      <div id="drawer-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+      <div class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl p-4 flex flex-col justify-between z-50 select-none">
+        <div>
+          <div class="flex items-center justify-between px-2 pt-2 pb-2">
+            <div class="flex items-center gap-2.5">
+              <svg viewBox="0 0 120 80" class="h-8 w-auto shrink-0" fill="none" aria-hidden="true">
+                <path d="M8 14C5 8 9 4 16 4H26C33 4 38 8 42 15L63 54L49 70C44 75 37 74 33 67L8 14Z" fill="#3B49FF" />
+                <path d="M52 49L74 14C79 7 85 4 93 4H108C113 4 116 9 113 14L107 24C104 28 99 30 94 30H80L64 58C59 68 50 74 41 74C38 74 35 73 33 71C40 70 46 61 52 49Z" fill="#6366F1" />
+                <path d="M78 34H106C111 34 114 38 111 43L107 49C105 52 101 54 96 54H74C71 54 69 51 70 47L73 39C74 36 76 34 78 34Z" fill="#6366F1" />
+                <path d="M68 58H105C110 58 113 62 110 67L106 72C103 75 99 76 94 76H77C69 76 64 71 66 64L68 58Z" fill="#6366F1" />
+              </svg>
+              <div class="flex flex-col">
+                <span class="text-[16px] font-bold text-slate-900 leading-tight">Vision</span>
+                <span class="text-[13px] font-semibold text-slate-500 leading-tight">Education</span>
+              </div>
+            </div>
+            <button id="close-menu-btn" type="button" aria-label="Đóng menu" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <nav class="mt-6 space-y-1.5 px-0.5">
+            <button type="button" class="drawer-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:bg-slate-100/70 font-medium text-left cursor-pointer">Trang chủ</button>
+            <button type="button" class="drawer-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:bg-slate-100/70 font-medium text-left cursor-pointer">Luyện đề</button>
+            <button type="button" class="drawer-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] bg-[#EEF0FD] text-[#5553E6] font-semibold text-left cursor-pointer">Lịch học</button>
+            <button type="button" class="drawer-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:bg-slate-100/70 font-medium text-left cursor-pointer">Bài tập</button>
+            <button type="button" class="drawer-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:bg-slate-100/70 font-medium text-left cursor-pointer">Điểm danh</button>
+            <button type="button" class="drawer-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:bg-slate-100/70 font-medium text-left cursor-pointer">Tóm tắt kiến thức</button>
+            <button type="button" class="drawer-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] text-slate-500 hover:bg-slate-100/70 font-medium text-left cursor-pointer">Cài đặt</button>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Khung Viewport chính -->
+    <div class="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto overflow-x-hidden">
+      <!-- Header -->
+      <div class="w-full bg-[#F8FAFD]/95 backdrop-blur-md px-3.5 sm:px-6 xl:px-[26px] pt-3 pb-2 sticky top-0 z-20 shrink-0">
+        <header class="flex items-center justify-between gap-2.5 sm:gap-6 select-none w-full">
+          <button id="open-menu-btn" type="button" aria-label="Mở menu" class="lg:hidden p-2 rounded-xl bg-white shadow-sm border border-slate-200/70 text-slate-700 hover:bg-slate-50 transition-colors shrink-0 cursor-pointer">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          </button>
+
+          <div class="flex-1 min-w-0 max-w-[600px]">
+            <div class="flex items-center h-[42px] sm:h-[46px] bg-white rounded-full px-3.5 sm:px-5 shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-[#EDF1F8]">
+              <svg class="w-[18px] h-[18px] text-[#94A3B8] shrink-0 mr-2.5 sm:mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" placeholder="Tìm kiếm bài học, khóa học, chủ đề..." class="w-full bg-transparent text-[13px] sm:text-[13.5px] font-medium text-[#1E293B] placeholder-[#94A3B8] outline-none truncate" />
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 sm:gap-4 shrink-0">
+            <button type="button" aria-label="Thông báo" class="relative w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-100 transition-all cursor-pointer shrink-0">
+              <svg class="w-5 h-5 text-[#191D23]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#EF4444] ring-2 ring-[#F8FAFD]"></span>
+            </button>
+
+            <button type="button" class="flex items-center gap-2 cursor-pointer p-1 rounded-2xl hover:bg-white/80 transition-colors">
+              <div class="w-9 h-9 rounded-full bg-[#EEF0FD] text-[#5553E6] border border-[#5553E6]/15 flex items-center justify-center shrink-0">
+                <svg class="w-[18px] h-[18px] text-[#5553E6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <span class="hidden sm:inline text-[13.5px] font-semibold text-slate-800 whitespace-nowrap">Gia Khánh</span>
+              <svg class="hidden sm:inline w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
+        </header>
+      </div>
+
+      <!-- Main Grid (Bản ưng số 1 - Full Height) -->
+      <main class="flex-1 min-w-0 flex flex-col px-3.5 sm:px-6 xl:px-[26px] pt-1.5 pb-5">
+        <div class="flex-1 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_280px] gap-4 sm:gap-5 items-stretch w-full">
+          <!-- Left Main Card -->
+          <section class="bg-white rounded-[22px] sm:rounded-[24px] border border-[#EAEFF5] shadow-[0_4px_20px_rgba(20,25,45,0.03)] p-4 sm:p-5 select-none min-w-0 flex flex-col flex-1">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-4 shrink-0">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-[#EEF0FD] text-[#5553E6] flex items-center justify-center shrink-0">
+                  <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>
+                </div>
+                <h1 class="text-[19px] sm:text-[21px] font-bold text-[#1E293B] tracking-tight">Lịch học</h1>
+              </div>
+
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                <button id="prev-week" type="button" aria-label="Tuần trước" class="w-8 h-8 rounded-full bg-white border border-[#EAEFF5] hover:bg-slate-50 flex items-center justify-center text-slate-600 transition-colors cursor-pointer shadow-sm">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div id="week-label" class="px-3 sm:px-4 py-1.5 rounded-full bg-white border border-[#EAEFF5] text-[12px] sm:text-[13px] font-semibold text-[#1E293B] shadow-sm whitespace-nowrap">
+                  Tuần 9 · 09 – 15/11/2026
+                </div>
+                <button id="next-week" type="button" aria-label="Tuần sau" class="w-8 h-8 rounded-full bg-white border border-[#EAEFF5] hover:bg-slate-50 flex items-center justify-center text-slate-600 transition-colors cursor-pointer shadow-sm">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Mobile View (<768px) -->
+            <div id="mobile-schedule" class="md:hidden flex flex-col gap-3"></div>
+
+            <!-- Tablet & Desktop Grid View (>=768px) -->
+            <div class="hidden md:flex flex-1 flex-col min-w-0">
+              <div id="schedule-grid" class="flex-1 grid grid-cols-[96px_repeat(7,minmax(0,1fr))] lg:grid-cols-[112px_repeat(7,minmax(0,1fr))] grid-rows-[48px_repeat(3,minmax(108px,1fr))] gap-1.5"></div>
+            </div>
+          </section>
+
+          <!-- Right Sidebar Cards -->
+          <aside class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-3 content-start items-start self-start min-w-0 select-none">
+            <div class="bg-white rounded-[22px] border border-[#EAEFF5] shadow-[0_4px_20px_rgba(20,25,45,0.03)] p-5 relative overflow-hidden">
+              <svg viewBox="0 0 120 120" class="absolute -top-3 -right-3 w-28 h-28 pointer-events-none opacity-75" fill="none" aria-hidden="true">
+                <path d="M42 0C55 34 86 58 120 66V0H42Z" fill="#ECEBFC" />
+                <path d="M68 0C78 26 98 44 120 50V0H68Z" fill="#DFDCFA" />
+              </svg>
+
+              <div class="relative z-10">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-lg bg-[#EEF0FD] text-[#5553E6] flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                  </div>
+                  <h2 class="text-[15.5px] font-bold text-[#1E293B] tracking-tight">Buổi học tiếp theo</h2>
+                </div>
+
+                <div class="mt-3.5">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#E8E7FD] text-[#4B49D9] text-[12px] font-semibold">Toán 12</span>
+                </div>
+
+                <div class="mt-3.5 space-y-2.5">
+                  <button type="button" class="w-full flex items-center gap-2 text-left text-[12.5px] font-medium text-slate-700 hover:text-[#5553E6] transition-colors cursor-pointer">
+                    <svg class="w-4 h-4 text-slate-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                    <span class="truncate">Thứ Ba, 10/11 · 07:30 – 10:30</span>
+                    <svg class="w-4 h-4 text-slate-400 ml-auto shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                  </button>
+
+                  <div class="flex items-center gap-2 text-[12.5px] font-medium text-slate-700">
+                    <svg class="w-4 h-4 text-slate-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span>P.203</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-[22px] border border-[#EAEFF5] shadow-[0_4px_20px_rgba(20,25,45,0.03)] p-3.5">
+              <button type="button" class="w-full h-[52px] rounded-[16px] bg-gradient-to-r from-[#4543D0] via-[#4A48D6] to-[#3432B0] hover:from-[#3D3BC4] hover:to-[#2C2AA0] text-white font-semibold text-[14.5px] px-4 flex items-center justify-between shadow-[0_8px_20px_rgba(69,67,208,0.28)] transition-all cursor-pointer whitespace-nowrap">
+                <span class="flex items-center gap-2.5 whitespace-nowrap">
+                  <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                  <span>Đổi lịch học</span>
+                </span>
+                <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    let selectedDayId = 't3'
+    let weekNumber = 9
+
+    const weekDays = [
+      { id: 't2', label: 'T2', date: '09/11' },
+      { id: 't3', label: 'T3', date: '10/11' },
+      { id: 't4', label: 'T4', date: '11/11' },
+      { id: 't5', label: 'T5', date: '12/11' },
+      { id: 't6', label: 'T6', date: '13/11' },
+      { id: 't7', label: 'T7', date: '14/11' },
+      { id: 'cn', label: 'CN', date: '15/11' },
+    ]
+
+    const shifts = [
+      {
+        id: 'morning',
+        label: 'Ca 1 · Sáng',
+        timeRange: '07:30 – 10:30',
+        bgClass: 'bg-[#EAF2FF]',
+        iconDesktop: '<svg class="w-6 h-6 lg:w-7 lg:h-7 mb-0.5 shrink-0" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 6V8.5M9.5 8.8L11.2 10.5M22.5 8.8L20.8 10.5M5.8 15H8.3M23.7 15H26.2" stroke="#3B82F6" stroke-width="1.8" stroke-linecap="round"/><path d="M10.5 19C10.5 15.962 12.962 13.5 16 13.5C19.038 13.5 21.5 15.962 21.5 19H10.5Z" fill="#3B82F6"/><path d="M6.5 20.5H25.5" stroke="#2563EB" stroke-width="1.8" stroke-linecap="round"/><path d="M10 24.5H22" stroke="#60A5FA" stroke-width="1.8" stroke-linecap="round"/></svg>',
+        iconMobile: '<svg class="w-6 h-6 shrink-0" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 6V8.5M9.5 8.8L11.2 10.5M22.5 8.8L20.8 10.5M5.8 15H8.3M23.7 15H26.2" stroke="#3B82F6" stroke-width="1.8" stroke-linecap="round"/><path d="M10.5 19C10.5 15.962 12.962 13.5 16 13.5C19.038 13.5 21.5 15.962 21.5 19H10.5Z" fill="#3B82F6"/><path d="M6.5 20.5H25.5" stroke="#2563EB" stroke-width="1.8" stroke-linecap="round"/><path d="M10 24.5H22" stroke="#60A5FA" stroke-width="1.8" stroke-linecap="round"/></svg>',
+      },
+      {
+        id: 'afternoon',
+        label: 'Ca 2 · Chiều',
+        timeRange: '14:00 – 17:00',
+        bgClass: 'bg-[#FFF3E6]',
+        iconDesktop: '<svg class="w-6 h-6 lg:w-7 lg:h-7 mb-0.5 shrink-0" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="5.5" fill="#F59E0B"/><path d="M16 5.5V8M16 24V26.5M5.5 16H8M24 16H26.5M8.6 8.6L10.4 10.4M21.6 21.6L23.4 23.4M23.4 8.6L21.6 10.4M10.4 21.6L8.6 23.4" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/></svg>',
+        iconMobile: '<svg class="w-6 h-6 shrink-0" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="5.5" fill="#F59E0B"/><path d="M16 5.5V8M16 24V26.5M5.5 16H8M24 16H26.5M8.6 8.6L10.4 10.4M21.6 21.6L23.4 23.4M23.4 8.6L21.6 10.4M10.4 21.6L8.6 23.4" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/></svg>',
+      },
+      {
+        id: 'evening',
+        label: 'Ca 3 · Tối',
+        timeRange: '18:00 – 21:00',
+        bgClass: 'bg-[#ECECFE]',
+        iconDesktop: '<svg class="w-6 h-6 lg:w-7 lg:h-7 mb-0.5 shrink-0" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M22.8 20.3C21.5 20.9 20 21.2 18.5 21.2C13.1 21.2 8.8 16.9 8.8 11.5C8.8 9.8 9.2 8.2 10 6.8C7.1 8.3 5.2 11.3 5.2 14.7C5.2 19.7 9.3 23.8 14.3 23.8C18 23.8 21.2 21.6 22.6 18.4C22.7 19 22.8 19.7 22.8 20.3Z" fill="#E0E2FE" stroke="#5553E6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        iconMobile: '<svg class="w-6 h-6 shrink-0" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M22.8 20.3C21.5 20.9 20 21.2 18.5 21.2C13.1 21.2 8.8 16.9 8.8 11.5C8.8 9.8 9.2 8.2 10 6.8C7.1 8.3 5.2 11.3 5.2 14.7C5.2 19.7 9.3 23.8 14.3 23.8C18 23.8 21.2 21.6 22.6 18.4C22.7 19 22.8 19.7 22.8 20.3Z" fill="#E0E2FE" stroke="#5553E6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      },
+    ]
+
+    const sessions = [
+      { dayId: 't3', shiftId: 'morning', type: 'mine', tone: 'lavender', line1: 'Hàm số', line2: 'bậc hai' },
+      { dayId: 'cn', shiftId: 'morning', type: 'same-lesson', tone: 'lavender', line1: 'Hàm số', line2: 'bậc hai' },
+      { dayId: 't7', shiftId: 'afternoon', type: 'same-lesson', tone: 'amber', line1: 'Hàm số', line2: 'bậc hai' },
+      { dayId: 't5', shiftId: 'evening', type: 'same-lesson', tone: 'mint', line1: 'Hàm số', line2: 'bậc hai' },
+    ]
+
+    const toneStyles = {
+      lavender: { card: 'bg-[#ECEBFC] hover:bg-[#E4E2FA]', badge: 'bg-[#D8D6F8] text-[#4B47B5]' },
+      amber: { card: 'bg-[#FFF4E5] hover:bg-[#FDEBD2]', badge: 'bg-[#FDE6C4] text-[#B46914]' },
+      mint: { card: 'bg-[#ECFAF0] hover:bg-[#DFF5E6]', badge: 'bg-[#CEEFD8] text-[#1D7A43]' },
+    }
+
+    function renderDesktopGrid() {
+      const grid = document.getElementById('schedule-grid')
+      const cells = []
+
+      cells.push('<div class="rounded-2xl bg-[#F3F5FA]"></div>')
+
+      weekDays.forEach((day) => {
+        const isSelected = day.id === selectedDayId
+        cells.push(`
+          <button type="button" data-day="${day.id}" class="day-btn rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer ${
+            isSelected
+              ? 'bg-gradient-to-b from-[#4543D4] to-[#312FB5] text-white shadow-[0_6px_16px_rgba(69,67,212,0.28)]'
+              : 'bg-[#F3F5FA] text-[#1E293B] hover:bg-[#EAEFF8]'
+          }">
+            <span class="text-[13.5px] lg:text-[14px] font-bold leading-tight">${day.label}</span>
+            <span class="text-[12px] font-medium leading-tight mt-0.5 ${isSelected ? 'text-white/90' : 'text-slate-500'}">${day.date}</span>
+          </button>
+        `)
+      })
+
+      shifts.forEach((shift) => {
+        cells.push(`
+          <div class="rounded-2xl p-2 lg:p-3 flex flex-col items-center justify-center text-center gap-1 ${shift.bgClass}">
+            ${shift.iconDesktop}
+            <span class="text-[12px] lg:text-[13px] font-bold text-[#1E293B] leading-snug whitespace-nowrap">${shift.label}</span>
+            <span class="text-[12px] font-medium text-slate-600 leading-tight whitespace-nowrap">${shift.timeRange}</span>
+          </div>
+        `)
+
+        weekDays.forEach((day) => {
+          const session = sessions.find((s) => s.dayId === day.id && s.shiftId === shift.id)
+          if (!session) {
+            cells.push('<div class="rounded-2xl bg-[#F5F6FB]"></div>')
+          } else if (session.type === 'mine') {
+            cells.push(`
+              <button type="button" data-day="${day.id}" class="day-btn rounded-2xl bg-[#EAE9FC] border-[1.5px] border-[#3E3C8E] px-1 pt-3.5 pb-2 flex flex-col items-center justify-start gap-2.5 lg:gap-3 text-center shadow-[0_2px_10px_rgba(85,83,230,0.08)] cursor-pointer transition-transform hover:-translate-y-0.5 min-w-0">
+                <span class="inline-flex items-center gap-1 px-1.5 lg:px-2 py-1 rounded-full bg-[#4341CC] text-white text-[12px] font-semibold leading-none whitespace-nowrap max-w-full">
+                  <svg class="w-2.5 h-2.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  <span class="truncate">Ca của bạn</span>
+                </span>
+                <span class="text-[12.5px] lg:text-[13.5px] font-semibold text-[#1E293B] leading-snug">
+                  <span class="block">${session.line1}</span>
+                  <span class="block">${session.line2}</span>
+                </span>
+              </button>
+            `)
+          } else {
+            const style = toneStyles[session.tone]
+            cells.push(`
+              <button type="button" data-day="${day.id}" class="day-btn rounded-2xl px-1.5 pt-3.5 pb-2 flex flex-col items-center justify-start gap-2.5 lg:gap-3 text-center cursor-pointer transition-all hover:-translate-y-0.5 min-w-0 ${style.card}">
+                <span class="inline-flex items-center px-2 lg:px-2.5 py-1 rounded-full text-[12px] font-semibold leading-none whitespace-nowrap ${style.badge}">Cùng bài</span>
+                <span class="text-[12.5px] lg:text-[13.5px] font-semibold text-[#1E293B] leading-snug">
+                  <span class="block">${session.line1}</span>
+                  <span class="block">${session.line2}</span>
+                </span>
+              </button>
+            `)
+          }
+        })
+      })
+
+      grid.innerHTML = cells.join('')
+    }
+
+    function renderMobileView() {
+      const container = document.getElementById('mobile-schedule')
+      const dayButtons = weekDays.map((day) => {
+        const isSelected = day.id === selectedDayId
+        return `
+          <button type="button" data-day="${day.id}" class="day-btn py-2 rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer ${
+            isSelected
+              ? 'bg-gradient-to-b from-[#4543D4] to-[#312FB5] text-white shadow-[0_4px_12px_rgba(69,67,212,0.28)]'
+              : 'bg-[#F3F5FA] text-[#1E293B] hover:bg-[#EAEFF8]'
+          }">
+            <span class="text-[12px] font-bold leading-tight">${day.label}</span>
+            <span class="text-[12px] font-medium leading-tight mt-0.5 ${isSelected ? 'text-white/90' : 'text-slate-500'}">${day.date}</span>
+          </button>
+        `
+      }).join('')
+
+      const shiftCards = shifts.map((shift) => {
+        const session = sessions.find((s) => s.dayId === selectedDayId && s.shiftId === shift.id)
+        let rightContent = '<span class="text-[12px] font-medium text-slate-400 pr-2">Không có buổi học</span>'
+
+        if (session && session.type === 'mine') {
+          rightContent = `
+            <div class="flex-1 min-w-0 rounded-xl bg-[#EAE9FC] border-[1.5px] border-[#3E3C8E] px-3 py-2 flex items-center justify-between gap-2">
+              <span class="text-[13px] font-semibold text-[#1E293B] truncate">${session.line1} ${session.line2}</span>
+              <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#4341CC] text-white text-[12px] font-semibold leading-none whitespace-nowrap shrink-0">
+                <svg class="w-2.5 h-2.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                Ca của bạn
+              </span>
+            </div>
+          `
+        } else if (session) {
+          const style = toneStyles[session.tone]
+          rightContent = `
+            <div class="flex-1 min-w-0 rounded-xl px-3 py-2 flex items-center justify-between gap-2 ${style.card}">
+              <span class="text-[13px] font-semibold text-[#1E293B] truncate">${session.line1} ${session.line2}</span>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-[12px] font-semibold leading-none whitespace-nowrap shrink-0 ${style.badge}">Cùng bài</span>
+            </div>
+          `
+        }
+
+        return `
+          <div class="rounded-2xl bg-[#F5F6FB] p-3 flex items-center justify-between gap-3">
+            <div class="rounded-xl px-3 py-2.5 flex items-center gap-2.5 shrink-0 ${shift.bgClass}">
+              ${shift.iconMobile}
+              <div>
+                <div class="text-[12.5px] font-bold text-[#1E293B] leading-tight">${shift.label}</div>
+                <div class="text-[12px] font-medium text-slate-600 mt-0.5">${shift.timeRange}</div>
+              </div>
+            </div>
+            ${rightContent}
+          </div>
+        `
+      }).join('')
+
+      container.innerHTML = `
+        <div class="grid grid-cols-7 gap-1">${dayButtons}</div>
+        <div class="space-y-2.5">${shiftCards}</div>
+      `
+    }
+
+    function renderAll() {
+      renderDesktopGrid()
+      renderMobileView()
+      document.querySelectorAll('.day-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          selectedDayId = btn.dataset.day
+          renderAll()
+        })
+      })
+    }
+
+    const drawer = document.getElementById('mobile-drawer')
+    document.getElementById('open-menu-btn').addEventListener('click', () => drawer.classList.remove('hidden'))
+    document.getElementById('close-menu-btn').addEventListener('click', () => drawer.classList.add('hidden'))
+    document.getElementById('drawer-backdrop').addEventListener('click', () => drawer.classList.add('hidden'))
+    document.querySelectorAll('.drawer-nav-btn').forEach((btn) => {
+      btn.addEventListener('click', () => drawer.classList.add('hidden'))
+    })
+
+    document.getElementById('prev-week').addEventListener('click', () => {
+      weekNumber = Math.max(1, weekNumber - 1)
+      document.getElementById('week-label').textContent = `Tuần ${weekNumber} · 09 – 15/11/2026`
+    })
+
+    document.getElementById('next-week').addEventListener('click', () => {
+      weekNumber += 1
+      document.getElementById('week-label').textContent = `Tuần ${weekNumber} · 09 – 15/11/2026`
+    })
+
+    renderAll()
+  </script>
+</body>
+</html>
