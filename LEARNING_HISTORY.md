@@ -7,6 +7,18 @@
 - **5–6** · Nêu được vấn đề, nhưng căn cứ còn yếu hoặc kết luận đi xa hơn dữ kiện.
 - **1–4** · Nhầm vấn đề chính hoặc dựa vào giả định sai làm đổi kết luận.
 
+## 18/11/2026 · Trách nhiệm của service đọc lịch tuần
+
+- **Phản biện tiếp ngày 18/11/2026 · 9/10.** Người dùng đề xuất cho lịch mini gửi ngày thứ Tư hoặc thứ Năm để mở tuần chứa ngày đó. Chuyển phép tính về thứ Hai sang service giúp router gọi service trực tiếp và tránh trả `422` cho một ngày hợp lệ giữa tuần. Kiểm tra thêm Chủ nhật và thứ Hai kế tiếp để xác nhận hai mốc thuộc hai tuần khác nhau.
+- **Phản biện · 8/10.** Người dùng chất vấn độ gọn của service mới và hỏi hàm đọc lịch tuần phục vụ mục đích gì. Câu hỏi làm rõ trách nhiệm của service và gợi rà lại tên hàm cũng như việc nó đang phụ thuộc vào hai repository.
+- **Phản biện tiếp · 7/10.** Người dùng nêu nguy cơ gắn nhãn **Ca của bạn** lên buổi bị hủy và đề xuất kiểm tra trạng thái trong service. Truy vấn lịch đã loại buổi hủy trước vòng lặp. **Cần luyện.** Truy luồng dữ liệu từ repository tới service. Tự kiểm tra một buổi thường lệ bị hủy và so với ca gốc vẫn mở nhưng buổi thay thế bị hủy.
+- **Phản biện tiếp · 8/10.** Người dùng chỉ ra ca 14:00–17:00 sẽ không được xếp khi đăng ký lớp đích có hiệu lực lúc 15:00. Phép so đúng và làm lộ quyết định nghiệp vụ còn thiếu về việc có cho chuyển vào buổi đang diễn ra hay không. **Cần luyện.** Tách giờ duyệt, giờ hiệu lực và quyền tham gia buổi cụ thể. Thử hai lớp cùng bắt đầu lúc 14:00 để thấy điều gì xảy ra nếu chỉ xét đăng ký giao với thời lượng buổi.
+- **Phản biện tiếp · 9/10.** Người dùng đối chiếu router lịch với các router sẵn có, chỉ ra handler trong repo trả trực tiếp kết quả service. Căn cứ kiểm tra được ở `/me` và `/login`. Đã đưa việc dựng response vào service và để handler lịch trả thẳng kết quả sau khi kiểm tra đầu vào.
+
+## 17/11/2026 · Khôi phục cấu trúc Package by Feature sạch và bắt đầu lại
+
+- **Quyết định kiến trúc · 9/10.** Người dùng chủ động loại bỏ toàn bộ code AI sinh ra trước đó bị cồng kềnh, đưa codebase về commit gốc sạch sẽ trên GitHub, nhưng giữ lại cấu trúc thư mục Package by Feature (`weekly/`, `temporary_transfers/`, `permanent_transfers/`) ở dạng rỗng hoàn toàn để tự tay code từng dòng một cách sạch sẽ, không bị phụ thuộc vào code AI.
+
 ## 14/11/2026 · Dùng dữ liệu lưới tuần để lấy buổi sắp tới
 
 - **Nhận định** · Lưới tuần đã lấy danh sách buổi học, nên có thể dùng lại dữ liệu đó và bỏ hàm lấy 5 buổi riêng.
@@ -36,6 +48,7 @@
 - **Phản biện tiếp ngày 15/11/2026 · 9/10.** Người dùng chỉ ra dữ liệu xếp lớp chỉ xác định ca thường lệ. Muốn đọc lịch học sinh sau khi đổi ca còn phải truy vấn `SessionsTransfer` để nhận diện buổi gốc và buổi thay thế.
 - **Chốt lại yêu cầu ngày 15/11/2026 · 9/10.** Người dùng xác định đầu ra của hàm repo là lịch cá nhân trong khoảng, gồm các buổi đã qua và sắp tới, dù theo lớp hay đổi tạm. Điều này làm rõ hàm cần trả buổi học sau khi áp dụng lần đổi. Có thể kiểm tra bằng ca `101 → 108`: lịch cá nhân chứa `108`, còn dữ liệu lần đổi giúp nhận diện `101` đã chuyển.
 - **Phản biện ngày 15/11/2026 · 7/10.** Người dùng nhắc cần xét `week` và dùng cụm “khác week”. Tuần dạy là điều kiện của ca thay thế; cần phân biệt ID buổi, tuần dạy trong chương trình và khoảng tuần của lưới lịch. Tự rà hai buổi khác ID nhưng đều dạy nội dung tuần 5.
+- **Phản biện ngày 18/11/2026 · 9/10.** Người dùng chỉ ra service lịch tuần cần xét đổi lớp cố định có hiệu lực giữa hai tuần và đổi một buổi sang tuần lịch sau. Hai ca buộc xác định riêng lớp có hiệu lực, liên kết buổi gốc với buổi đích và trạng thái hiển thị ở từng tuần. Tự kiểm tra hai tuần liên tiếp từ cùng một lần đổi, rồi thử tuần đích có thêm buổi thường lệ thuộc tuần dạy khác.
 - **Phản biện ngày 15/11/2026 · 9/10.** Người dùng yêu cầu chứng minh thiết kế đổi ca đáp ứng nghiệp vụ và làm rõ cơ sở gọi một phương án là tối ưu. Khóa chính ghép và khóa ngoại đã thử trên SQLite trong bộ nhớ. Còn cần kiểm thử luồng đầy đủ sau khi viết service, và cần số đo để so hiệu năng với phương án khác.
 - **Phản biện ngày 15/11/2026 · 8/10.** Người dùng hỏi vì sao phải đánh dấu hai cột làm khóa chính trong `SessionTransfer`. Luật nghiệp vụ cần cặp `(student_id, original_session_id)` duy nhất. Có thể dùng khóa chính ghép hoặc khóa chính `id` kèm ràng buộc `UNIQUE` trên cặp. Tự rà bằng hai học sinh cùng đổi một buổi và một học sinh đổi hai buổi khác nhau.
 - **Phản biện ngày 15/11/2026 · 8/10.** Người dùng chỉ ra `replacement_session_id` có thể nhận `NULL`. Về schema, cột khóa ngoại ngoài khóa chính có thể khai báo `nullable=True`. SQLite đã chấp nhận dòng có `NULL` khi bật kiểm tra khóa ngoại. Cần định nghĩa ý nghĩa của dòng này khi dựng lịch và điểm danh.

@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.modules.auth.login.router import login_router
 from app.modules.auth.change_password.router import change_password_router
 from app.modules.auth.me.router import me_router
+from app.modules.schedule.weekly.router import weekly_schedule_router
 from app.core.config import settings
 
 app = FastAPI()
@@ -10,6 +11,7 @@ app = FastAPI()
 app.include_router(login_router)
 app.include_router(change_password_router)
 app.include_router(me_router)
+app.include_router(weekly_schedule_router)
 
 app.add_middleware(
     CORSMiddleware,

@@ -18,16 +18,17 @@ Người dùng muốn LMS phục vụ công việc thật của trung tâm và l
 - Trung tâm chỉ dạy ba khối 10, 11 và 12. Cô nhập khối khi tạo hồ sơ học sinh và có thể xếp lớp sau. Khối của học sinh lấy từ hồ sơ `students.grade`. Học sinh chưa được xếp lớp vẫn xem được lịch cả khối. Mỗi khối có nhiều lớp. Khi đã xếp lớp, học sinh đăng ký một lớp với lịch cố định, chỉ học môn Toán, đúng một buổi mỗi tuần.
 - **Ca** là khung giờ. **Lịch cố định của lớp** gồm thứ trong tuần và ca. **Buổi học** là lần học cụ thể, có ngày, giờ và nội dung, dùng để lập danh sách tham dự và điểm danh. Các khung giờ đã bàn để minh họa là sáng 07:30–10:30, chiều 14:00–17:00 và tối 18:00–21:00. Dữ liệu buổi học phân loại nội dung Toán bằng chủ đề (`topic`) và các cờ chuyên đề: Đại số (`has_algebra`), Hình học (`has_geometry`), Ôn tập (`is_review`).
 - Trang **Lịch học** hiển thị số tuần học và khoảng ngày, cho học sinh chọn tuần. Người dùng xác nhận tuần trên lưới tính từ thứ Hai đến Chủ nhật. Học sinh xem các buổi theo ngày và ca, có giờ bắt đầu, giờ kết thúc và nội dung học. Giao diện chọn ca không cần hiện tên hoặc mã lớp.
-- Khi học sinh mở Lịch học từ ô lịch mini, người dùng muốn API trả các thông tin cơ bản của buổi học và bỏ các trường frontend không dùng. Danh sách trường cụ thể của response sẽ chốt khi viết schema.
+- Khi bấm tuần trước hoặc tuần sau, học sinh phải thấy lịch mới nhất của đúng tuần đã chọn. Nếu giáo viên dời hoặc hủy buổi, hoặc học sinh đổi ca hay hủy lần đổi, lịch đang mở của học sinh bị ảnh hưởng phải tự cập nhật theo thời gian thực mà không cần tải lại trang.
+- API `GET /schedule/weekly` nhận ngày được chọn qua `week_start`, kể cả các ngày giữa tuần. Service tính 00:00 thứ Hai của tuần chứa ngày đó và trả ngày thứ Hai trong response cùng `sessions`, `my_session_ids` và `transferred_session_ids`. Mỗi buổi chỉ gồm `id`, `topic`, `starts_at` và `ends_at` để dựng lưới. Khi nối thao tác chọn một ngày trên lịch mini, frontend có thể gửi ngày được chọn trực tiếp.
 - Trên lưới tuần, buổi học học sinh sẽ tham dự được tô khác màu và có nhãn **Ca của bạn**. Người dùng muốn giữ hai thao tác: lấy danh sách buổi của cả khối và xác định buổi của học sinh trong tuần đang xem để phục vụ lưới và thẻ bên phải. Với ca đăng ký, người dùng đề xuất đối chiếu `class_id` của buổi với `class_id` trong đăng ký lớp. Frontend quyết định màu sắc hiển thị dựa trên buổi được xác định.
 - Người dùng muốn giữ ô buổi gốc trên lưới và có dấu hiệu rõ ràng để học sinh nhận ra đây là ca đã đổi. Đề xuất dùng nhãn **Đã chuyển ca** kèm biểu tượng đổi lịch. Ca thay thế mang nhãn **Ca của bạn**.
 - Người dùng xác nhận một học sinh có thể được xếp hai buổi trong cùng tuần trên lưới nếu hai buổi thuộc hai tuần dạy khác nhau. Nếu nhiều buổi đều khớp lịch lớp và cùng tuần dạy thì chỉ buổi được xếp mới có màu và nhãn **Ca của bạn**. Các buổi còn lại vẫn thuộc lịch cả khối. Đề xuất chờ chốt: để service chọn buổi có `starts_at` sớm hơn khi hai ca thường lệ cùng tuần dạy, rồi áp dụng lần đổi tạm hợp lệ nếu có.
 - Nút **Đổi lịch học** cho chọn **đổi tạm thời** hoặc **đổi cố định**.
   - **Đổi tạm thời** chỉ áp dụng cho **buổi học tiếp theo của học sinh**. Học sinh chọn một buổi khác dạy cùng nội dung theo ngày, ca và giờ trên lưới tuần. Khi đổi thành công, cô thấy học sinh trong danh sách điểm danh buổi mới. Buổi gốc thể hiện học sinh đã chuyển buổi để cô phân biệt với vắng mặt. Lớp đăng ký được giữ và các tuần sau học theo lịch gốc.
-  - Khi đổi tạm, buổi thay thế phải thuộc cùng tuần dạy trong chương trình với buổi gốc. Cách lưu tuần dạy và việc cho chọn ca thay thế ở tuần khác trên lưới vẫn cần chốt.
+  - Người dùng xác nhận cho đổi tạm sang tuần lịch sau nếu buổi thay thế thuộc cùng tuần dạy trong chương trình với buổi gốc. Lưới tuần gốc hiện **Đã chuyển ca** và lưới tuần đích hiện **Ca của bạn**. Cách lưu tuần dạy còn cần chốt.
   - Học sinh có thể đổi nhiều lần trong cùng một tuần, miễn lần đổi vẫn áp dụng cho buổi học tiếp theo và còn ca thay thế dạy cùng nội dung. Khi chọn lại ca thay thế cho cùng buổi gốc, cập nhật buổi đích trong lần đổi hiện tại để mỗi buổi gốc của học sinh có tối đa một ca thay thế đang được chọn.
   - Người dùng lưu ý có thể hết buổi dạy cùng nội dung để thay thế cho buổi tiếp theo. Cần chốt trạng thái giao diện khi danh sách ca thay thế trống.
-  - **Đổi cố định** chuyển lớp hoặc ca đăng ký từ thời điểm có hiệu lực. Các buổi sau theo lịch mới và lịch sử đã học được giữ.
+  - **Đổi cố định** chuyển lớp hoặc ca đăng ký từ thời điểm có hiệu lực. Xác định lớp của học sinh theo đăng ký có hiệu lực lúc từng buổi bắt đầu. Các buổi sau theo lịch mới và lịch sử đã học được giữ.
 - Khi giáo viên dời ngày hoặc giờ của cùng một buổi, học sinh đã đăng ký buổi đó đi theo lịch mới, kể cả học sinh đã chọn buổi đó khi đổi ca tạm. Cập nhật ngày giờ trên chính `ClassSession` để các liên kết theo ID buổi tiếp tục áp dụng.
 
 ## Phương án vận hành đã chốt
@@ -41,13 +42,15 @@ Người dùng muốn LMS phục vụ công việc thật của trung tâm và l
 
 ## Câu còn mở
 
+- Khi đổi tạm qua tuần lịch, còn cần chốt lưới tuần gốc có hiển thị thêm ngày của ca đích bên cạnh nhãn **Đã chuyển ca** hay không.
+- Cơ chế đẩy cập nhật lịch theo thời gian thực và cách đồng bộ lại khi kết nối gián đoạn còn cần chốt. Quy tắc tính buổi tiếp theo và quy tắc xử lý hủy buổi vẫn là các quyết định nghiệp vụ riêng.
 - Người dùng nêu tình huống học sinh muốn hủy lần đổi tạm để quay lại buổi gốc và chọn cho `replacement_session_id` nhận `NULL` với giá trị mặc định là `NULL`. Cần chốt ý nghĩa nghiệp vụ của dòng có `NULL`, hạn hủy và có cần lưu lịch sử các lần đổi đã hủy hay không.
-- Cần chốt cách thông báo khi giáo viên dời giờ hoặc hủy buổi đã có học sinh đăng ký, và cách xử lý đăng ký khi buổi bị hủy, đặc biệt khi buổi gốc đã qua.
+- Cần chốt cách thông báo khi giáo viên dời giờ hoặc hủy buổi đã có học sinh đăng ký. Khi buổi thay thế bị hủy, cần chốt cách xử lý lần đổi và ca gốc, đặc biệt nếu ca gốc đã qua. Hiện truy vấn loại buổi thay thế bị hủy khỏi lưới, còn ca gốc vẫn hiện **Đã chuyển ca** nếu lần đổi còn lưu.
 - Người dùng cân nhắc gộp dữ liệu học sinh tham gia từng buổi với dữ liệu đổi ca và nhấn mạnh mục tiêu là biết học sinh được xếp vào buổi nào khi buổi diễn ra. Cần chốt cách lưu danh sách dự kiến và kết quả điểm danh thực tế, đồng thời phục vụ yêu cầu hiển thị **Đã chuyển ca** ở buổi gốc. Model đổi ca đã có, còn model điểm danh chưa được triển khai.
 - Mốc tính **Tuần học 1**. Ngày khai giảng của từng khóa là một đề xuất đang chờ chốt.
 - Người dùng muốn xác định mỗi lớp đang dạy đến buổi thứ mấy, đề xuất đếm theo tuần và cân nhắc lưu `week` ở model lớp. Codex đề xuất lưu tuần dạy trên từng `ClassSession` để so buổi gốc với buổi thay thế, vì các buổi của cùng một lớp có thể mang số tuần khác nhau. Còn cần chốt cách ghi tuần khi lớp nghỉ hoặc học bù và việc dùng tiến độ để kiểm tra lớp đích khi chuyển cố định.
 - Thẻ **Buổi học tiếp theo** có dòng phòng học trong ảnh tham chiếu. Chưa chốt phòng được gán theo lớp hay theo buổi. Model `Class` và `ClassSession` hiện chưa có trường phòng.
-- Quy trình **đổi cố định**. Cần xác nhận học sinh tự đổi hay cô hoặc trợ giảng duyệt.
+- Quy trình **đổi cố định**. Cần xác nhận học sinh tự đổi hay cô hoặc trợ giảng duyệt. Người dùng nêu trường hợp cô duyệt lúc 15:00 và cho học sinh vào ngay buổi 14:00–17:00 của lớp đích, đồng thời hỏi có cần bản ghi riêng theo buổi. Phương án đang bàn là giữ mốc hiệu lực của đăng ký lớp và lưu thêm việc xếp học sinh vào đúng buổi đang diễn ra. Cần chốt có hỗ trợ trường hợp này và xử lý lịch hoặc điểm danh buổi lớp cũ ra sao nếu trùng giờ.
 - Chuyển khối khi sang năm học mới. Người dùng đã cân nhắc tăng `grade` thêm 1 sau mỗi năm và quyết định để logic này làm sau khi có model `Student`. Chưa chốt mốc chuyển khối và cách thực hiện.
 
 ## Thiết kế dữ liệu Lịch học đang bàn
@@ -95,12 +98,21 @@ Người dùng muốn LMS phục vụ công việc thật của trung tâm và l
 - Đã có model và file migration cho `classes`, `class_enrollments` và `class_sessions`. Người dùng xác nhận mới tạo các migration này, chưa áp dụng vào MySQL. Các migration hiện tại chưa khai báo bốn cột của model `ClassSession` gồm `topic`, `has_algebra`, `has_geometry` và `is_review`.
 - Người dùng quyết định hoãn áp dụng migration Lịch học vì chưa có dữ liệu thật.
 - File `backend/app/models/student.py` đã có model `Student` với `CheckConstraint` giới hạn khối 10, 11, 12. Bản trên đĩa hiện vẫn đặt tên khóa chính là `user_id`. Chưa có migration `students`. Model `ClassEnrollment` đã trỏ `student_id` tới `students.user_id`, còn migration hiện tại vẫn trỏ tới `users.id`. Backend sản phẩm chưa có API tạo/import học sinh. Script seed tạo tài khoản `User` vai trò `STUDENT`.
-- Repository lịch có `get_student_grade(user_id)` và `get_upcoming_sessions(grade, starts_from, limit=5)`. Hàm lấy tối đa 5 buổi theo khối hiện chưa có nơi gọi và người dùng xác nhận không cần cho phần đang làm. Chưa có API lịch học. Trạng thái này được đối chiếu trên mã nguồn, chưa chạy truy vấn với MySQL.
+- Repository lịch có `get_student_grade(user_id)` và `get_upcoming_sessions(grade, starts_from, limit=5)`. Hàm lấy tối đa 5 buổi theo khối hiện chưa có nơi gọi và người dùng xác nhận không cần cho phần đang làm. API lịch tuần đã đăng ký trong FastAPI và được kiểm tra qua HTTP với SQLite in-memory. Chưa kiểm tra trên MySQL.
 - Người dùng chốt backend xác định ID buổi **Ca của bạn** và ID buổi **Đã chuyển ca** trên lưới tuần, gồm cả buổi đã qua và buổi sắp tới. Service dựa vào lịch cả khối và đăng ký lớp để tìm ca thường lệ, rồi áp dụng lần đổi tạm. Frontend đọc hai danh sách ID để tô màu và gắn nhãn.
 - Người dùng mô tả luồng đọc lịch cá nhân: lấy các buổi `scheduled` đã được xếp, rồi thay buổi gốc bằng buổi đã chọn khi có lần đổi cùng tuần dạy. Khi áp dụng lần đổi đã lưu, đề xuất dùng `original_session_id` để xác định đúng buổi cần thay, dùng `week` để kiểm tra cùng nội dung và dùng ngày giờ của buổi cuối cùng để xác định nó có nằm trên lưới đang xem.
-- Repository đã có `get_sessions_in_range()` lấy lưới cả khối, `get_student_enrollments_in_range()` lấy đăng ký lớp giao với khoảng ngày và `get_student_transfers_for_sessions()` trả object `SessionsTransfer`. Đã kiểm tra hàm đọc đổi ca trên SQLite với lưới chứa một hoặc cả hai ID buổi, dòng của học sinh khác và buổi thay thế `NULL`. Service hiện mới trả lịch cả khối; chưa xác định danh sách ID ca cá nhân.
+- `weekly/service.py` lấy lưới cả khối qua `WeeklyScheduleRepository`, dùng lại truy vấn đăng ký lớp và lần đổi ca từ `ScheduleRepository`, trả hai danh sách ID ca cá nhân. Đã kiểm tra trên SQLite việc đổi lớp đúng tại mốc hiệu lực, lần đổi xuất hiện đúng ở hai tuần, lần đổi có buổi thay thế `NULL`, dữ liệu của học sinh khác và tuần trống. Service đọc lần đổi đã lưu theo ID hai buổi. Model chưa có dữ liệu tuần dạy để xác thực điều kiện cùng tuần dạy khi lưu lần đổi.
 - Phạm vi của thẻ **Buổi học tiếp theo** vẫn cần chốt khi tuần đang xem không còn buổi tương lai của học sinh: hiển thị trạng thái trống hay tìm tiếp ở tuần sau.
 - Người dùng đang tự code tiếp tính năng **Lịch học**. Mốc giao diện đề xuất là dựng trang dùng chung khung dashboard, nối hai lối vào và hiển thị một tuần học mẫu. Kiểm tra bằng cách mở từ cả sidebar và lịch mini.
+
+## Điểm dừng
+
+- **Ngày 17/11/2026:** Người dùng chốt cấu trúc Package by Feature cho module Schedule, chia thành 3 sub-module chuyên biệt: `weekly/`, `temporary_transfers/`, và `permanent_transfers/`. Khởi tạo khung thư mục và các file rỗng chuẩn mực (`router.py`, `service.py`, `repository.py`, `schemas.py`) để người dùng tự tay viết code sạch sẽ từ đầu.
+
+- **Mốc triển khai hiện tại:** Người dùng đồng ý bắt đầu từ luồng xem lịch tuần. Mốc hoàn thành khi học sinh mở `/schedule`, chuyển tuần và thấy đúng lịch của khối mình từ API. Ca cá nhân, buổi tiếp theo, đổi tạm và đổi cố định là các chức năng tiếp theo của trang.
+- **Ngày 18/11/2026:** Người dùng ưu tiên làm đúng luồng chuyển tuần và đồng bộ các thay đổi ngay trên lưới đang mở. API đọc lịch tuần đã có, còn cần nối frontend và triển khai cơ chế đẩy cập nhật.
+- **Điểm dừng:** Người dùng tự tạo bản giao diện Lịch học để tiếp tục phần frontend sau khi hoàn thành API đọc lịch tuần.
+- **Phạm vi thử giao diện:** Người dùng chốt nối API lịch tuần với dữ liệu mẫu để kiểm tra hai nút chuyển tuần và xác nhận lưới hiển thị đủ các buổi của tuần đang xem.
 
 ## Điểm vào mã nguồn
 
