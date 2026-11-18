@@ -9,6 +9,13 @@
 - Trong mỗi lượt trao đổi về LMS, nếu người dùng nói điều mới hoặc sửa thông tin về dự án, tự cập nhật [hồ sơ dự án](PROJECT_CONTEXT.md) ngay trong lượt đó. Áp dụng cho tính năng, nghiệp vụ, luồng sử dụng, yêu cầu giao diện, phạm vi và điểm dừng. Người dùng không cần nhắc “lưu lại”.
 - Ghi ý người dùng theo từng chủ đề, tránh lặp. Tách thông tin đã xác nhận, ý tưởng đang cân nhắc, câu còn mở và trạng thái triển khai đã kiểm tra. Nếu người dùng sửa một quyết định cũ, cập nhật mục liên quan. Gợi ý của Codex chỉ trở thành quyết định khi người dùng đồng ý.
 
+## Tổ chức code frontend và backend
+
+- Chia FE và BE theo nghiệp vụ, rồi chia trách nhiệm bên trong từng nghiệp vụ. Tên tầng giống nhau có thể mang trách nhiệm khác nhau. Ví dụ service Weekly ở FE gửi request HTTP, còn service Weekly ở BE áp dụng quy tắc lịch học và gọi repository để lấy dữ liệu.
+- Chọn vị trí code theo nghiệp vụ sở hữu nó và phạm vi sử dụng. Code riêng cho một màn hình hoặc luồng thì để gần chỗ dùng. Code nhiều luồng cùng nghiệp vụ cần thì để ở module cha. Ví dụ Weekly dùng `ScheduleRepository` trong `modules/schedule` vì repository này chứa truy vấn về đăng ký lớp và đổi ca.
+- Code dùng được qua nhiều nghiệp vụ thì đặt ở khu vực chung phù hợp với trách nhiệm. Ví dụ `frontend/src/lib/axios.ts` lo HTTP, `frontend/src/lib/date.ts` chứa hàm định dạng ngày dùng chung, `backend/app/core` chứa phần xác thực dùng chung và `backend/app/database` quản lý phiên làm việc với cơ sở dữ liệu.
+- Khi chọn vị trí, xét cả những luồng sắp tới đã biết của LMS. Có thể tách dùng chung ngay từ lần dùng đầu nếu đã thấy các luồng khác cần cùng hành vi và giao diện của hàm đủ rõ. Số nơi gọi chỉ là một dấu hiệu. Kiểm tra các giả định có ảnh hưởng đến kết quả, như định dạng và múi giờ khi dùng chung hàm ngày.
+
 ## Theo dõi tiến bộ
 
 - Mỗi khi người dùng phản biện một nhận định hoặc đề xuất, trả lời nội dung trước, rồi chấm câu hỏi hoặc lập luận trên thang 10 và nêu lý do ngắn gọn. Chấm theo tiêu chí trong [lịch sử học](LEARNING_HISTORY.md). Câu hỏi cú pháp thông thường vẫn được trả lời thẳng.

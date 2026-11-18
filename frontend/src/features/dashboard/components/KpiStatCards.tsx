@@ -1,6 +1,6 @@
 import React from 'react'
 import { BarChart2, FileText, Flame, ArrowUp } from 'lucide-react'
-import type { KpiStats } from '../types/dashboard.types'
+import type { KpiStats } from '../types/dashboardTypes'
 
 interface KpiStatCardsProps {
   stats: KpiStats

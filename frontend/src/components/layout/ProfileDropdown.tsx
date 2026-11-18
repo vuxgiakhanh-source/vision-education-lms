@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useRouter } from 'next/navigation'
 import { User, Settings, LogOut, ChevronDown } from 'lucide-react'
-import type { UserProfile } from '../../features/dashboard/types/dashboard.types'
+import type { UserProfile } from './layoutTypes'
 
 interface ProfileDropdownProps {
   user: UserProfile
@@ -10,7 +10,7 @@ interface ProfileDropdownProps {
 export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const navigate = useNavigate()
+  const router = useRouter()
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -31,7 +31,7 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ user }) => {
   const handleLogout = () => {
     localStorage.removeItem('access_token')
     setIsOpen(false)
-    navigate('/login')
+    router.push('/login')
   }
 
   return (

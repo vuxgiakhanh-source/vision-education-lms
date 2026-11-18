@@ -1,14 +1,17 @@
-# 🎓 VISION EDUCATION LMS - MASTER SPECIFICATION & ROADMAP
+# Roadmap Vision Education LMS
 
-> **Hệ thống Quản lý Học tập & Luyện thi Chuyên sâu - Vision Education LMS**
-> Thiết kế chuẩn CBT (Computer-Based Testing), Gamification & Hệ sinh thái học tập tương tác cao.
+LMS dành cho trung tâm Toán khối 10–12. Mốc đang triển khai là học sinh xem lịch đúng khối và chuyển tuần từ dữ liệu thật.
+
+[Hồ sơ dự án](PROJECT_CONTEXT.md) · [Thiết kế tổng thể](docs/design/architecture.md) · [Thiết kế dữ liệu](docs/design/database.md) · [Design system](docs/design/design-system.md) · [Đặc tả Weekly](docs/design/weekly.md) · [Sprint Weekly](docs/planning/weekly-sprint.md)
 
 ---
 
-## 🌟 TỔNG QUAN TÍNH NĂNG TOÀN DIỆN (SYSTEM MODULES)
+## Phạm vi tính năng
+
+Danh sách này gồm cả các tính năng đang làm và các ý tưởng cho mốc sau. Dùng bảng mốc bên dưới để xem thứ tự triển khai đề xuất.
 
 ### 1. 🛡️ Module 1: Authentication & Phân quyền (RBAC)
-- **3 Vai trò chính:** `Admin` (Quản trị viên), `Teacher` (Giáo viên), `Student` (Học sinh).
+- **Vai trò trong model hiện tại** gồm quản trị viên, giáo viên, trợ giảng và học sinh. Quyền chi tiết của từng vai trò cần xác định theo luồng.
 - Xác thực số điện thoại & mật khẩu băm Bcrypt, cấp mã JWT Token.
 - Bảo vệ chống quét tài khoản (Enumeration Attack) & Axios Request/Response Interceptors.
 
@@ -56,32 +59,17 @@
 
 ---
 
-## 🚀 KẾ HOẠCH TRIỂN KHAI TỪNG BƯỚC (ROADMAP)
+## Thứ tự triển khai đề xuất
 
-```mermaid
-graph TD
-    A[Giai đoạn 1: Hoàn tất Auth, Token & Layout Dashboard] --> B[Giai đoạn 2: Lịch học, Thông báo & Điểm danh]
-    B --> C[Giai đoạn 3: Lộ trình tuần & Tóm tắt kiến thức]
-    C --> D[Giai đoạn 4: Phòng Luyện đề CBT & Thống kê Leaderboard]
-    D --> E[Giai đoạn 5: Kênh Chat Khối & Bảng Thành tích Vinh danh]
-```
+| Mốc | Kết quả có thể demo | Việc cần có trước |
+| --- | --- | --- |
+| Nền tảng | Học sinh đăng nhập, đổi mật khẩu và mở Dashboard có thông tin hồ sơ. | Đã có API tài khoản và route Next.js. Rà các ca quyền truy cập và tài khoản bị khóa trước khi dùng thật. |
+| **Weekly · đang làm** | Học sinh mở `/schedule`, xem lịch đúng khối và chuyển tuần bằng dữ liệu MySQL dev. | Hoàn thiện schema dev, nối lưới với API và kiểm tra theo [sprint Weekly](docs/planning/weekly-sprint.md). |
+| Ca cá nhân và buổi tiếp theo | Học sinh thấy ca của mình, ca gốc đã chuyển và thẻ buổi tiếp theo. | Chốt cách tìm buổi tiếp theo và cách xử lý buổi bị dời hoặc hủy. |
+| Đổi ca và cập nhật lịch | Học sinh đổi tạm hoặc đổi cố định theo quy tắc của trung tâm. Lịch đang mở cập nhật khi có thay đổi liên quan. | Chốt tuần dạy, quyền duyệt, quy tắc hủy và cách đồng bộ lại sau mất kết nối. |
+| Điểm danh | Giáo viên mở buổi, thấy đúng danh sách dự kiến rồi ghi kết quả thực tế. | Có cách xác định ca sau đổi và phạm vi quyền giáo viên hoặc trợ giảng. |
+| Nội dung học | Học sinh xem lộ trình, tóm tắt, bài tập và tài liệu của chương trình. | Chốt cách gắn tài liệu với chương trình và tuần dạy. |
+| Thi online | Học sinh mở đề, lưu đáp án, nộp bài và nhận kết quả. Luồng lưu và nộp đã được thử khi tải dồn. | Chốt dữ liệu đề, lượt thi và cách xử lý mất mạng. |
+| Phân tích, cộng đồng và vinh danh | Có thống kê thi, chat theo khối và bảng vinh danh theo phạm vi đã chọn. | Có kết quả thi và quy tắc công bố, quyền xem và quản trị nội dung. |
 
-### 📍 Giai đoạn 1: Khung nền tảng (Foundation)
-1. Thêm `useNavigate` sang Dashboard & Request Interceptor kẹp `Bearer Token`.
-2. Dựng Layout Dashboard hoàn chỉnh (Sidebar, Header, Profile `/auth/me`).
-
-### 📍 Giai đoạn 2: Lịch học & Điểm danh (Schedule & Attendance)
-1. Quản lý thời khóa biểu theo khối + Thông báo đổi lịch.
-2. Quản lý học viên & module Điểm danh chuyên cần.
-
-### 📍 Giai đoạn 3: Lộ trình & Tóm tắt tuần (Curriculum & Summary)
-1. Dựng trang Lộ trình học theo tuần + Tóm tắt kiến thức.
-2. Khung thảo luận / bình luận hỏi đáp dưới bài tập.
-
-### 📍 Giai đoạn 4: Trọng tâm - Phòng Thi ảo CBT & Phân tích (Exam & Analytics)
-1. Giao diện phòng thi chuẩn kỳ thi thật (Đồng hồ, KaTeX, Auto-save).
-2. Thuật toán đảo đề, chấm điểm, thống kê câu sai nhiều nhất & Leaderboard tuần/tháng/năm.
-
-### 📍 Giai đoạn 5: Kênh Chat & Bảng Thành tích (Community & Hall of Fame)
-1. Chatbox realtime cho học sinh trong khối.
-2. Trang Bảng vàng vinh danh học sinh xuất sắc qua các năm.
+Khi chọn sprint mới, lấy một kết quả có thể demo từ bảng này. Ghi dữ liệu cần chuẩn bị, việc phụ thuộc và các ca nghiệm thu. Sau demo, cập nhật [hồ sơ dự án](PROJECT_CONTEXT.md) với kết quả đã kiểm tra và quyết định còn mở.

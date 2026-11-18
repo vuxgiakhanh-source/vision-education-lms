@@ -7,7 +7,95 @@
 - **5–6** · Nêu được vấn đề, nhưng căn cứ còn yếu hoặc kết luận đi xa hơn dữ kiện.
 - **1–4** · Nhầm vấn đề chính hoặc dựa vào giả định sai làm đổi kết luận.
 
+## 19/11/2026 · Nguyên nhân Output State nhận giá trị ban đầu là null
+
+- **Phản biện giả định · 8/10.** Người dùng đặt giả định: output (`weeklySchedule`) ban đầu là `null` vì *"chưa có date nên chưa biết lấy mốc nào"*. Nhận xét rất nhạy bén khi nhìn ra sự bất đối xứng giữa hai state lúc khởi tạo. Tuy nhiên, giả định "chưa có date" bị lệch với code thực tế vì `selectedDate` đã có sẵn ngày hôm nay nhờ `new Date()`. Nguyên nhân thực sự của `null` không phải thiếu tham số, mà do độ trễ mạng bất đồng bộ (Network Latency): lúc React vẽ frame đầu tiên, request mới bắt đầu gửi đi và dữ liệu chưa kịp bay về.
+
+## 19/11/2026 · Phân loại State thành Input và Output trong Data Fetching
+
+- **Phản biện khái niệm · 9/10.** Người dùng chất vấn căn cứ phân loại: *"sao biết đây là input output cu"*. Câu hỏi truy tận gốc bản chất thay vì chấp nhận thụ động thuật ngữ. Căn cứ phân biệt nằm ở luồng dữ liệu của hàm và API: một biến đóng vai trò tham số đầu vào (`selectedDate` truyền vào hàm và biến thành Query Param `?week_start=...` gửi lên backend), còn một biến là kết quả phản hồi đầu ra (`data` nhận về từ response body để lưu vào state và đưa lên view).
+
+## 19/11/2026 · Xử lý lỗi tải lịch ở frontend
+
+- **Phản biện · 8/10.** Người dùng đặt câu hỏi vì sao Weekly chỉ có `catch (error)` trong khi backend có exception riêng. Câu hỏi chỉ ra khoảng cách giữa log thử request và cách xử lý lỗi cho người dùng. Cần phân biệt lỗi HTTP đã có ở Axios, biến nhận lỗi trong `catch` và trạng thái lỗi hiển thị trên Weekly.
+
+## 19/11/2026 · Giá trị khởi tạo của State ngày xem lịch (Initial State & Domain Reality)
+
+- **Phản biện thiết kế State · 9/10.** Người dùng chất vấn việc gán giá trị mặc định là chuỗi rỗng `useState('')`: *"ừm hiểu ý nma sao để useState(''"*. Lập luận rất sắc bén: chuỗi rỗng không đại diện cho bất kỳ ngày hợp lệ nào, vừa gây lỗi 422 khi gửi sang FastAPI vừa làm trống rỗng giao diện lúc khởi tạo. Giá trị khởi tạo của state phải phản ánh đúng nghiệp vụ: mở web lên là phải xem lịch tuần hiện tại (ngày hôm nay).
+
+## 19/11/2026 · Phạm vi dùng lại của hàm định dạng ngày
+
+- **Phản biện · 8/10.** Người dùng đặt lại phạm vi của `formatLocalDate` sau khi được hướng dẫn đặt hàm trong `WeeklyGrid.tsx`. Câu hỏi nhận ra hàm nhận `Date` và có thể dùng ở nhiều nơi. Cần đối chiếu thêm nơi gọi có dùng cùng múi giờ và cùng định dạng ngày hay không trước khi tách dùng chung.
+- **Phản biện tiếp ngày 19/11/2026 · 8/10.** Người dùng yêu cầu xét các luồng sắp tới khi đặt hàm. Lịch tuần, đổi ca và điểm danh đều có thao tác theo ngày. Cần giữ phạm vi dùng chung ở việc chuyển ngày theo giờ địa phương sang `YYYY-MM-DD` và kiểm tra từng nơi gọi cần ngày, giờ hay thời điểm đầy đủ.
+- **Phản biện tiếp ngày 19/11/2026 · 9/10.** Người dùng chỉ ra backend còn dùng lại mã ở ngoài `core` và `database`. Đối chiếu thấy Weekly dùng `ScheduleRepository` ở module cha và nhiều luồng Auth nhập `User` từ `app/models`. Ranh giới đặt mã phụ thuộc vào nghiệp vụ sở hữu mã và phạm vi sử dụng.
+
+## 19/11/2026 · Gọi method trên object và trên class
+
+- **Phản biện · 8/10.** Người dùng đối chiếu lời gọi `weeklyScheduleService.getWeeklySchedule(...)` với quy tắc gọi instance method của Java. Quy tắc tạo instance đúng với instance method. Còn thiếu trường hợp method `static` và việc nhận ra `weeklyScheduleService` đã là object được tạo bằng `{ ... }`. **Cần luyện.** Tự chỉ ra đối tượng bên trái dấu chấm trong `hello.run()`, `Hello.run()` với method `static`, và `weeklyScheduleService.getWeeklySchedule(...)`.
+
+## 19/11/2026 · File route và component màn hình
+
+- **Phản biện · 7/10.** Người dùng đối chiếu Schedule với các màn hình khác để hỏi vì sao cần `page.tsx`. Hướng đối chiếu đúng, còn thiếu bước tìm trong `src/app`. **Cần luyện.** Mở file route của Dashboard và lần theo import đến component màn hình trong `src/features`.
+- **Phản biện tiếp ngày 19/11/2026 · 9/10.** Người dùng chỉ ra route Schedule là file Codex thêm, làm rõ khác biệt giữa cây frontend trước và sau khi chuyển framework. `git status` xác nhận route đang là file chưa được Git theo dõi.
+
+## 19/11/2026 · Kiểu ngày trong phản hồi Weekly
+
+- **Phản biện · 7/10.** Người dùng hỏi vì sao trường ngày `week_start` được khai báo `string` ở frontend. Câu hỏi chỉ đúng trường cần đối chiếu và còn thiếu bước xem giá trị qua JSON. **Cần luyện.** Phân biệt kiểu `date` trong schema Python với chuỗi ngày trong phản hồi JSON. Tự kiểm tra bằng cách đọc dấu ngoặc kép quanh giá trị `week_start` trong phản hồi API.
+
+## 18/11/2026 · Ngữ nghĩa của section và div
+
+- **Phản biện · 8/10.** Người dùng nhận ra đổi `section` thành `div` trong khung Weekly có thể cho cùng giao diện. Kết luận còn thiếu điều kiện về ngữ nghĩa truy cập. **Cần luyện.** Phân biệt giao diện nhìn thấy với các vùng mà trình đọc màn hình nhận ra. So sánh hai thẻ khi dùng chung CSS, rồi thử gắn tên cho `section` và kiểm tra vai trò trong cây Accessibility.
+
+## 18/11/2026 · Chọn công nghệ frontend theo phạm vi LMS
+
+- **Phản biện · 9/10.** Người dùng chỉ ra đề xuất dùng Next.js cho website giới thiệu dựa vào một sản phẩm họ chưa định làm. Việc xác nhận phạm vi làm rõ rằng quyết định công nghệ phải được đánh giá trên các nhu cầu của chính LMS.
+
+## 18/11/2026 · Phân biệt venv và Docker
+
+- **Phản biện · 7/10.** Người dùng nhận ra cả hai đều có thể cô lập thư viện Python của ứng dụng. Còn gộp việc cô lập thư viện với đóng gói để chuyển môi trường chạy giữa các máy. **Cần luyện.** Phân biệt thư mục venv tạo từ Python có sẵn, Docker image và container chạy từ image. Tự kiểm tra bằng cách giải thích sẽ mang artifact nào và cần cài gì khi đưa FastAPI từ Windows lên VPS Linux.
+- **Phản biện tiếp ngày 18/11/2026 · 8/10.** Người dùng đề xuất đưa FastAPI và Alembic vào Docker để bỏ nhu cầu dùng venv trên Windows. Phương án khả thi vì cả hai dùng chung runtime Python. Còn cần xét khác biệt giữa quy trình phát triển và triển khai, cùng địa chỉ MySQL khi backend chuyển qua mạng Compose.
+
+## 18/11/2026 · Nhận thức quy trình Thiết kế mô hình trước khi viết mã (Design-First Mindset)
+
+- **Nhận định quy trình kỹ nghệ · 9/10.** Người dùng chỉ ra chuẩn mực phát triển phần mềm: "thường thì người ta vẽ trước rồi mới code DB".
+- **Lý do & Giá trị kỹ thuật**:
+  1. *Quy tắc chi phí thay đổi (Cost of Change Curve)*: Sửa sai trên bản vẽ ERD chỉ tốn vài phút thảo luận; nhưng sửa sai cấu trúc DB khi code đã triển khai ra production phải đối mặt với rủi ro mất dữ liệu, viết script migration phức tạp và downtime.
+  2. *Design-First vs. Code-First*: Trong các buổi phỏng vấn System Design tại Big Tech, 100% ứng viên phải phác thảo ERD trên bảng trắng (Whiteboard) để bảo vệ quyết định chuẩn hóa dữ liệu trước khi viết API hay câu truy vấn.
+- [x] **Kỹ năng đã làm chủ — Tư duy kiến trúc Design-First (Thiết kế dữ liệu trước khi triển khai).**
+
+## 18/11/2026 · Nhận diện luồng đọc và đổi lịch tuần từ mô hình ERD (Data-Model-Driven Thinking)
+
+- **Nhận định & Liên hệ kiến trúc · 9/10.** Người dùng nhận ra rằng khi nhìn kỹ vào sơ đồ ERD (mối quan hệ giữa `students`, `class_enrollments`, `class_sessions` và `sessions_transfers`), ta có thể suy ra trọn vẹn luồng logic hiển thị lịch tuần sau khi đổi ca mà không bị dính bug.
+- **Lý do & Giá trị kỹ thuật**:
+  1. *Chuyển dịch tư duy (Mental Model Shift)*: Người dùng không còn nhìn tính năng như một chuỗi thao tác giao diện rời rạc, mà nhìn dưới góc độ quan hệ dữ liệu: Lịch tuần = (Lịch cố định từ `class_enrollments` $\setminus$ Ca đã đổi đi ở `original_session_id`) $\cup$ Ca học bù ở `replacement_sessions_id`.
+  2. *Triệt tiêu bug logic*: Việc định danh buổi bằng ID cụ thể và tách biệt lần đổi ca giúp xử lý được các ca biên phức tạp: đổi ca xuyên tuần (cross-week), chuyển lớp cố định giữa tuần (`starts_at`/`ends_at`), và hủy ca tạm thời mà không làm xáo trộn lịch của các học sinh khác trong lớp.
+- [ ] **Cần luyện — Truy vết ca biên Buổi học bị hủy (Cancelled Session Edge Case).** Giả sử học sinh A đổi sang học bù vào buổi B, nhưng sau đó buổi B bị giáo viên hủy (`status = 'cancelled'`). Tự truy vết luồng trong service để xác định hệ thống nên báo trạng thái gì cho học sinh A trên lưới lịch tuần.
+
+## 18/11/2026 · Bác bỏ việc ép co dãn chiều cao toàn màn hình (Vertical Over-stretching Antipattern)
+
+- **Phản biện trực quan UI/UX · 9.5/10.** Người dùng lập tức tuýt còi và yêu cầu dừng ngay ("thôi, dừng sửa lại xấu thế ?") khi thấy giải pháp ép dãn lưới lịch theo toàn bộ chiều cao màn hình 24 inch (`h-full`, `1fr`).
+- **Lý do & Giá trị kỹ thuật**:
+  1. *Lỗi tư duy Responsive máy móc*: Một bảng lịch chỉ có 3 ca học (Sáng, Chiều, Tối). Nếu dùng `1fr` để ép nó dãn kín đáy màn hình 24 inch (cao 1080px hoặc 1440px), mỗi hàng sẽ bị kéo dãn tới hơn 260px–280px trong khi nội dung chỉ có 2 dòng chữ ("Hàm số bậc hai"). Hệ quả là 70% diện tích ô thành khoảng trắng rỗng tuếch, tỷ lệ ô bị biến dạng thành những "ống thang máy" dọc lêu nghêu cực kỳ mất thẩm mỹ.
+  2. *Quy tắc vàng của Dashboard / Calendar UI*: Bảng dữ liệu dạng ma trận (grid matrix) cần giữ tỷ lệ khung hình cân đối (aspect ratio gần vuông hoặc hơi chữ nhật ngang nhẹ, chiều cao hàng 135px–145px). Khoảng trống bên dưới trên màn hình lớn là chuyện hoàn toàn bình thường trong thiết kế SaaS chuyên nghiệp (như Linear, Google Calendar) hoặc giải quyết bằng nội dung bổ trợ (thẻ ghi chú quy định đổi ca, thống kê), tuyệt đối không được ép dãn cơ học làm méo ô.
+- [x] **Kỹ năng đã làm chủ — Giữ vững tỷ lệ thị giác (Visual Proportion) trước bẫy co dãn máy móc.**
+
+## 18/11/2026 · Đồng bộ cấu trúc Frontend Feature theo Backend (Frontend-Backend Symmetry)
+
+- **Đề xuất kiến trúc Frontend · 9.5/10.** Người dùng đề xuất phân chia thư mục Frontend `frontend/src/features/schedule/` tương ứng 1-1 với Backend và đồng bộ cấu trúc với `features/auth/`: tách thành 3 sub-feature `weekly/`, `temporary_transfers/`, `permanent_transfers/`.
+- **Lý do & Giá trị kỹ thuật**:
+  1. *Tính đối xứng kiến trúc (Architectural Symmetry)*: Giúp luồng code từ Backend sang Frontend có cùng một bản đồ tư duy. Khi cần sửa tính năng đổi ca tạm, lập trình viên biết ngay ở Backend là `modules/schedule/temporary_transfers` và ở Frontend là `features/schedule/temporary_transfers`.
+  2. *Tránh Antipattern "Túi rác khổng lồ" (Junk Drawer)*: Thay vì nhét toàn bộ components của lưới tuần, modal đổi ca tạm và form xin chuyển lớp cố định vào chung một thư mục `components/` mười mấy file lộn xộn, mỗi sub-feature sẽ tự quản lý `components/`, `services/`, `types/` của riêng mình.
+  3. *Trang chính `SchedulePage.tsx` đóng vai trò Container/Orchestrator*: Chỉ làm nhiệm vụ ghép nối Lưới tuần (`weekly`) với Nút/Modal đổi ca (`temporary_transfers`), giữ component trang chính ngắn gọn, dễ bảo trì.
+- [x] **Kỹ năng đã làm chủ — Tư duy đồng bộ kiến trúc toàn hệ thống (Full-stack Architectural Symmetry).**
+- **Phản biện tiếp ngày 18/11/2026 · 7/10.** Người dùng nhận thấy frontend vẫn thiếu nhất quán sau khi sắp xếp lại. Nhận định đúng ở ranh giới trách nhiệm vì bản C trong Weekly vẫn chứa giao diện đổi lịch mẫu. Còn thiếu ví dụ cụ thể trong lập luận. **Cần luyện.** Tách việc đối chiếu tên thư mục khỏi kiểm tra trách nhiệm trong code. Thử chỉ ra phần nào của `ScheduleOptionC.tsx` sẽ phải sửa nếu chỉ thay đổi cách đổi ca tạm.
+- **Làm rõ ngày 18/11/2026 · 8/10.** Người dùng xác định yêu cầu nhất quán là mỗi chức năng frontend có năm tầng. Điều này làm rõ tiêu chí kiểm tra bên trong từng nhánh. Ca biên cần chốt là chức năng không có route riêng hoặc dữ liệu cần kiểm tra lúc chạy, như `auth/me` hiện chỉ có `services/` và `types/`.
+- **Phản biện tiếp ngày 18/11/2026 · 7/10.** Người dùng chỉ rõ phạm vi so sánh là Auth, Dashboard và Schedule. Có chỗ lệch kiểm tra được ở độ sâu của `pages/`. **Cần luyện.** Dùng các import page từ `App.tsx` để chỉ ra điểm lệch, rồi kiểm tra quy tắc đề xuất trên feature có nhiều route và feature có một route.
+- **Phản biện tiếp ngày 18/11/2026 · 9/10.** Người dùng chỉ ra từ ảnh bản 5179 rằng tiêu đề **Lịch học** nằm trong cùng khung trắng với điều hướng tuần và bảng lịch. Căn cứ trực quan khớp với cấu trúc HTML: ba phần cùng ở trong một `section`. Việc gom chúng vào khung Weekly giúp hướng dẫn dựng JSX sát bố cục người dùng chọn.
+- **Phản biện tiếp ngày 18/11/2026 · 9/10.** Người dùng đưa ảnh chỉ rõ nút chuyển tuần chỉ hiện mũi tên trái và phải. Bản TSX tham chiếu dùng icon có tên truy cập riêng trên nút. Tự kiểm tra bằng cách xem nút chỉ hiện biểu tượng và vẫn được nhận diện là **Tuần trước** hoặc **Tuần sau** trong cây Accessibility.
+
 ## 18/11/2026 · Trách nhiệm của service đọc lịch tuần
+
+- **Phản biện tiếp ngày 18/11/2026 · 8/10.** Người dùng yêu cầu nhãn khoảng ngày dùng dữ liệu thật thay cho chuỗi mẫu. Nhận định bắt được nguy cơ lưới và nhãn lệch nhau khi chuyển tuần. Cần chỉ ra trường làm căn cứ là `week_start` trong response, rồi tự thử một tuần bắc qua hai tháng.
 
 - **Phản biện tiếp ngày 18/11/2026 · 9/10.** Người dùng đề xuất cho lịch mini gửi ngày thứ Tư hoặc thứ Năm để mở tuần chứa ngày đó. Chuyển phép tính về thứ Hai sang service giúp router gọi service trực tiếp và tránh trả `422` cho một ngày hợp lệ giữa tuần. Kiểm tra thêm Chủ nhật và thứ Hai kế tiếp để xác nhận hai mốc thuộc hai tuần khác nhau.
 - **Phản biện · 8/10.** Người dùng chất vấn độ gọn của service mới và hỏi hàm đọc lịch tuần phục vụ mục đích gì. Câu hỏi làm rõ trách nhiệm của service và gợi rà lại tên hàm cũng như việc nó đang phụ thuộc vào hai repository.
@@ -49,6 +137,7 @@
 - **Chốt lại yêu cầu ngày 15/11/2026 · 9/10.** Người dùng xác định đầu ra của hàm repo là lịch cá nhân trong khoảng, gồm các buổi đã qua và sắp tới, dù theo lớp hay đổi tạm. Điều này làm rõ hàm cần trả buổi học sau khi áp dụng lần đổi. Có thể kiểm tra bằng ca `101 → 108`: lịch cá nhân chứa `108`, còn dữ liệu lần đổi giúp nhận diện `101` đã chuyển.
 - **Phản biện ngày 15/11/2026 · 7/10.** Người dùng nhắc cần xét `week` và dùng cụm “khác week”. Tuần dạy là điều kiện của ca thay thế; cần phân biệt ID buổi, tuần dạy trong chương trình và khoảng tuần của lưới lịch. Tự rà hai buổi khác ID nhưng đều dạy nội dung tuần 5.
 - **Phản biện ngày 18/11/2026 · 9/10.** Người dùng chỉ ra service lịch tuần cần xét đổi lớp cố định có hiệu lực giữa hai tuần và đổi một buổi sang tuần lịch sau. Hai ca buộc xác định riêng lớp có hiệu lực, liên kết buổi gốc với buổi đích và trạng thái hiển thị ở từng tuần. Tự kiểm tra hai tuần liên tiếp từ cùng một lần đổi, rồi thử tuần đích có thêm buổi thường lệ thuộc tuần dạy khác.
+- **Phản biện tiếp ngày 18/11/2026 · 9/10.** Người dùng chỉ ra nhãn số tuần dạy chung trên lưới dễ gây hiểu nhầm vì các lớp có thể dạy tới các tuần khác nhau trong cùng khoảng ngày. Quy tắc chọn khoảng lịch theo `week_start` dùng được cho cả khối, còn số tuần dạy gắn với từng buổi. Tự kiểm tra bằng cách đặt hai buổi thuộc hai tuần dạy vào cùng một lưới.
 - **Phản biện ngày 15/11/2026 · 9/10.** Người dùng yêu cầu chứng minh thiết kế đổi ca đáp ứng nghiệp vụ và làm rõ cơ sở gọi một phương án là tối ưu. Khóa chính ghép và khóa ngoại đã thử trên SQLite trong bộ nhớ. Còn cần kiểm thử luồng đầy đủ sau khi viết service, và cần số đo để so hiệu năng với phương án khác.
 - **Phản biện ngày 15/11/2026 · 8/10.** Người dùng hỏi vì sao phải đánh dấu hai cột làm khóa chính trong `SessionTransfer`. Luật nghiệp vụ cần cặp `(student_id, original_session_id)` duy nhất. Có thể dùng khóa chính ghép hoặc khóa chính `id` kèm ràng buộc `UNIQUE` trên cặp. Tự rà bằng hai học sinh cùng đổi một buổi và một học sinh đổi hai buổi khác nhau.
 - **Phản biện ngày 15/11/2026 · 8/10.** Người dùng chỉ ra `replacement_session_id` có thể nhận `NULL`. Về schema, cột khóa ngoại ngoài khóa chính có thể khai báo `nullable=True`. SQLite đã chấp nhận dòng có `NULL` khi bật kiểm tra khóa ngoại. Cần định nghĩa ý nghĩa của dòng này khi dựng lịch và điểm danh.

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Calendar, ArrowRight, ArrowUpRight } from 'lucide-react'
-import type { TaskItem } from '../types/dashboard.types'
+import type { TaskItem } from '../types/dashboardTypes'
 
 interface TaskListCardProps {
   tasks: TaskItem[]

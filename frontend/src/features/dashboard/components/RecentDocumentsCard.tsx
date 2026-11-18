@@ -1,6 +1,6 @@
 import React from 'react'
 import { ArrowUpRight, ArrowRight, FileText, Presentation, FileCode } from 'lucide-react'
-import type { DocumentItem } from '../types/dashboard.types'
+import type { DocumentItem } from '../types/dashboardTypes'
 
 interface RecentDocumentsCardProps {
   documents: DocumentItem[]

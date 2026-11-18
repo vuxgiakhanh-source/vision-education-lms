@@ -1,10 +1,10 @@
+import type { UserProfile } from '../../../components/layout/layoutTypes'
 import type {
-  UserProfile,
   KpiStats,
   TaskItem,
   DocumentItem,
   CalendarDayItem,
-} from '../types/dashboard.types'
+} from '../types/dashboardTypes'
 
 export const mockUserProfile: UserProfile = {
   name: 'Gia Khánh',

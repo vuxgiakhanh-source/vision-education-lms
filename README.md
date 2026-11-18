@@ -14,7 +14,7 @@ Vision Education LMS là ứng dụng quản lý học tập cho trung tâm Toá
 
 | Thành phần | Công nghệ |
 | --- | --- |
-| Giao diện | React, TypeScript, Vite, Tailwind CSS, React Router và Axios |
+| Giao diện | Next.js App Router, React, TypeScript, Tailwind CSS và Axios |
 | API | Python, FastAPI, Uvicorn và Pydantic |
 | Dữ liệu | MySQL 8, SQLAlchemy và Alembic |
 | Xác thực | JWT Bearer và bcrypt |
@@ -26,14 +26,14 @@ Các lệnh bên dưới dùng PowerShell trên Windows. Để chạy frontend, 
 
 ```powershell
 npm --prefix frontend ci
-npm --prefix frontend run dev -- --host 127.0.0.1 --port 5175 --strictPort
+npm --prefix frontend run dev
 ```
 
 | Đường dẫn | Nội dung |
 | --- | --- |
-| [Xem trước Lịch học](http://127.0.0.1:5175/schedule-preview) | Xem lịch mẫu và chuyển giữa các phương án giao diện khi chỉ chạy frontend. |
-| [Kiểm tra responsive](http://127.0.0.1:5175/dashboard-preview/index.html) | Xem bố cục dashboard ở nhiều kích thước màn hình. |
-| [Đăng nhập](http://127.0.0.1:5175/login) | Điểm vào luồng đăng nhập khi API và MySQL đang chạy. |
+| [Xem trước Lịch học](http://localhost:5173/schedule-preview) | Xem lịch mẫu và chuyển giữa các phương án giao diện khi chỉ chạy frontend. |
+| [Kiểm tra responsive](http://localhost:5173/dashboard-preview/index.html) | Xem bố cục dashboard ở nhiều kích thước màn hình. |
+| [Đăng nhập](http://localhost:5173/login) | Điểm vào luồng đăng nhập khi API và MySQL đang chạy. |
 
 ## Chạy API và đăng nhập
 
@@ -47,8 +47,8 @@ if (-not (Test-Path backend\.env)) { Copy-Item backend\.env.example backend\.env
 if (-not (Test-Path frontend\.env)) { Copy-Item frontend\.env.example frontend\.env }
 ```
 
-- Trong `backend/.env`, điền các giá trị `MYSQL_*` và `SECRET_KEY`. Cấu hình `ALLOWED_ORIGINS=http://127.0.0.1:5175` để khớp với địa chỉ frontend ở trên.
-- Trong `frontend/.env`, đặt `VITE_API_URL=http://127.0.0.1:8000`. Khởi động lại Vite nếu đã chạy trước khi chỉnh file.
+- Trong `backend/.env`, điền các giá trị `MYSQL_*` và `SECRET_KEY`. Cấu hình `ALLOWED_ORIGINS=http://localhost:5173` để khớp với địa chỉ frontend ở trên.
+- Trong `frontend/.env`, đặt `NEXT_PUBLIC_API_URL=http://127.0.0.1:8000`. Đổi tên biến nếu đang dùng `VITE_API_URL` từ phiên bản cũ, rồi khởi động lại frontend.
 
 Với cơ sở dữ liệu phát triển mới, chạy các lệnh sau trong terminal backend:
 
@@ -78,6 +78,7 @@ Tài liệu tương tác nằm tại [Swagger UI](http://127.0.0.1:8000/docs).
 
 | Thư mục | Nội dung |
 | --- | --- |
+| [`frontend/src/app`](frontend/src/app) | Route và layout của Next.js App Router. |
 | [`frontend/src/features`](frontend/src/features) | Đăng nhập, dashboard học sinh và Lịch học. |
 | [`backend/app/modules`](backend/app/modules) | Router, service, schema và repository theo tính năng. |
 | [`backend/app/models`](backend/app/models) | Model SQLAlchemy cho dữ liệu tài khoản, học sinh, lớp và buổi học. |

@@ -1,11 +1,28 @@
-import { Navigate, Outlet } from 'react-router-dom'
+'use client'
 
-export function AuthGuard() {
-    const token = localStorage.getItem('access_token')
-    if (!token) {
-        return <Navigate to="/login" replace />
-    }
-    else {
-        return <Outlet />
-    }
+import { useEffect, useSyncExternalStore, type ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
+
+function subscribeToStorage(onChange: () => void) {
+    window.addEventListener('storage', onChange)
+    return () => window.removeEventListener('storage', onChange)
+}
+
+function getAccessToken() {
+    return localStorage.getItem('access_token')
+}
+
+function getServerSnapshot() {
+    return undefined
+}
+
+export function AuthGuard({ children }: { children: ReactNode }) {
+    const router = useRouter()
+    const token = useSyncExternalStore(subscribeToStorage, getAccessToken, getServerSnapshot)
+
+    useEffect(() => {
+        if (token === null || token === '') router.replace('/login')
+    }, [router, token])
+
+    return token ? children : null
 }

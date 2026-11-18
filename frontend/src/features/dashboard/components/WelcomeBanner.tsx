@@ -18,7 +18,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({
       {/* 100% Unified Authentic Background Artwork - Seamless across full width */}
       <div className="absolute right-0 top-0 bottom-0 pointer-events-none flex items-center justify-end h-full w-full ultrawide:after:absolute ultrawide:after:inset-0 ultrawide:after:bg-[linear-gradient(90deg,#1b1e4e_0%,#1b1e4ee6_30%,transparent_65%)]">
         <img
-          src={bannerUnified}
+          src={bannerUnified.src}
           alt=""
           className="h-full w-full object-cover wide:object-contain ultrawide:object-cover object-right select-none pointer-events-none opacity-50 sm:opacity-100"
         />

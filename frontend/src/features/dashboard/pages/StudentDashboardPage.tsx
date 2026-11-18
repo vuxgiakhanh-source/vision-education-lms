@@ -1,5 +1,7 @@
+'use client'
+
 import React, { useState, useEffect } from 'react'
-import { DashboardLayout } from '../components/DashboardLayout'
+import { DashboardLayout } from '../../../components/layout/DashboardLayout'
 import { WelcomeBanner } from '../components/WelcomeBanner'
 import { KpiStatCards } from '../components/KpiStatCards'
 import { TaskListCard } from '../components/TaskListCard'
@@ -15,9 +17,11 @@ import { meService } from '../../auth/me/services/meService'
 import { getShortName } from '../../../utils/getShortName'
 import type { MeResponse } from '../../auth/me/types/meTypes'
 
-export const StudentDashboardPage: React.FC = () => {
+export const StudentDashboardPage: React.FC<{ preview?: boolean }> = ({ preview = false }) => {
   const [user, setUser] = useState<MeResponse | null>(null)
   useEffect(() => {
+    if (preview && !localStorage.getItem('access_token')) return
+
     async function loadUser() {
       try {
         const profile = await meService.getMe()
@@ -28,7 +32,7 @@ export const StudentDashboardPage: React.FC = () => {
     }
 
     loadUser()
-  }, [])
+  }, [preview])
   const displayName = user ? getShortName(user.full_name) : 'Đang tải...'
   return (
     <DashboardLayout user={{ name: displayName }}>

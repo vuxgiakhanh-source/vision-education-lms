@@ -1,7 +1,10 @@
+'use client'
+
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useNavigate } from 'react-router-dom'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { changePasswordSchema } from '../schemas/changePasswordSchema'
 import { changePasswordService } from '../services/changePasswordService'
 import type { ChangePasswordFormData } from '../types/changePasswordTypes'
@@ -12,7 +15,7 @@ export function ChangePasswordForm() {
     const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false)
     const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
-    const navigate = useNavigate()
+    const router = useRouter()
 
     const {
         register,
@@ -28,7 +31,7 @@ export function ChangePasswordForm() {
             const res = await changePasswordService.changePassword(data)
             setSuccessMessage(res.message)
             setTimeout(() => {
-                navigate('/dashboard')
+                router.push('/dashboard')
             }, 1500)
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Đổi mật khẩu thất bại. Vui lòng thử lại.'
@@ -43,7 +46,7 @@ export function ChangePasswordForm() {
             {/* Logo VE */}
             <div className="mb-4">
                 <img
-                    src={logoImage}
+                    src={logoImage.src}
                     alt="Vision Education Logo"
                     className="h-12 w-auto object-contain drop-shadow-sm"
                 />
@@ -164,7 +167,7 @@ export function ChangePasswordForm() {
             {/* Quay lại đăng nhập */}
             <div className="mt-6 text-center">
                 <Link
-                    to="/login"
+                    href="/login"
                     className="inline-flex items-center gap-1.5 text-[13px] text-[#4b5563] hover:text-[#111827] font-medium transition-colors"
                 >
                     <span>←</span>

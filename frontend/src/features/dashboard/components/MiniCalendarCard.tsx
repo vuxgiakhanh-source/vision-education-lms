@@ -1,6 +1,6 @@
 import React from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { CalendarDayItem } from '../types/dashboard.types'
+import type { CalendarDayItem } from '../types/dashboardTypes'
 
 interface MiniCalendarCardProps {
   days: CalendarDayItem[]

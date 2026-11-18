@@ -1,7 +1,10 @@
+'use client'
+
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useNavigate } from 'react-router-dom'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { loginSchema } from '../schemas/loginSchema'
 import { authService } from '../services/loginService'
 import type { LoginFormData } from '../types/loginTypes'
@@ -10,7 +13,7 @@ import logoImage from '../../../../assets/images/logo.webp'
 export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false)
 
-    const navigate = useNavigate()
+    const router = useRouter()
 
     const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema)
@@ -21,10 +24,10 @@ export function LoginForm() {
             const res = await authService.login(data)
             localStorage.setItem('access_token', res.access_token)
             if (res.must_change_password) {
-                navigate('/change-password')
+                router.push('/change-password')
             }
             else {
-                navigate('/dashboard')
+                router.push('/dashboard')
             }
         } 
         catch (error) {
@@ -40,7 +43,7 @@ export function LoginForm() {
             {/* Logo VE chính thức */}
             <div className="mb-3">
                 <img
-                    src={logoImage}
+                    src={logoImage.src}
                     alt="Vision Education Logo"
                     className="h-12 w-auto object-contain drop-shadow-sm"
                 />
@@ -118,7 +121,7 @@ export function LoginForm() {
                         <p className="text-red-500 text-xs mt-1 font-medium">{errors.password.message}</p>
                     )}
                     <div className="text-right pt-0.5">
-                        <Link to="/forgot-password" className="text-[12px] text-[#5850ec] hover:underline font-medium">
+                        <Link href="/forgot-password" className="text-[12px] text-[#5850ec] hover:underline font-medium">
                             Quên mật khẩu?
                         </Link>
                     </div>
