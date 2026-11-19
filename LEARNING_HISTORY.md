@@ -7,6 +7,27 @@
 - **5–6** · Nêu được vấn đề, nhưng căn cứ còn yếu hoặc kết luận đi xa hơn dữ kiện.
 - **1–4** · Nhầm vấn đề chính hoặc dựa vào giả định sai làm đổi kết luận.
 
+## 19/11/2026 · Phân biệt Business Logic (Nghiệp vụ) và Presentation Logic (Trình diễn)
+
+- **Phản biện kiến trúc · 9.5/10.** Người dùng bắt bẻ rất sắc: *"thế cũng tính là một loại logic mà"*. Lập luận đánh trúng ngộ nhận phổ biến khi học lập trình ("Backend lo logic, Frontend chỉ lo vẽ giao diện"). Người dùng nhận ra việc tính ngày đầu/cuối tuần, cắt chuỗi và định dạng hiển thị ở FE thực chất cũng là logic. Điều này làm rõ ranh giới kiến trúc cốt lõi:
+  - **Business Logic (BE sở hữu):** Quy tắc bất biến của hệ thống (tuần tính từ thứ Hai, quyền hạn học sinh, ca nào là ca chính thức, kiểm tra xung đột ca). Nếu sai sẽ làm hỏng dữ liệu trung tâm.
+  - **Presentation Logic (FE sở hữu):** Biến đổi dữ liệu thô phục vụ trải nghiệm người dùng (format chuỗi ngày, responsive co giãn, ẩn hiện modal). Nếu sai chỉ ảnh hưởng tới cách nhìn, không làm sai lệch dữ liệu gốc trong database.
+
+## 19/11/2026 · Mốc tính khi chuyển tuần
+
+- **Phản biện · 8/10.** Người dùng đề xuất lấy thứ Hai đã nhận từ API rồi trừ bảy ngày để tránh tính lại đầu tuần. Phép tính đúng sau khi response đã về, nhưng đọc mốc từ response cũ khi bấm nhanh có thể gửi lặp cùng một tuần. Tự kiểm tra bằng cách so hai lần bấm liên tiếp trước khi API trả về khi lấy mốc từ response và khi dùng hàm cập nhật state dựa trên ngày đang chọn.
+- **Phản biện tiếp ngày 19/11/2026 · 9/10.** Người dùng hỏi vì sao không dùng lại hai mốc đã tính thay vì dịch một ngày giữa tuần rồi tính đầu và cuối tuần mới. Câu hỏi chạm đúng lựa chọn thiết kế state. Có thể giữ thứ Hai làm state điều hướng để dịch theo tuần, nhưng cần cập nhật ngay khi bấm và vẫn tải dữ liệu tuần mới. Tự kiểm tra hạng mục nào là state điều hướng, hạng mục nào là kết quả API và giá trị nào có thể suy ra.
+- **Phản biện tiếp ngày 19/11/2026 · 7/10.** Người dùng hỏi liệu request A gửi trước bắt buộc phải trả trước hay các request hoạt động theo stack. Câu hỏi xác định đúng giả định quyết định lỗi ghi đè. **Cần luyện.** Phân biệt thứ tự gửi và thứ tự hoàn tất của hai request đang chạy. Nếu A bắt đầu lúc 0 ms và mất 800 ms, B bắt đầu lúc 100 ms và mất 200 ms, tính lúc mỗi hàm tiếp tục sau `await`.
+
+## 19/11/2026 · HTML table, CSS Grid và cách sinh ô lịch
+
+- **Phản biện · 7/10.** Người dùng đưa đề xuất chuyển khung Weekly sang CSS Grid vì bản mẫu dùng Grid và `.map()`. Kiểm tra đúng Bản ưng 2 ở cổng 5179, phần lưới desktop dùng CSS Grid. `.map()` dùng được với cả `div` và `th`/`td`, còn HTML table vẫn phù hợp khi dữ liệu có quan hệ theo hàng và cột. **Cần luyện.** Tách bố cục CSS khỏi cách sinh JSX và cách trình duyệt liên kết tiêu đề với ô. Tự thử cho một mảng bảy ngày sinh ra bảy `th` rồi bảy `div`.
+- **Phản biện tiếp ngày 19/11/2026 · 8/10.** Người dùng đề xuất lặp ca trong vòng lặp ngày thay vì lặp ngày trong từng ca. Cả hai đều tạo được tổ hợp ngày và ca, nhưng thứ tự phần tử khác nhau. Tự viết thứ tự sinh ô với hai ngày và hai ca, rồi đối chiếu cách lưới desktop bản 5179 tự điền theo hàng.
+
+## 19/11/2026 · Phạm vi của commit message
+
+- **Phản biện · 9/10.** Người dùng chỉ ra tiêu đề `docs: add LMS design and Weekly sprint plan` bỏ sót công việc frontend nếu dùng để commit toàn bộ thay đổi. `git diff --cached --name-status` xác nhận staging đã gồm chuyển sang Next.js, nối Weekly và tài liệu. Đặt tiêu đề theo thay đổi chính rồi dùng phần thân để ghi các nhóm còn lại.
+
 ## 19/11/2026 · Nguyên nhân Output State nhận giá trị ban đầu là null
 
 - **Phản biện giả định · 8/10.** Người dùng đặt giả định: output (`weeklySchedule`) ban đầu là `null` vì *"chưa có date nên chưa biết lấy mốc nào"*. Nhận xét rất nhạy bén khi nhìn ra sự bất đối xứng giữa hai state lúc khởi tạo. Tuy nhiên, giả định "chưa có date" bị lệch với code thực tế vì `selectedDate` đã có sẵn ngày hôm nay nhờ `new Date()`. Nguyên nhân thực sự của `null` không phải thiếu tham số, mà do độ trễ mạng bất đồng bộ (Network Latency): lúc React vẽ frame đầu tiên, request mới bắt đầu gửi đi và dữ liệu chưa kịp bay về.
@@ -28,6 +49,7 @@
 - **Phản biện · 8/10.** Người dùng đặt lại phạm vi của `formatLocalDate` sau khi được hướng dẫn đặt hàm trong `WeeklyGrid.tsx`. Câu hỏi nhận ra hàm nhận `Date` và có thể dùng ở nhiều nơi. Cần đối chiếu thêm nơi gọi có dùng cùng múi giờ và cùng định dạng ngày hay không trước khi tách dùng chung.
 - **Phản biện tiếp ngày 19/11/2026 · 8/10.** Người dùng yêu cầu xét các luồng sắp tới khi đặt hàm. Lịch tuần, đổi ca và điểm danh đều có thao tác theo ngày. Cần giữ phạm vi dùng chung ở việc chuyển ngày theo giờ địa phương sang `YYYY-MM-DD` và kiểm tra từng nơi gọi cần ngày, giờ hay thời điểm đầy đủ.
 - **Phản biện tiếp ngày 19/11/2026 · 9/10.** Người dùng chỉ ra backend còn dùng lại mã ở ngoài `core` và `database`. Đối chiếu thấy Weekly dùng `ScheduleRepository` ở module cha và nhiều luồng Auth nhập `User` từ `app/models`. Ranh giới đặt mã phụ thuộc vào nghiệp vụ sở hữu mã và phạm vi sử dụng.
+- **Phản biện tiếp ngày 19/11/2026 · 9/10.** Người dùng hỏi vì sao cần thêm `formatDayMonth` khi đang dựng khung hàng T2 đến CN. Câu hỏi phát hiện việc định dạng ngày đã được đưa vào trước bước cần dùng. Khi nối dữ liệu, có thể định dạng ngay tại chỗ tạo các cột và xét tách hàm khi làm rõ cách dùng lại.
 
 ## 19/11/2026 · Gọi method trên object và trên class
 
@@ -41,6 +63,9 @@
 ## 19/11/2026 · Kiểu ngày trong phản hồi Weekly
 
 - **Phản biện · 7/10.** Người dùng hỏi vì sao trường ngày `week_start` được khai báo `string` ở frontend. Câu hỏi chỉ đúng trường cần đối chiếu và còn thiếu bước xem giá trị qua JSON. **Cần luyện.** Phân biệt kiểu `date` trong schema Python với chuỗi ngày trong phản hồi JSON. Tự kiểm tra bằng cách đọc dấu ngoặc kép quanh giá trị `week_start` trong phản hồi API.
+- **Phản biện tiếp ngày 19/11/2026 · 8/10.** Người dùng lưu ý người Việt đọc ngày theo thứ tự ngày, tháng, năm khi thấy hàm tách ngày theo thứ tự năm, tháng, ngày. Nhận xét đúng về cách hiển thị. **Cần luyện.** Đối chiếu định dạng theo từng bước. Từ `week_start = '2026-11-16'`, tự chỉ ra thứ tự biến khi tách chuỗi và viết ngày để hiển thị cho học sinh.
+- **Phản biện tiếp ngày 19/11/2026 · 9/10.** Người dùng chỉ ra nhãn mẫu chỉ thể hiện tuần cùng tháng, còn tuần thực tế có thể qua tháng hoặc qua năm. Nhận xét phát hiện hai ca làm thay đổi nội dung nhãn. Tự kiểm tra ba tuần bắt đầu ngày `2026-11-09`, `2026-11-30` và `2026-12-28`.
+- **Phản biện tiếp ngày 19/11/2026 · 8/10.** Người dùng hỏi có nên đổi `formatLocalDate` sang thứ tự ngày/tháng/năm hay không. Câu hỏi đúng về nhu cầu hiển thị, nhưng đổi hàm chung sẽ ảnh hưởng ngày `selectedDate` gửi API và kết quả của `addCalendarDays`. Tự kiểm tra bằng cách lần theo một ngày từ `formatLocalDate` qua `selectedDate` tới query `week_start`, rồi xác định chỗ đổi sang nhãn cho học sinh.
 
 ## 18/11/2026 · Ngữ nghĩa của section và div
 
