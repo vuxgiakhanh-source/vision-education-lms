@@ -13,19 +13,21 @@ import {
   mockDocuments,
   mockCalendarDays,
 } from '../mock/dashboard.mock'
+import { useAuthProfile } from '../../auth/guards/AuthGuard'
 import { meService } from '../../auth/me/services/meService'
 import { getShortName } from '../../../utils/getShortName'
 import type { MeResponse } from '../../auth/me/types/meTypes'
 
 export const StudentDashboardPage: React.FC<{ preview?: boolean }> = ({ preview = false }) => {
-  const [user, setUser] = useState<MeResponse | null>(null)
+  const profile = useAuthProfile()
+  const [previewProfile, setPreviewProfile] = useState<MeResponse | null>(null)
   useEffect(() => {
-    if (preview && !localStorage.getItem('access_token')) return
+    if (!preview || !localStorage.getItem('access_token')) return
 
     async function loadUser() {
       try {
         const profile = await meService.getMe()
-        setUser(profile)
+        setPreviewProfile(profile)
       } catch (error) {
         console.error('Không tải được hồ sơ: ', error)
       }
@@ -33,6 +35,7 @@ export const StudentDashboardPage: React.FC<{ preview?: boolean }> = ({ preview 
 
     loadUser()
   }, [preview])
+  const user = profile ?? previewProfile
   const displayName = user ? getShortName(user.full_name) : 'Đang tải...'
   return (
     <DashboardLayout user={{ name: displayName }}>

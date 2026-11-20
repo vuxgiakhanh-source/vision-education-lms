@@ -5,16 +5,39 @@ from .config import settings
 
 
 ALGORITHM = "HS256"
-#1 Mã hóa password để lưu vào db
-def hash_password(password: str) -> str:
-    password_bytes = password.encode("utf-8") # change from string to bytes
-    hashed_bytes = hashpw(password_bytes, gensalt()) # create hashed bytes
-    hashed_string = hashed_bytes.decode("utf-8") # decode from bytes to string
-    return hashed_string
+MAX_PASSWORD_BYTES = 72
+MIN_NEW_PASSWORD_CHARACTERS = 8
 
-#2 Xác thực xem password có đúng khi đăng nhập ko
+
+class InvalidPasswordError(ValueError):
+    pass
+
+
+def _encode_password(password: str) -> bytes:
+    try:
+        encoded = password.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise InvalidPasswordError("Mật khẩu chứa ký tự không hợp lệ.") from exc
+    if len(encoded) > MAX_PASSWORD_BYTES:
+        raise InvalidPasswordError(f"Mật khẩu không được vượt quá {MAX_PASSWORD_BYTES} byte UTF-8.")
+    return encoded
+
+
+def validate_password_length(password: str) -> None:
+    _encode_password(password)
+
+
+def validate_new_password_length(password: str) -> None:
+    validate_password_length(password)
+    if len(password) < MIN_NEW_PASSWORD_CHARACTERS:
+        raise InvalidPasswordError(f"Mật khẩu mới phải có ít nhất {MIN_NEW_PASSWORD_CHARACTERS} ký tự.")
+
+
+def hash_password(password: str) -> str:
+    return hashpw(_encode_password(password), gensalt()).decode("utf-8")
+
 def verify_password(password: str, hashed_password: str) -> bool:
-    return checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
+    return checkpw(_encode_password(password), hashed_password.encode("utf-8"))
 
 #3  Tạo token truy cập
 def create_access_token(payload: dict, expires_delta: timedelta):

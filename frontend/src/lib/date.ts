@@ -9,4 +9,14 @@ export function addCalendarDays(date: string, days: number): string {
     const [year, month, day] = date.split('-').map(Number)
     const shiftedDate = new Date(year, month - 1, day + days)
     return formatLocalDate(shiftedDate)
-} 
+}
+
+export function formatLocalDateTimeRange(startsAt: string, endsAt: string): string {
+    // The API sends the center's local time. Keep its wall time when formatting the range.
+    const startDate = startsAt.slice(0, 10)
+    const endDate = endsAt.slice(0, 10)
+    const start = `${startDate.split('-').reverse().join('/')} · ${startsAt.slice(11, 16)}`
+    const endTime = endsAt.slice(11, 16)
+    const end = endDate === startDate ? endTime : `${endDate.split('-').reverse().join('/')} · ${endTime}`
+    return `${start} – ${end}`
+}

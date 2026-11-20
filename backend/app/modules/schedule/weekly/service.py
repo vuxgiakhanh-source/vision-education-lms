@@ -1,5 +1,6 @@
 from datetime import date, datetime, time, timedelta
 
+from .. import service as schedule_service
 from ..exceptions import StudentGradeNotFoundException
 from ..repository import ScheduleRepository
 from .repository import WeeklyScheduleRepository
@@ -16,7 +17,7 @@ class WeeklyScheduleService:
         self.schedule_repository = schedule_repository
 
     def get_weekly_sessions(self, user_id: int, selected_date: date) -> WeeklyScheduleResponse:
-        grade = self.repository.get_student_grade(user_id)
+        grade = self.schedule_repository.get_student_grade(user_id)
         if grade is None:
             raise StudentGradeNotFoundException()
 
@@ -29,26 +30,26 @@ class WeeklyScheduleService:
                 week_start=monday, sessions=[], my_session_ids=[], transferred_session_ids=[]
             )
 
-        student_enrollments = self.schedule_repository.get_student_enrollments_in_range(
-            user_id, week_start, week_end
-        )
-        student_transfers = self.schedule_repository.get_student_transfers_for_sessions(
-            user_id, [session.id for session in sessions]
-        )
+        session_ids = [session.id for session in sessions]
+        progress = self.schedule_repository.get_current_schedule_progress(user_id, grade, schedule_service.schedule_now())
+        enrolled_ids = self.schedule_repository.get_enrolled_session_ids(user_id, session_ids, progress)
+        student_transfers = self.schedule_repository.get_student_transfers_for_sessions(user_id, session_ids, progress)
         original_ids = {transfer.original_session_id for transfer in student_transfers}
         replacement_ids = {transfer.replacement_sessions_id for transfer in student_transfers}
+        teaching_weeks = {session.teaching_week for session in sessions if session.teaching_week is not None}
+        attendance = self.schedule_repository.get_relevant_attendances(user_id, grade, session_ids, teaching_weeks)
+        attended_ids = {session_id for session_id, _ in attendance}
+        attended_weeks = {week for _, week in attendance if week is not None}
+        assigned_ids = enrolled_ids | replacement_ids
 
         my_session_ids = []
         transferred_session_ids = []
         for session in sessions:
-            if session.id in original_ids:
+            if session.id in attended_ids:
+                my_session_ids.append(session.id)
+            elif session.id in original_ids:
                 transferred_session_ids.append(session.id)
-            elif session.id in replacement_ids or any(
-                enrollment.class_id == session.class_id
-                and enrollment.starts_at <= session.starts_at
-                and (enrollment.ends_at is None or session.starts_at < enrollment.ends_at)
-                for enrollment in student_enrollments
-            ):
+            elif session.id in assigned_ids and session.teaching_week not in attended_weeks:
                 my_session_ids.append(session.id)
 
         return WeeklyScheduleResponse(

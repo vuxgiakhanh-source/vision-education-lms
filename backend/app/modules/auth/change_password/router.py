@@ -1,11 +1,13 @@
 from .schemas import ChangePasswordRequest
 from fastapi import APIRouter, Depends, HTTPException, status
 from .service import ChangePasswordService, get_change_password_service
-from app.core.dependencies import get_current_user_id
+from app.core.dependencies import ACCOUNT_LOCKED_DETAIL, get_current_user_id
+from app.core.security import InvalidPasswordError
 from .exceptions import (
     EmptyNewPasswordException,
     PasswordUnchangedException,
-    UserNotFoundException
+    UserLockedException,
+    UserNotFoundException,
 )
 
 change_password_router = APIRouter()
@@ -28,9 +30,16 @@ def change_password(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Mật khẩu mới trùng với mật khẩu cũ"
         )
+    except InvalidPasswordError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
     except UserNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tài khoản không tồn tại hoặc đã bị vô hiệu hóa"
+            detail="Tài khoản không tồn tại",
+        )
+    except UserLockedException:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=ACCOUNT_LOCKED_DETAIL,
         )
 

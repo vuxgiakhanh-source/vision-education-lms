@@ -1,3 +1,6 @@
+import { SchedulePage } from '../../features/schedule/pages/SchedulePage'
+import { weeklyPreview } from '../../features/schedule/weekly/mock/schedule.mock'
+
 export default function SchedulePreviewRoute() {
-  return null
+  return <SchedulePage preview={weeklyPreview} />
 }

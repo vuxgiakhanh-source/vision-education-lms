@@ -17,3 +17,5 @@ class ClassEnrollment(Base):
     class_id = Column(Integer, ForeignKey("classes.id"), nullable=False)
     starts_at = Column(DateTime, nullable=False)
     ends_at = Column(DateTime, nullable=True)
+    completed_through_teaching_week = Column(Integer, nullable=True)
+    entry_session_id = Column(Integer, ForeignKey("class_sessions.id"), nullable=True)

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from .service import MeService, get_me_service
 from .exceptions import UserLockedException, UserNotFoundException
-from app.core.dependencies import get_current_user_id
+from app.core.dependencies import ACCOUNT_LOCKED_DETAIL, get_current_user_id
 
 me_router = APIRouter()
 
@@ -19,5 +19,5 @@ def get_me(user_id: int = Depends(get_current_user_id),
     except UserLockedException:
         raise HTTPException(
             status_code=403,
-            detail="Tài khoản của bạn đã bị khóa"
+            detail=ACCOUNT_LOCKED_DETAIL,
         )

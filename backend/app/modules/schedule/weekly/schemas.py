@@ -7,6 +7,8 @@ class WeeklySessionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    class_name: str
+    teaching_week: int | None
     topic: str
     starts_at: datetime
     ends_at: datetime

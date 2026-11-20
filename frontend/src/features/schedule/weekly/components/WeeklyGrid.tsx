@@ -1,13 +1,11 @@
-'use client'
-
-import { useState, useEffect, Fragment } from 'react'
-import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
-import { formatLocalDate, addCalendarDays } from '../../../../lib/date'
-import { weeklyScheduleService } from '../services/weeklyScheduleService'
-import type { WeeklyScheduleResponse } from '../types/weeklyScheduleTypes'
+import { Fragment } from 'react'
+import { CalendarDays, ChevronLeft, ChevronRight, MoveHorizontal } from 'lucide-react'
+import { addCalendarDays } from '../../../../lib/date'
+import type { WeeklySchedule } from '../types/weeklyScheduleTypes'
+import { WeeklySessionCard } from './WeeklySessionCard'
 
 const WEEK_DAYS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
-const SHIFT_ICON_CLASS = 'mb-0.5 size-7 shrink-0 lg:size-8'
+const SHIFT_ICON_CLASS = 'mb-0.5 size-6 shrink-0 @min-[38rem]/weekly:size-8'
 const SHIFT_ROWS = [
     {
         id: 'morning',
@@ -47,7 +45,7 @@ const SHIFT_ROWS = [
         ),
     },
 ]
-const WEEK_NAV_BUTTON_CLASS = 'flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#EAEFF5] bg-white text-slate-600 shadow-sm transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary'
+const WEEK_NAV_BUTTON_CLASS = 'flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#EAEFF5] bg-white text-slate-600 shadow-sm transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary sm:pointer-fine:size-8'
 
 export function formatWeekLabel(weekStart: string): string {
     const weekEnd = addCalendarDays(weekStart, 6)
@@ -66,85 +64,103 @@ export function formatDayMonth(weekStart: string): string {
     return `${day}/${month}`
 }
 
+type Props = {
+    week: WeeklySchedule | null
+    today: string
+    onWeekChange: (days: number) => void
+    subtitle?: string
+    loadError?: string
+}
 
+export function WeeklyGrid({ week, today, onWeekChange, subtitle, loadError }: Props) {
+    const weekStart = week?.weekStart
+    const days = WEEK_DAYS.map((label, index) => ({
+        label,
+        date: weekStart ? addCalendarDays(weekStart, index) : undefined,
+    }))
 
-export function WeeklyGrid() {
-    const [selectedDate, setSelectedDate] = useState(() => formatLocalDate(new Date()))
-    const [weeklySchedule, setWeeklySchedule] = useState<WeeklyScheduleResponse | null>(null)
-    const [loadError, setLoadError] = useState<string | null>(null)
-    useEffect(
-        () => {
-            let ignore = false
-            async function loadWeek() {
-                try {
-                    const data = await weeklyScheduleService.getWeeklySchedule(selectedDate)
-                    if (ignore) return
-                    setLoadError(null)
-                    setWeeklySchedule(data)
-                    console.log('Dữ liệu tuần lấy về:', data.week_start)
-                } catch (error) {
-                    console.error('Lỗi lấy lịch:', error)
-                    if (ignore) return
-                    setLoadError('Không tải được lịch của tuần đã chọn')
-                }
-            }
-            loadWeek()
-            return () => { ignore = true }
-        },
-        [selectedDate]
-    )
     return (
-        <section className="mx-3.5 my-4 flex min-w-0 flex-col rounded-[22px] border border-[#EAEFF5] bg-white p-4 shadow-[0_4px_20px_rgba(20,25,45,0.03)] sm:mx-6 sm:rounded-[24px] sm:p-5 md:min-h-[calc(100dvh_-_92px)]">
-            <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 pb-4">
+        <section className="@container/weekly flex min-w-0 flex-col rounded-[22px] border border-[#EAEFF5] bg-white p-4 shadow-[0_4px_20px_rgba(20,25,45,0.03)] sm:rounded-[24px] sm:p-5">
+            <header className="grid shrink-0 grid-cols-[minmax(0,1fr)] items-center gap-2.5 pb-3 @min-[27rem]/weekly:grid-cols-[minmax(0,1fr)_auto] @min-[27rem]/weekly:pb-4">
                 <div className="flex items-center gap-2.5">
                     <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-brand-light text-brand-primary">
                         <CalendarDays aria-hidden="true" className="size-[18px]" strokeWidth={2.2} />
                     </div>
-                    <h1 className="text-[19px] font-bold tracking-tight text-[#1E293B] sm:text-[21px]">Lịch học</h1>
+                    <div>
+                        <h1 className="text-[19px] font-bold tracking-tight text-[#1E293B] sm:text-[21px]">Lịch học</h1>
+                        {subtitle && <p className="text-xs text-slate-600">{subtitle}</p>}
+                    </div>
                 </div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="flex min-w-0 items-center justify-between gap-1.5 @min-[27rem]/weekly:justify-end @min-[27rem]/weekly:gap-2">
                     <button
                         type="button"
                         aria-label="Tuần trước"
                         className={WEEK_NAV_BUTTON_CLASS}
-                        onClick={() => setSelectedDate(currentDate => addCalendarDays(currentDate, -7))}
+                        onClick={() => onWeekChange(-7)}
                     >
                         <ChevronLeft className="size-4" strokeWidth={2.2} />
                     </button>
-                    <span className="rounded-full border border-[#EAEFF5] bg-white px-3 py-1.5 text-[12px] font-semibold whitespace-nowrap text-[#1E293B] shadow-sm sm:px-4 sm:text-[13px]"> {weeklySchedule ? formatWeekLabel(weeklySchedule.week_start) : ''} </span>
+                    <span className="rounded-full border border-[#EAEFF5] bg-white px-3 py-1.5 text-[12px] font-semibold whitespace-nowrap text-[#1E293B] shadow-sm sm:px-4 sm:text-[13px]">{weekStart ? formatWeekLabel(weekStart) : ''}</span>
                     <button
                         type="button"
                         aria-label="Tuần sau"
                         className={WEEK_NAV_BUTTON_CLASS}
-                        onClick={() => setSelectedDate(currentDate => addCalendarDays(currentDate, +7))}
+                        onClick={() => onWeekChange(7)}
                     >
                         <ChevronRight className="size-4" strokeWidth={2.2} />
                     </button>
                 </div>
             </header>
             {loadError ? <p role="alert" className="mb-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{loadError}</p> : null}
-            <div className="grid flex-1 grid-cols-[96px_repeat(7,minmax(4rem,1fr))] grid-rows-[48px_repeat(3,minmax(108px,1fr))] gap-1.5 overflow-x-auto lg:grid-cols-[112px_repeat(7,minmax(0,1fr))]">
-                <div className="rounded-2xl bg-[#F3F5FA]"></div>
-                {WEEK_DAYS.map((day, index) => (
-                    <div key={day} className="flex flex-col items-center justify-center rounded-2xl bg-[#F3F5FA] text-[#1E293B]">
-                        <span className="text-[13.5px] leading-tight font-bold lg:text-sm">{day}</span>
-                        <span className="mt-0.5 text-[11px] leading-tight font-medium text-slate-500 lg:text-[11.5px]">
-                            {weeklySchedule
-                                ? formatDayMonth(addCalendarDays(weeklySchedule.week_start, index))
-                                : ''}
+            <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-slate-600 @min-[42rem]/weekly:hidden">
+                <MoveHorizontal aria-hidden="true" className="size-3.5 shrink-0" />
+                Cuộn ngang để xem các ngày còn lại
+            </p>
+            <div
+                role="region"
+                aria-label="Lưới lịch theo tuần"
+                tabIndex={0}
+                className="grid flex-1 grid-cols-[80px_repeat(7,minmax(5.5rem,1fr))] grid-rows-[48px_repeat(3,minmax(108px,1fr))] gap-1.5 overflow-x-auto overscroll-x-contain focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary @min-[42rem]/weekly:grid-cols-[96px_repeat(7,minmax(0,1fr))] lg:@min-[42rem]/weekly:grid-cols-[112px_repeat(7,minmax(0,1fr))]"
+            >
+                <div className="sticky left-0 z-10 rounded-2xl bg-[#F3F5FA]"></div>
+                {days.map(({ label, date }) => (
+                    <div
+                        key={label}
+                        aria-current={date === today ? 'date' : undefined}
+                        className={`flex flex-col items-center justify-center rounded-2xl ${date === today ? 'bg-[#183B80] text-white shadow-[0_2px_5px_rgba(24,59,128,0.16)]' : 'bg-[#F3F5FA] text-[#1E293B]'}`}
+                    >
+                        <span className="text-[13.5px] leading-tight font-bold">{label}</span>
+                        <span className={`mt-0.5 text-[11px] leading-tight font-medium ${date === today ? 'text-white' : 'text-slate-500'}`}>
+                            {date ? formatDayMonth(date) : ''}
                         </span>
                     </div>
                 ))}
                 {SHIFT_ROWS.map(shift => (
                     <Fragment key={shift.id}>
-                        <div className={`flex flex-col items-center justify-center gap-1 rounded-2xl p-2 text-center lg:p-3 ${shift.bgClass}`}>
+                        <div className={`sticky left-0 z-10 flex flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 text-center @min-[42rem]/weekly:p-2 ${shift.bgClass}`}>
                             {shift.icon}
-                            <span className="text-xs leading-snug font-bold whitespace-nowrap text-[#1E293B] lg:text-[13px]">{shift.label}</span>
-                            <span className="text-[10.5px] leading-tight font-medium whitespace-nowrap text-slate-600 lg:text-[11.5px]">{shift.timeRange}</span>
+                            <span className="text-[11px] leading-snug font-bold whitespace-nowrap text-[#1E293B] @min-[48rem]/weekly:text-[13px]">{shift.label}</span>
+                            <span className="text-[10px] leading-tight font-medium whitespace-nowrap text-slate-600 @min-[48rem]/weekly:text-[11.5px]">{shift.timeRange}</span>
                         </div>
-                        {WEEK_DAYS.map(day => (
-                            <div key={day} className="rounded-2xl bg-[#F5F6FB]" />
-                        ))}
+                        {days.map(({ label, date }) => {
+                            const sessions = (week?.sessions ?? []).filter(session =>
+                                session.date === date && session.shift === shift.id
+                            )
+
+                            return (
+                                <div
+                                    key={label}
+                                    role={sessions.length > 1 ? 'group' : undefined}
+                                    aria-label={sessions.length > 1 ? `${label}, ${shift.label}` : undefined}
+                                    tabIndex={sessions.length > 1 ? 0 : undefined}
+                                    className={`rounded-2xl ${date === today ? 'bg-[#E1EAFC]' : 'bg-[#F5F6FB]'} ${sessions.length ? 'flex min-h-0 min-w-0 flex-col gap-1.5 overflow-y-auto overscroll-y-contain p-0.5 [contain:size]' : ''}`}
+                                >
+                                    {sessions.map(session => (
+                                        <WeeklySessionCard key={session.id} session={session} />
+                                    ))}
+                                </div>
+                            )
+                        })}
                     </Fragment>
                 ))}
             </div>

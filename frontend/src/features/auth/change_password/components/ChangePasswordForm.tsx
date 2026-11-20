@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { changePasswordSchema } from '../schemas/changePasswordSchema'
 import { changePasswordService } from '../services/changePasswordService'
+import { MAX_PASSWORD_BYTES, MIN_NEW_PASSWORD_CHARACTERS } from '../../passwordPolicy'
 import type { ChangePasswordFormData } from '../types/changePasswordTypes'
 import logoImage from '../../../../assets/images/logo.webp'
 
@@ -34,7 +36,10 @@ export function ChangePasswordForm() {
                 router.push('/dashboard')
             }, 1500)
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Đổi mật khẩu thất bại. Vui lòng thử lại.'
+            const detail = isAxiosError<{ detail?: unknown }>(error) ? error.response?.data?.detail : undefined
+            const message = typeof detail === 'string' && detail.trim()
+                ? detail
+                : 'Đổi mật khẩu thất bại. Vui lòng thử lại.'
             setError("root", {
                 message
             })
@@ -71,7 +76,7 @@ export function ChangePasswordForm() {
             <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)}>
                 {/* Mật khẩu mới */}
                 <div className="space-y-1.5">
-                    <label className="block text-[12px] font-semibold text-[#374151]">
+                    <label htmlFor="new-password" className="block text-[12px] font-semibold text-[#374151]">
                         Mật khẩu mới
                     </label>
                     <div className="relative flex items-center">
@@ -81,7 +86,11 @@ export function ChangePasswordForm() {
                             </svg>
                         </span>
                         <input
+                            id="new-password"
                             type={showNewPassword ? "text" : "password"}
+                            autoComplete="new-password"
+                            aria-describedby={errors.newPassword ? 'new-password-help new-password-error' : 'new-password-help'}
+                            aria-invalid={Boolean(errors.newPassword)}
                             placeholder="Nhập mật khẩu mới"
                             {...register("newPassword")}
                             className="w-full pl-10 pr-11 py-3.5 text-[13px] bg-[#f8f9fd] border border-[#edf0f7] rounded-[14px] focus:outline-none focus:ring-2 focus:ring-[#6366f1]/40 focus:bg-white transition-all text-[#1f2937] placeholder-[#a0aec0]"
@@ -103,14 +112,17 @@ export function ChangePasswordForm() {
                             )}
                         </button>
                     </div>
+                    <p id="new-password-help" className="text-xs text-slate-600">
+                        Ít nhất {MIN_NEW_PASSWORD_CHARACTERS} ký tự, tối đa {MAX_PASSWORD_BYTES} byte UTF-8.
+                    </p>
                     {errors.newPassword && (
-                        <p className="text-red-500 text-xs mt-1 font-medium">{errors.newPassword.message}</p>
+                        <p id="new-password-error" className="text-red-500 text-xs mt-1 font-medium">{errors.newPassword.message}</p>
                     )}
                 </div>
 
                 {/* Xác nhận mật khẩu mới */}
                 <div className="space-y-1.5">
-                    <label className="block text-[12px] font-semibold text-[#374151]">
+                    <label htmlFor="confirm-new-password" className="block text-[12px] font-semibold text-[#374151]">
                         Xác nhận mật khẩu mới
                     </label>
                     <div className="relative flex items-center">
@@ -120,7 +132,11 @@ export function ChangePasswordForm() {
                             </svg>
                         </span>
                         <input
+                            id="confirm-new-password"
                             type={showConfirmNewPassword ? "text" : "password"}
+                            autoComplete="new-password"
+                            aria-invalid={Boolean(errors.confirmNewPassword)}
+                            aria-describedby={errors.confirmNewPassword ? 'confirm-new-password-error' : undefined}
                             placeholder="Nhập lại mật khẩu mới"
                             {...register("confirmNewPassword")}
                             className="w-full pl-10 pr-11 py-3.5 text-[13px] bg-[#f8f9fd] border border-[#edf0f7] rounded-[14px] focus:outline-none focus:ring-2 focus:ring-[#6366f1]/40 focus:bg-white transition-all text-[#1f2937] placeholder-[#a0aec0]"
@@ -143,13 +159,13 @@ export function ChangePasswordForm() {
                         </button>
                     </div>
                     {errors.confirmNewPassword && (
-                        <p className="text-red-500 text-xs mt-1 font-medium">{errors.confirmNewPassword.message}</p>
+                        <p id="confirm-new-password-error" className="text-red-500 text-xs mt-1 font-medium">{errors.confirmNewPassword.message}</p>
                     )}
                 </div>
 
                 {/* Lỗi server */}
                 {errors.root && (
-                    <div className="w-full p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded-[14px] font-medium text-center">
+                    <div role="alert" className="w-full p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded-[14px] font-medium text-center">
                         {errors.root.message}
                     </div>
                 )}

@@ -9,6 +9,13 @@
 - Trong mỗi lượt trao đổi về LMS, nếu người dùng nói điều mới hoặc sửa thông tin về dự án, tự cập nhật [hồ sơ dự án](PROJECT_CONTEXT.md) ngay trong lượt đó. Áp dụng cho tính năng, nghiệp vụ, luồng sử dụng, yêu cầu giao diện, phạm vi và điểm dừng. Người dùng không cần nhắc “lưu lại”.
 - Ghi ý người dùng theo từng chủ đề, tránh lặp. Tách thông tin đã xác nhận, ý tưởng đang cân nhắc, câu còn mở và trạng thái triển khai đã kiểm tra. Nếu người dùng sửa một quyết định cũ, cập nhật mục liên quan. Gợi ý của Codex chỉ trở thành quyết định khi người dùng đồng ý.
 
+## Thiết kế và phòng lỗi
+
+- Trước khi code một luồng nghiệp vụ, giúp người dùng nêu điều kiện phải luôn đúng, dữ liệu nào có thể thay đổi giữa các bước và tầng nào chịu trách nhiệm kiểm tra từng điều kiện. Lần theo đường chạy thực tế từ UI qua API đến DB ở những phần liên quan.
+- Khi luồng có truy cập DB hoặc thao tác đồng thời, lần theo thời điểm mở và đóng session, lấy và trả connection, bắt đầu và kết thúc transaction. Xem điều gì xảy ra khi hai request chạy cùng lúc, người dùng gửi lại request hoặc dữ liệu thay đổi sau khi họ mở màn hình. Chọn ca biên theo rủi ro thực tế của luồng.
+- Với mỗi rủi ro đáng kể, chỉ ra đoạn code liên quan, điều kiện gây lỗi, ảnh hưởng và cách tái hiện nhỏ nhất. Cho người dùng thử dự đoán kết quả hoặc đề xuất cách kiểm trước, rồi đối chiếu với code và test.
+- Trước khi chốt một tính năng, báo rõ ca nào đã chạy, trên môi trường nào và phần nào mới suy ra từ code. Kết luận về tải cần số đo trên môi trường và kịch bản phù hợp.
+
 ## Tổ chức code frontend và backend
 
 - Chia FE và BE theo nghiệp vụ, rồi chia trách nhiệm bên trong từng nghiệp vụ. Tên tầng giống nhau có thể mang trách nhiệm khác nhau. Ví dụ service Weekly ở FE gửi request HTTP, còn service Weekly ở BE áp dụng quy tắc lịch học và gọi repository để lấy dữ liệu.

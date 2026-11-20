@@ -56,13 +56,15 @@ Với cơ sở dữ liệu phát triển mới, chạy các lệnh sau trong ter
 Set-Location backend
 docker compose up -d mysql
 
-# Sau khi MySQL sẵn sàng, tạo bảng tài khoản và thêm tài khoản thử.
-..\.venv\Scripts\python.exe -m alembic upgrade 2bc85ebdd106
+# Sau khi MySQL sẵn sàng, áp dụng toàn bộ migration và tạo tài khoản thử.
+..\.venv\Scripts\python.exe -m alembic upgrade head
 ..\.venv\Scripts\python.exe -m scripts.seed_users
 ..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Dùng tài khoản trong [script seed](backend/scripts/seed_users.py) để thử đăng nhập. Chạy seed một lần trên cơ sở dữ liệu mới vì script sẽ chèn thêm bản ghi mỗi lần chạy. Mốc migration ở trên tạo bảng `users` cho luồng tài khoản. Các migration lịch hiện vẫn chưa tạo bảng `students` và chưa có đủ cột nội dung buổi học.
+Dùng số điện thoại và mật khẩu khởi tạo in trên terminal để đăng nhập lần đầu. [Script seed](backend/scripts/seed_users.py) tạo tài khoản thử và hồ sơ học sinh khối 12, đồng thời yêu cầu đổi mật khẩu ở lần đăng nhập đầu tiên. Mật khẩu khởi tạo được sinh ngẫu nhiên và chỉ in khi tạo tài khoản. Chạy lại seed vẫn giữ mật khẩu của tài khoản đã có.
+
+Nếu MySQL có tài khoản trùng số điện thoại, migration sẽ dừng. Xử lý từng trường hợp trùng trước khi chạy lại `alembic upgrade head`.
 
 ### API hiện có
 

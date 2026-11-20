@@ -1,17 +1,44 @@
+from typing import Annotated
+
+from anyio import CapacityLimiter, to_thread
+from anyio.lowlevel import RunVar
 from fastapi import APIRouter, Depends, HTTPException
-from .schemas import LoginRequest
-from .service import LoginService, get_auth_service, create_token_payload, create_login_response
-from .exceptions import UserNotFoundException, WrongPasswordException, InvalidPhoneNumberException, EmptyPasswordException, UserLockedException
-from app.core.security import create_access_token
+
 from app.core.logger import logger
+from app.core.security import InvalidPasswordError
+
+from .exceptions import (
+    EmptyPasswordException,
+    InvalidPhoneNumberException,
+    UserLockedException,
+    UserNotFoundException,
+    WrongPasswordException,
+)
+from .schemas import LoginRequest
+from .service import LoginService, get_auth_service
+
+
 login_router = APIRouter()
+MAX_CONCURRENT_LOGINS = 4
+_login_limiter = RunVar[CapacityLimiter]("login_limiter")
+
+
+def get_login_limiter() -> CapacityLimiter:
+    limiter = _login_limiter.get(None)
+    if limiter is None:
+        limiter = CapacityLimiter(MAX_CONCURRENT_LOGINS)
+        _login_limiter.set(limiter)
+    return limiter
+
 
 @login_router.post("/login")
-def login(login_request: LoginRequest, 
-          auth_service: LoginService = Depends(get_auth_service)
+async def login(
+    login_request: LoginRequest,
+    auth_service: Annotated[LoginService, Depends(get_auth_service)],
 ):
     try:
-        return auth_service.login(login_request)
+        # Keep password verification from consuming the shared synchronous capacity.
+        return await to_thread.run_sync(auth_service.login, login_request, limiter=get_login_limiter())
     except UserNotFoundException:
         raise HTTPException(
             status_code=401,
@@ -23,7 +50,7 @@ def login(login_request: LoginRequest,
             detail="Mật khẩu hoặc số điện thoại không đúng"
         )
     except InvalidPhoneNumberException:
-        logger.warning(f"Sdt: {login_request.phone_number} không hợp lệ")
+        logger.warning("Đăng nhập thất bại: Số điện thoại không hợp lệ")
         raise HTTPException(
             status_code=400,
             detail="Số điện thoại phải có đúng 10 chữ số"
@@ -34,6 +61,8 @@ def login(login_request: LoginRequest,
             status_code=400,
             detail="Mật khẩu không được để trống"
         )
+    except InvalidPasswordError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except UserLockedException:
         logger.warning(f"Đăng nhập thất bại: Tài khoản đã bị khóa")
         raise HTTPException(

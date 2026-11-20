@@ -35,7 +35,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
     { id: 'practice', label: 'Luyện đề', icon: FileText, path: '/practice' },
     { id: 'schedule', label: 'Lịch học', icon: Calendar, path: '/schedule' },
     { id: 'exercises', label: 'Bài tập', icon: BookOpen, path: '/exercises' },
-    { id: 'attendance', label: 'Điểm danh', icon: SquareCheck, path: '/attendance' },
+    { id: 'attendance', label: 'Lớp học', icon: SquareCheck, path: '/attendance' },
     { id: 'summary', label: 'Tóm tắt kiến thức', icon: Lightbulb, path: '/summary' },
     { id: 'settings', label: 'Cài đặt', icon: Settings, path: '/settings' },
   ]
@@ -96,6 +96,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                 key={item.id}
                 type="button"
                 onClick={() => handleNavClick(item.path)}
+                aria-current={isActive ? 'page' : undefined}
                 className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] wide:text-[15px] wide:py-3 transition-all cursor-pointer text-left ${
                   isActive
                     ? 'bg-[#EEF0FD] text-[#5553E6] font-semibold shadow-2xs'

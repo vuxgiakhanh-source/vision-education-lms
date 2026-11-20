@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { isAxiosError } from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { loginSchema } from '../schemas/loginSchema'
@@ -29,12 +30,17 @@ export function LoginForm() {
             else {
                 router.push('/dashboard')
             }
-        } 
-        catch (error) {
-            const message = error instanceof Error ? error.message : 'Đăng nhập thất bại. Vui lòng thử lại.'
-            setError("root", {
-                message
-            })
+        } catch (error) {
+            let message = 'Đăng nhập thất bại. Vui lòng thử lại.'
+
+            if (isAxiosError<{ detail?: unknown }>(error)) {
+                const detail = error.response?.data?.detail
+                if (typeof detail === 'string' && detail.trim()) {
+                    message = detail
+                }
+            }
+
+            setError('root', { message })
         }
     }
 

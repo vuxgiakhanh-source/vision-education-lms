@@ -7,6 +7,138 @@
 - **5–6** · Nêu được vấn đề, nhưng căn cứ còn yếu hoặc kết luận đi xa hơn dữ kiện.
 - **1–4** · Nhầm vấn đề chính hoặc dựa vào giả định sai làm đổi kết luận.
 
+## 20/11/2026 · Nhận diện Deadlock Connection Pool và Ranh giới Tối ưu sớm
+
+- **Phản biện & Đánh giá rủi ro kiến trúc · 9/10.** Người dùng đặt câu hỏi sắc bén: *"cái này có xàm ko hay đáng chú ý"* đối với cảnh báo cạn connection pool do mượn 2 kết nối đồng thời trong router đổi ca (`temporary_transfers/router.py`).
+  - **Bản chất kỹ thuật:** Cảnh báo này **hoàn toàn có thật và rất đáng chú ý**, không phải vì lý do "tốn tài nguyên" thông thường, mà là vì nguy cơ **Connection Pool Deadlock** (khóa chết tài nguyên ứng dụng). Khi một request giữ chặt Connection 1 (qua generator `get_db`) và đòi mượn tiếp Connection 2 (`use_cache=False`), chỉ cần 5 học sinh cùng bấm xác nhận cùng lúc (với `pool_size = 5`), cả 5 request sẽ giữ 5 connection đầu và cùng đứng chờ connection thứ hai. Hệ thống rơi vào vòng lặp chờ vô tận (Hold and Wait) và đơ toàn tập cho tới khi timeout.
+  - **Điểm sáng tư duy:** Người dùng tỉnh táo nghi vấn xem đây là lỗi thực tế hay lại là trò dọa ma/chém gió của AI sau bẫy tối ưu sớm. Việc phân biệt được đâu là *tối ưu hạ tầng viển vông* (stress test 1.000 CCU, tuning timing attack) và đâu là *lỗi kiến trúc code cơ bản* (nested connection acquisition) là bước tiến quan trọng về tư duy backend.
+- **Yêu cầu kiểm chứng thực nghiệm · 9/10.** Khi nghe phân tích kịch bản Deadlock, người dùng tiếp tục chất vấn tính chân thực: *"real à"*.
+  - **Kiểm chứng bằng thực nghiệm:** Không dừng lại ở lý thuyết sách vở, đã chạy script mô phỏng chính xác luồng này trên MySQL thật của dự án (`pool_size=2`, 2 thread cùng mượn lồng). Kết quả: Cả 2 request đều nổ `sqlalchemy.exc.TimeoutError` sau 1 giây vì deadlock 100%. Ngược lại, khi gộp về 1 session, cả 2 request hoàn thành trong 0.1s. Yêu cầu kiểm chứng thực tế này giúp bảo vệ lập luận bằng bằng chứng định lượng thay vì tranh cãi lý thuyết.
+- **Nhận diện Bẫy trừu tượng hóa (Leaky Abstraction) của ORM · 9/10.** Người dùng chỉ ra sự vô hình của connection: *"ơ tôi code mãi mà tôi chả bao giờ thấy code của tôi lấy connection ở đâu nhé"*.
+  - **Bản chất kỹ thuật:** SQLAlchemy áp dụng cơ chế *Lazy Connection Checkout*. Khi gọi `SessionLocal()`, ORM chưa hề chạm vào DB. Nhưng ngay khi câu lệnh `db.query(...)` đầu tiên chạy, Session âm thầm gõ cửa `engine.pool` để checkout connection vật lý và giữ chặt nó cho tới khi `db.close()`.
+  - **Bài học kiến trúc:** Đây là minh chứng điển hình cho *Quy luật rò rỉ trừu tượng (Law of Leaky Abstractions)*. ORM giấu đi việc quản lý connection để dev tiện code, nhưng khi gặp bài toán tranh chấp tài nguyên hoặc transaction lồng nhau, dev sẽ bị bất ngờ nếu không hiểu cơ chế ngầm bên dưới.
+- **Phản biện về Ranh giới trách nhiệm (Separation of Concerns) trong Router · 9/10.** Người dùng bức xúc chỉ ra sự phi lý khi router đổi ca dùng chung `require_changed_password`: *"sao đổi ca lại dùng chung với cái này xàm lìn vl"*.
+  - **Bản chất kiến trúc:** Router đổi ca chỉ cần định danh: *"Ai là học sinh đang gửi request?"*. Việc lôi một hàm kiểm tra mật khẩu (`require_changed_password`) vào làm chìa khóa định danh là vi phạm nghiêm trọng ranh giới nghiệp vụ (Domain Boundary Crossing). Hậu quả trực tiếp: router bị ép gánh một DB connection đọc thừa thãi từ bước xác thực, dẫn tới việc phải "chắp vá" thêm `use_cache=False` để mở transaction ghi, tạo thành cái bẫy Deadlock.
+  - **Tư duy thiết kế:** Nhận thức rõ ràng việc không nên chắp vá dependency tiện tay, mà phải thiết kế dependency đúng trách nhiệm (định danh ra định danh, transaction ra transaction).
+- **Thấu suốt Nguyên lý 1 Request = 1 Connection · 10/10.** Sau khi được giải thích bản chất `use_cache=False`, người dùng đúc kết bằng hình tượng chuẩn xác: *"mỗi thằng vào quán ăn thì một ghế ngồi thôi chứu"*.
+  - **Bản chất kỹ thuật:** Trong kiến trúc web, một HTTP request phải tuân thủ nguyên tắc *Request-Scoped Resource*: 1 Request chỉ mượn đúng 1 DB connection duy nhất và tái sử dụng (cache) xuyên suốt chu trình xử lý. Việc đòi mượn 2 kết nối lồng nhau (`use_cache=False`) chính là mầm mống gây nghẽn pool và deadlock.
+  - **Ý nghĩa nhận thức:** Người dùng đã hoàn toàn làm chủ mô hình tài nguyên và hiểu tường tận vì sao cần xóa bỏ `use_cache=False`.
+- **Tư duy Đánh giá Đánh đổi (Trade-off Analysis) trong Hạ tầng · 10/10.** Đứng trước lời giới thiệu về gói máy chủ miễn phí cấu hình khủng của Oracle, người dùng không vội mừng mà lập tức chất vấn: *"free hoàn toàn nhỉ no trade off nhỉ"*.
+  - **Bản chất kỹ thuật:** Trong công nghệ không bao giờ có "bữa trưa miễn phí". Người dùng phát huy xuất sắc tư duy kỹ thuật phản biện: Khi một dịch vụ cung cấp tài nguyên lớn với giá 0 đồng, chắc chắn phải có các ràng buộc ngầm (khó đăng ký, rủi ro thu hồi máy nhàn rỗi, kiến trúc chip ARM64, không có hỗ trợ kỹ thuật khi mất dữ liệu).
+  - **Ý nghĩa thực tế:** Giúp dự án phòng ngừa rủi ro gián đoạn dịch vụ của trung tâm Toán, ưu tiên chiến lược sao lưu độc lập (off-site backup) thay vì đặt 100% niềm tin mù quáng vào các gói Free Tier.
+- **Bắt bẻ Mâu thuẫn Cấu hình Hạ tầng & Chi phí · 10/10.** Khi trợ lý gợi ý gói VPS giá rẻ 60k–100k/tháng, người dùng lập tức vặn lại: *"ngáo à máy chủ của tôi khéo phải 4vcpu mới đụ"*.
+  - **Căn cứ sắc bén:** Người dùng bám sát kết quả tính toán Capacity Planning vừa chốt ở lượt trước: Hệ thống cần **4 vCPU** (2 vCPU cho MySQL và 2 vCPU cho 4 Uvicorn workers) để gánh 200 CCU phòng thi online và chia tải bcrypt. Gói 60k–100k trên thị trường thực chất chỉ mua được 1 vCPU (hoặc 2 vCPU cấu hình thấp), hoàn toàn không đủ đáp ứng bài toán tải thực tế của trung tâm.
+  - **Tư duy kỹ sư trưởng:** Giữ vững tiêu chuẩn kỹ thuật đã được chứng minh bằng phép đo, không để bị đánh tráo khái niệm giữa "tiết kiệm chi phí" và "thiếu hụt tài nguyên gây sập hệ thống".
+
+## 20/11/2026 · Nhận thức về Bẫy Tối ưu sớm (Premature Optimization) & Over-engineering
+
+- **Trực giác & Định hướng dự án · 10/10.** Người dùng dừng lại chất vấn đúng lúc khi thấy AI liệt kê hàng loạt bài toán tối ưu hạ tầng phức tạp: *"hmm ??? là sao nhỉ tao hình như bị AI dắt mũi rồi mày ơi"*.
+  - **Bản chất vấn đề:** AI đang dẫn dụ người dùng vào cái bẫy kinh điển: **Tối ưu hóa sớm (Premature Optimization)**. Các bài toán đo tải 1.000 CCU, cạn connection pool, timing attack của bcrypt, EXPLAIN ANALYZE index ghép... về mặt lý thuyết là đúng trong hệ thống hàng triệu người dùng, nhưng là **hoàn toàn lệch hướng** với bối cảnh LMS của một trung tâm Toán 500 học sinh đang cần hoàn thành tính năng trước deadline 19/12/2026.
+  - **Giá trị thực tiễn:** Trực giác của người dùng giúp kéo dự án trở lại đúng mục tiêu cốt lõi: ưu tiên hoàn thiện tính năng có thể demo và vận hành thật (Functional Delivery), tránh lãng phí thời gian vào những tối ưu hạ tầng chưa cần thiết.
+
+## 20/11/2026 · Đồng bộ tài liệu Setup và Lỗ hổng Seed dữ liệu
+
+- **Phát hiện nghiệp vụ & Onboarding · 10/10.** Người dùng chỉ ra sự lệch pha nghiêm trọng giữa tài liệu và code: *"README sai với code hiện tại. README hướng dẫn alembic upgrade 2bc85ebdd106, tức chỉ tạo bảng users, và nói “chưa có bảng students”. Thực tế phải upgrade head. seed_users.py cũng chỉ tạo User mà không tạo Student, nên tài khoản seed vào /schedule sẽ bị 403."*
+  - **Căn cứ sắc bén:** 
+    1. [README.md](file:///d:/vision-education-lms/README.md#L60) đang kẹt ở mốc migration cũ `2bc85ebdd106`, trong khi database thực tế đã có đầy đủ bảng `students`, `class_sessions`, `classes`, `sessions_transfers`. Lệnh đúng để chạy môi trường dev là `alembic upgrade head`.
+    2. [seed_users.py](file:///d:/vision-education-lms/backend/scripts/seed_users.py) chỉ tạo bản ghi ở bảng `users` (`role=STUDENT`) mà không hề tạo hồ sơ học sinh trong bảng `students`.
+    3. **Hậu quả chết người:** Người mới setup theo README đăng nhập thì thành công, nhưng vừa bấm vào `/schedule` là bị Backend văng lỗi HTTP 403 (`StudentGradeNotFoundException: Tài khoản chưa có hồ sơ học sinh`), làm gãy toàn bộ trải nghiệm khởi tạo ban đầu (Developer Onboarding).
+
+- **Kiểm chứng rà xác thực · 9/10.** Người dùng đưa ca tái hiện cụ thể cho số điện thoại trùng, giới hạn byte của bcrypt, log lỗi, thông báo đổi mật khẩu và Alembic. Cần phân biệt model đã sửa với ràng buộc thực tế trong DB, và import một class với việc Python chạy cả module. Tự kiểm bằng cách so index MySQL với model, rồi liệt kê metadata trong tiến trình Alembic mới.
+- **Phản biện ngày 20/11/2026 · 9/10.** Người dùng chỉ ra lần hướng dẫn đăng nhập đã bỏ sót ràng buộc duy nhất của số điện thoại. Khi review một truy vấn lấy tài khoản theo định danh, truy ngược điều kiện duy nhất từ truy vấn đến model, migration và schema đang chạy. Kiểm trường hợp tạo hai tài khoản trùng định danh trong dữ liệu thử.
+
+## 20/11/2026 · Duyệt đổi lớp và tuần dạy đã lỡ
+
+- **Phản biện · 9/10.** Người dùng tách việc duyệt chuyển lớp khỏi việc xếp từng buổi. Nếu lớp đích đã dạy xong tuần cần chuyển và học sinh chưa học, em đã lỡ tuần đó. Việc này cần thông báo cho học sinh và không phải lý do giữ yêu cầu chờ duyệt.
+- **Phản biện tiếp ngày 20/11/2026 · 8/10.** Người dùng đặt lại câu hỏi vì sao cần giáo viên duyệt, rồi chỉ ra bước duyệt có thể phát sinh lỗi. Nếu các điều kiện đổi lớp đều có thể kiểm tra lúc xác nhận và không cần quyết định riêng của giáo viên, bỏ bước chờ làm luồng ngắn hơn. Có thể kiểm bằng ca học sinh sửa lớp đích khi cô đang mở yêu cầu cũ và ca hai người cùng xác nhận vào một chỗ cuối. Ca thứ hai vẫn cần xử lý khi tự đổi.
+- **Phản biện về mốc tuần ngày 20/11/2026 · 9/10.** Người dùng nhắc quy tắc đã chốt là buổi tiếp theo của lớp mới phải có tuần lớn hơn tuần học sinh đã học. Điều kiện phải được áp dụng lại khi điểm danh muộn làm tăng mốc tuần, thay vì chỉ kiểm ở thời điểm chuyển lớp.
+- **Phản biện về quy trình điểm danh ngày 20/11/2026 · 9/10.** Người dùng chỉ ra ca giả lập học xong mà chưa được điểm danh không xảy ra trong luồng đã chốt. Kiểm lại khi điểm danh có mặt được lưu trước khi chuyển lớp cho thấy cả hai lượt A → B → C lấy đúng Tuần 20 và các buổi thấp hơn của lớp B không nhận nhãn cá nhân.
+
+## 20/11/2026 · Kích thước lưới và buổi trùng ô
+
+- **Phản biện · 9/10.** Người dùng phát hiện nội dung kéo giãn lưới và dữ liệu demo tạo hai thẻ trong cùng một ô ca. Kiểm tra cho thấy một ca thuộc lớp demo cũ cùng khối, còn ca lớp đăng ký mới được gắn **Ca của bạn**. Tự kiểm bằng cách so kích thước hàng giữa buổi có chủ đề ngắn và dài, rồi đối chiếu ID ca cá nhân khi nhiều lớp học cùng giờ.
+- **Phản biện tiếp ngày 20/11/2026 · 9/10.** Người dùng chất vấn việc lấy nhầm bản giao diện. Đối chiếu file lưu của cổng 5179 với mockup V3 xác nhận 142 px là thông số của V3, còn bản 5179 chia hàng linh hoạt. Tự kiểm bằng cách đo cùng một viewport rồi đổi chiều cao viewport để xem kích thước thay đổi do đâu.
+- **Phản biện tiếp ngày 20/11/2026 · 9/10.** Người dùng hỏi vì sao hai buổi trong ca thử lại thuộc cùng lớp và cùng tuần dạy. Câu hỏi chỉ ra điều kiện làm đổi kết luận: mỗi lớp có tối đa một buổi cho mỗi `teaching_week`, nên ca thử chỉ phản ánh dữ liệu trùng.
+- **Phản biện về dời giờ ngày 20/11/2026 · 9/10.** Người dùng hỏi vì sao nhãn cá nhân mất khi buổi vẫn thuộc lớp đang theo. Kiểm tra cho thấy điều kiện xếp buổi chặn giờ bắt đầu trước ngày giờ vào lớp, còn buổi đầu chưa được lưu theo ID khi vẫn sắp tới. Tự kiểm bằng cách giữ nguyên ID buổi đầu rồi dời giờ qua mốc chuyển lớp và đối chiếu Weekly với Upcoming.
+
+## 20/11/2026 · Trách nhiệm của router đổi ca
+
+- **Phản biện · 8/10.** Người dùng đặt vấn đề `router.py` trộn nhiệm vụ. Đối chiếu code thấy handler khai báo dependency, gọi service và chuyển lỗi sang HTTP; hàm lấy giờ trong cùng file còn tự quyết định múi giờ của lịch. **Cần luyện.** Phân biệt việc lắp dependency cho HTTP với nơi sở hữu quy ước nghiệp vụ. Tự kiểm bằng cách lần theo `Depends(get_schedule_now)` và xác định dòng nào chọn UTC+7, dòng nào chỉ truyền thời điểm cho service.
+- **Phản biện tiếp ngày 20/11/2026 · 8/10.** Người dùng hỏi vì sao hai dependency router tạo cùng một service nhưng gọi lẫn nhau. Sự khác biệt cần giữ là vòng đời DB session của API đọc và API ghi. Đã tách đoạn tạo service thành hàm thường để mỗi dependency chỉ khai báo cách nhận session. Tự kiểm bằng cách lần đường đi của `Depends(get_db)` trong GET và `Depends(get_db, use_cache=False)` trong PUT.
+
+## 20/11/2026 · Phạm vi cập nhật thời gian thực
+
+- **Phản biện · 8/10.** Người dùng xem lại nhu cầu cập nhật lịch liên tục và đề xuất ưu tiên kết nối trực tiếp cho phòng thi ảo. Căn cứ là chi phí tài nguyên và mức độ cần phản hồi ngay. Tự kiểm bằng ca giáo viên dời buổi khi học sinh đang mở danh sách đổi ca: xác định khi nào màn hình đọc dữ liệu mới và điều kiện backend kiểm tra tại lúc xác nhận.
+
+## 20/11/2026 · Kiểm tra khi đổi lại ca tạm
+
+- **Phản biện · 8/10.** Người dùng chọn bỏ thao tác hủy và kiểm tra tính hợp lệ mỗi khi chọn lại ca. Cách này bỏ được luồng hủy riêng. Cần chốt điều kiện đổi lại, nhất là khi ca gốc chưa diễn ra hoặc ca đang được xếp đã bắt đầu.
+- **Bổ sung ngày 20/11/2026 · 9/10.** Người dùng chốt lọc danh sách khi mở chức năng, chỉ hiện ca dạy cùng buổi với buổi tiếp theo và đủ điều kiện đổi. Tách được trải nghiệm chọn ca khỏi lần kiểm tra lại khi xác nhận. Ca kiểm tra là một ca hợp lệ khi mở danh sách nhưng bị giáo viên hủy trước lúc xác nhận.
+- **Phản biện tiếp ngày 20/11/2026 · 9/10.** Người dùng xác nhận dùng `teaching_week` và đổi mốc khóa từ giờ bắt đầu sang giờ kết thúc, tính cả đúng giờ kết thúc. Điều này làm thay đổi cách tìm buổi đang được xếp có thể đổi. Tự kiểm ở ba thời điểm ngay trước giờ kết thúc, đúng giờ kết thúc và ngay sau đó, rồi phân biệt hạn của ca nguồn với giờ của ca đích.
+- **Bổ sung ngày 20/11/2026 · 9/10.** Người dùng chốt ca đích đang học vẫn hợp lệ nếu cùng `teaching_week` và lúc xác nhận chưa quá giờ kết thúc. Người dùng cũng nêu ca biên cô dời giờ sau khi học sinh chọn ca. Giữ liên kết theo ID buổi cho phép lịch của học sinh đi theo giờ mới.
+- **Bổ sung ngày 20/11/2026 · 9/10.** Người dùng nhận ra cần lọc theo `ends_at` để giữ ca đang diễn ra và đề xuất nhãn để học sinh hiểu trạng thái trước khi chọn. Ca tự kiểm là mở danh sách trước giờ kết thúc nhưng xác nhận sau giờ kết thúc.
+- **Chốt nghiệp vụ ngày 20/11/2026 · 9/10.** Người dùng phân biệt buổi gốc để giữ lần đổi với ca đang được xếp để tính hạn và tra điểm danh. Học sinh có thể quay về ca gốc còn hợp lệ. Cô có thể dời ca đích sang tuần lịch sau mà giữ buổi trong chương trình. Tự kiểm với A → B, A đã qua, B đang diễn ra, và so kết quả trước với sau khi B được điểm danh có mặt.
+- **Ca biên ngày 20/11/2026 · 9/10.** Người dùng nêu tình huống bỏ lỡ cả bốn ca Tuần 17. Ca này kiểm tra liệu buổi đã bỏ lỡ có chặn việc tìm buổi hợp lệ tiếp theo hay không và làm rõ khi nào cần một quy trình học bù riêng. Tự kiểm khi cả bốn ca đã hết giờ và lớp đã có lịch Tuần 18.
+- **Bắt bẻ nghiệp vụ đã chốt · 10/10.** Người dùng vặn lại ngay khi AI áp đặt tư duy ngoài đời (`starts_at > now`): *"vde là mày ngu"*. Căn cứ chuẩn xác 100% dựa trên nghiệp vụ đặc thù của trung tâm đã chốt trong [PROJECT_CONTEXT.md]: Hệ thống cho phép học sinh đổi ca kể cả khi ca đích đang diễn ra, miễn là thời điểm xác nhận chưa vượt quá `ends_at` (để học sinh đổi gấp hoặc đến muộn vẫn được vào ca và điểm danh đúng tuần dạy). Đoạn code `ClassSession.ends_at >= now` là hoàn toàn chính xác theo nghiệp vụ đã chốt.
+
+## 20/11/2026 · Tuần dạy trên lưới lịch học
+
+- **Làm rõ · 9/10.** Người dùng sửa cách hiểu về chữ “tuần” bằng cách chỉ rõ đó là tuần học thứ mấy của lớp. Nhận xét xác định đúng dữ liệu của từng buổi. Hai lớp trên cùng một lưới tuần có thể đang học ở hai tuần dạy khác nhau.
+
+## 20/11/2026 · Trạng thái tuần trống
+
+- **Phản biện · 8/10.** Người dùng chọn để trống các ô khi cả khối không có lịch trong tuần. Lưới đã có khoảng ngày và điều hướng để học sinh biết đang xem tuần nào. Ca cần kiểm là chuyển từ tuần đã có lịch sang tuần trống để xác nhận các buổi cũ biến mất và vẫn chuyển tuần được.
+
+## 20/11/2026 · Kỷ luật Quy trình: Không code khi chưa lập Kế hoạch Sprint
+
+- **Kỷ luật kỹ thuật & Quản trị phát triển (Engineering Discipline) · 10/10.** Người dùng chặn đứng ngay việc nhảy vào code: *"oi ko được tao đã lên kế hoạch sprint đâu"*.
+  - **Căn cứ xuất sắc:** Đây là phản xạ chuẩn mực của một kỹ sư phần mềm hướng tới Big Tech / Lab nghiên cứu. Coding chỉ là bước thực thi cuối cùng; không bao giờ được bắt đầu gõ code khi chưa có Sprint Plan: chưa chốt rõ Mục tiêu demo (Sprint Goal), chia nhỏ Backlog theo độ phụ thuộc, xác định Tiêu chuẩn hoàn thành (Definition of Done - DoD) và Kịch bản nghiệm thu (Acceptance Criteria).
+  - **Giá trị thực chiến:** Giúp tiết kiệm hàng giờ debug mò mẫm, tránh viết code rồi phải đập đi xây lại vì thiếu ca biên hoặc hiểu sai luồng dữ liệu.
+
+## 20/11/2026 · Bám sát Phạm vi Sprint và Tránh vẽ tính năng ngoài Context
+
+- **Phản biện bám sát dự án & Quản lý phạm vi (Scope Control) · 9.5/10.** Người dùng bắt bẻ ngay lập tức: *"mày đọc kĩ dự án của tao chưa vậy"* khi Codex hỏi lan man sang phân quyền Admin/Teacher, CRUD lớp học.
+  - **Căn cứ sắc bén:** Dự án trung tâm Toán của cô đang dồn toàn lực vào mốc số 1 là **Weekly Schedule** (hạn 19/12). Điểm dừng code hiện tại được ghi rõ trong `PROJECT_CONTEXT.md`: [WeeklyGrid.tsx](frontend/src/features/schedule/weekly/components/WeeklyGrid.tsx) mới chỉ render `previewSessions` tĩnh, bước tiếp theo là đưa các buổi học (`sessions`) thật từ API vào 21 ô ngày và ca.
+  - **Bài học quản trị dự án:** Không được tự ý mở rộng phạm vi (Scope Creep) hoặc suy diễn sang các màn hình CRUD quản trị khi ngữ cảnh sản phẩm và sprint hiện tại chỉ đang tập trung vào luồng hiển thị lịch của học sinh.
+
+## 20/11/2026 · Vị trí của ScheduleTransferButton và Nguyên lý Common Parent
+
+- **Lập luận kiến trúc · 9.5/10.** Người dùng nhận diện chính xác bản chất: *"thế còn cái scheduleTransferbutton là của thằng permanent với temp nên để ngoài đấy cho bọn nó dùng chung nhỉ"*.
+  - **Căn cứ sắc bén:** Nút `ScheduleTransferButton` mở popup chứa cả 2 lựa chọn (Đổi tạm thời & Đổi cố định), đóng vai trò là Cổng vào chung (Common Entry Point) cho cả hai nghiệp vụ con `temporary_transfers` và `permanent_transfers`.
+  - **Tránh Anti-Pattern:** Nếu nhét nút này vào một trong hai nhánh con (ví dụ nhét vào `temporary_transfers/`), nhánh còn lại muốn dùng sẽ phải import chéo (Cross-feature import), gây Coupling (phụ thuộc vòng/chặt). Để ở thư mục cha `features/schedule/components/` là cách xử lý chuẩn mực theo nguyên lý Common Closure / Common Parent.
+
+## 19/11/2026 · Bản chất của localStorage và Ca biên 401 trên Multi-Tab
+
+- **Phản biện bảo mật & lưu trữ trình duyệt · 9/10.** Người dùng chất vấn bản chất của trang đăng nhập: *"lúc chưa đăng nhập thì làm gì có token mà xóa mà dám xóa bậy"*, và nhận ra cơ chế dùng chung kho lưu trữ của trình duyệt: *"dùng cùng 1 trình duyệt nên tự dưng thấy trong localStorage có token dùng chung à"*.
+  - Lập luận đánh trúng bản chất của **Same-Origin Storage**: Mọi tab cùng mở trên một domain đều chia sẻ chung một kho `localStorage`.
+  - Phân biệt ranh giới giữa **Public Endpoint** (`/login` - không cần và không được gửi token, lỗi 401 là sai mật khẩu) với **Protected Endpoint** (`/schedule` - bắt buộc token, lỗi 401 là hết hạn phiên). Không được để request login thất bại xóa nhầm phiên của tab khác.
+
+## 20/11/2026 · Quy ước màu ô lịch Weekly
+
+- **Phản biện · 8/10.** Sau khi xem bốn buổi mẫu, người dùng nhận xét nhiều màu làm lưới khó đọc và yêu cầu quy ước. Trong bản thử, đầu hàng và ô có buổi dùng hai bảng màu cho ca, còn tím cũng được dùng để chỉ ca cá nhân. Tự kiểm bằng cách đặt một ca sáng của bạn cạnh một ca sáng của khối và giải thích mỗi màu giúp học sinh biết điều gì.
+
+## 20/11/2026 · Phân biệt chức năng Auth và code hỗ trợ dùng chung
+
+- **Phản biện · 8/10.** Người dùng chỉ ra `authenticatedApi.ts` không phải một chức năng độc lập như đăng nhập hay đổi mật khẩu. File dùng chung để gắn token và xử lý phiên cho nhiều API, nên thuộc Auth. Điểm cần đánh giá riêng là một thư mục con có giúp tìm code nhanh hơn khi hiện chỉ có một file hay không.
+  - **Hỏi tiếp · 8/10.** Người dùng áp dụng cùng tiêu chí với đề xuất `auth/api/`. `api` mô tả công cụ kết nối, chưa nói file là phần hỗ trợ dùng chung của các luồng Auth. Tự kiểm bằng cách nhìn cây thư mục và dự đoán chỗ sửa khi thay quy tắc kết thúc phiên.
+
+## 20/11/2026 · Độ phức tạp của AuthGuard
+
+- **Phản biện · 7/10.** Người dùng đặt vấn đề `AuthGuard` dài sau khi thêm kiểm tra đổi mật khẩu. Kiểm tra cho thấy file dài 91 dòng, gồm cả theo dõi token, tải và chia sẻ hồ sơ, điều hướng, giao diện tải lỗi và thử lại. **Cần luyện.** Chỉ ra cụ thể phần nào làm luồng khó theo dõi. Thử mô tả các trạng thái đang kiểm tra, đã có hồ sơ và tải lỗi, rồi xem có thể dùng một kiểu state để thể hiện các trạng thái loại trừ nhau không.
+
+## 19/11/2026 · Vị trí lấy tên hồ sơ trong Lịch học
+
+- **Phản biện kiến trúc · 8/10.** Người dùng hỏi vì sao `SchedulePage` cần `displayName`. Câu hỏi chỉ đúng dữ liệu có thể đang nằm sai tầng. Lần theo prop cho thấy `ProfileDropdown` trong khung dùng chung là nơi hiển thị tên. Nếu chuyển việc lấy hồ sơ lên layout dùng chung, cần kiểm tra các route thực sự dùng khung đó, gồm cả trường hợp trang đổi mật khẩu nằm dưới cùng nhóm xác thực.
+- **Hỏi tiếp ngày 19/11/2026 · 8/10.** Người dùng hỏi phần `displayName` có thừa không. Tên được dùng ở header. Phần xử lý trùng là logic tải và rút gọn tên ở cả Dashboard và Lịch học. Có thể tự kiểm bằng tab Network khi chuyển giữa hai trang và khi chỉ đổi tuần trong Lịch học.
+  - Người dùng đối chiếu lại toàn bộ `SchedulePage` sau khi xác nhận vẫn cần tên ở góc phải. Với cấu trúc hiện tại, đoạn tải hồ sơ cấp tên cho `DashboardLayout`, còn `ignore` bỏ qua kết quả khi trang đã rời. Kết luận phụ thuộc vào chỗ lấy tên hiện tại.
+- **Phản biện tiếp ngày 19/11/2026 · 7/10.** Người dùng yêu cầu kiểm tra lại thay vì chấp nhận kết luận chỉ dựa vào việc tên có nơi sử dụng. Yêu cầu đúng trọng tâm, còn thiếu giả thuyết hoặc ca cụ thể. **Cần luyện.** Khi review effect, tách cập nhật state khỏi tác dụng phụ của tầng HTTP. Tự kiểm tra `ignore` có thể tác động đến `setDisplayName` và interceptor Axios ở hai vị trí nào.
+- **Phản biện tiếp ngày 19/11/2026 · 8/10.** Người dùng đặt vấn đề lỗi `401` muộn có thể chỉ xảy ra khi thao tác cực nhanh. Câu hỏi phân biệt khả năng kỹ thuật với tần suất thực tế. Còn thiếu điều kiện phản hồi có thể chậm hơn thao tác đăng nhập ở tab khác. Tự kiểm tra bằng cách vẽ thứ tự gửi request A, lưu token B và nhận `401` của A với khoảng chờ khác nhau. Ca đã tái hiện dùng API giả lập, tần suất thực tế chưa được đo.
+
+## 19/11/2026 · Quyền xem lịch khi tài khoản bị khóa
+
+- **Phản biện nghiệp vụ · 8/10.** Người dùng phân biệt quyền xem lịch cả khối với quyền có ca cá nhân. Cần xét học sinh vào trang bằng cách nào khi đăng nhập mới bị từ chối và JWT cũ đã hết hạn. Tự kiểm tra hai tình huống đó riêng, rồi đối chiếu `sessions`, `my_session_ids` và `transferred_session_ids` trong kết quả Weekly.
+- **Phản biện tiếp ngày 20/11/2026 · 8/10.** Người dùng đề xuất đăng xuất khi request kế tiếp bị từ chối vì tài khoản khóa, qua đó tránh polling hoặc kết nối báo sự kiện riêng. Phương án phù hợp nếu chấp nhận tab còn hiện dữ liệu đã tải khi người dùng chưa thao tác. Tự kiểm hai ca `403` do tài khoản khóa và `403` do chưa đổi mật khẩu để thấy chỉ ca khóa cần đăng xuất.
+
 ## 19/11/2026 · Phân biệt Business Logic (Nghiệp vụ) và Presentation Logic (Trình diễn)
 
 - **Phản biện kiến trúc · 9.5/10.** Người dùng bắt bẻ rất sắc: *"thế cũng tính là một loại logic mà"*. Lập luận đánh trúng ngộ nhận phổ biến khi học lập trình ("Backend lo logic, Frontend chỉ lo vẽ giao diện"). Người dùng nhận ra việc tính ngày đầu/cuối tuần, cắt chuỗi và định dạng hiển thị ở FE thực chất cũng là logic. Điều này làm rõ ranh giới kiến trúc cốt lõi:
@@ -141,6 +273,8 @@
 - **Bổ sung ngày 15/11/2026 · 8/10.** Người dùng nhận ra khoảng ngày của lưới có thể chứa hai buổi của một học sinh khi lịch các ca thay đổi. Lập luận phát hiện giả định về số lượng của kết quả. **Cần luyện.** Tự rà ca một buổi từ tuần trước được dời sang tuần này và ca đổi tạm một buổi sang ca cùng bài để xác định những ô nào cần đánh dấu.
 - **Phản biện tiếp ngày 15/11/2026 · 8/10.** Người dùng hỏi query đăng ký có thể dẫn tới hai buổi trong tuần khi ghép lịch lớp hay không. Có thể khi các buổi ở hai lớp đều khớp thời điểm hiệu lực, chẳng hạn chuyển lớp vào thứ Năm, nhưng kết quả còn tùy số đăng ký và buổi thực tế. **Cần luyện.** So hai trường hợp A thứ Ba và B thứ Sáu cùng dạy tuần 5, hoặc lần lượt dạy tuần 5 và 6, rồi xác định quy tắc với từng trường hợp.
 - **Phản biện tiếp ngày 15/11/2026 · 9/10.** Người dùng chỉ ra hệ quả trên lưới: nếu hai buổi cùng tuần dạy đều được tô màu **Ca của bạn**, giao diện sẽ báo thừa một buổi phải đi học. Backend cần xác định đúng buổi được xếp trước khi frontend tô màu.
+- **Phản biện tiếp ngày 19/11/2026 · 9/10.** Người dùng viện dẫn lịch thường lệ mỗi lớp một buổi mỗi tuần và yêu cầu phân biệt ca giả lập với dữ liệu DB. Truy vấn xác nhận hai buổi demo trong mỗi tuần lịch của cùng một lớp, chưa có cột xác định tuần dạy, và API trả `my_session_ids: []` cho hồ sơ dev đã thử.
+- **Bổ sung ngày 19/11/2026 · 9/10.** Người dùng đưa ca cô dạy trước buổi của tuần sau để tuần sau nghỉ. Ca này cho thấy cùng lớp có thể có hai buổi hợp lệ cùng tuần lịch nhưng thuộc hai tuần dạy. Tự kiểm bằng cách đặt buổi tuần dạy 5 và 6 cùng khoảng thứ Hai đến Chủ nhật, rồi xác định cả hai có được gắn **Ca của bạn** khi học sinh được xếp cả hai hay không.
 - **Phản biện ngày 15/11/2026 · 8/10.** Người dùng hỏi vì sao chỉ lấy ID thay vì bản ghi ORM như repository hiện tại. Câu hỏi làm rõ dữ liệu mà bước sau cần. **Cần luyện.** Thử đánh dấu ca từ lưới đã tải bằng ID buổi, rồi thử xác định ca từ ID của bản ghi đăng ký và xem trường nào còn thiếu.
 - **Phản biện tiếp ngày 15/11/2026 · 9/10.** Người dùng chỉ ra trợ lý đổi từ truy vấn ID buổi sang truy vấn đăng ký lớp mà chưa đưa bằng chứng phương án sau nhanh hơn. Cả hai bản đơn giản đều có ba lượt truy vấn gồm tra khối và lấy lưới. Muốn so hiệu năng thì đo trên cùng dữ liệu và xem kế hoạch truy vấn.
 
@@ -207,3 +341,16 @@
 - [ ] **Cần luyện — Tư duy Responsive bento trên màn hình lớn (Large Display UX).**
   - **Điểm mấu chốt**: Trên màn hình lớn (24"+), ưu tiên bảo vệ **Tỷ lệ khung hình (Aspect Ratio)** của component (~1 : 1.25 đến 1 : 1.35) bằng container có `max-w` hài hòa và khoảng đệm tự nhiên, thay vì ép `flex-1` / `100vh`.
   - **Cách tự kiểm tra**: Mở devtools đổi viewport từ 1366×768 lên 1920×1080: nếu ô nội dung tăng gấp đôi chiều cao nhưng chữ chỉ có 2 dòng làm thừa 80% khoảng trắng chết, đó là lỗi responsive ép dãn sai quy cách.
+
+## 20/11/2026 · Đối chiếu nhận định về tải đồng thời
+
+- **Phản biện · 8/10.** Bản rà chỉ đúng vòng đời connection trong xác nhận đổi ca và đăng nhập, đồng thời ghi rõ mốc tải là suy luận. Con số request làm đầy pool và số login mỗi giây còn thiếu phép đo. **Cần luyện.** Dùng timestamp của `checkout` và `checkin` để đo thời gian giữ connection, rồi đối chiếu với thời gian bcrypt, độ trễ và số lỗi khi tăng tải trên môi trường thử.
+- **Phản biện tiếp · 9/10.** Người dùng chỉ ra việc vẫn sót lỗi sau khi đã chốt tính năng và yêu cầu học cách phòng lỗi từ lúc xây dựng dự án. Nhận xét đúng vì test nghiệp vụ đã qua nhưng chưa kiểm vòng đời connection. Bài tập là lần theo một request đổi ca, đánh dấu lúc lấy và trả connection rồi dự đoán kết quả khi pool chỉ có một connection.
+- **Phản biện tiếp · 8/10.** Người dùng chất vấn vì sao router đổi ca phụ thuộc `require_changed_password` và chỉ ra `use_cache=False` che khuất vấn đề vòng đời session. Tách đúng hai bước cần xem lại. Cần phân biệt chính sách truy cập chung với nghiệp vụ đổi ca và thời điểm trả connection. Tự kiểm bằng cách dự đoán kết quả của API xác nhận nếu dùng token còn hạn của tài khoản bị khóa hoặc chưa đổi mật khẩu lần đầu.
+- **Phản biện tiếp · 8/10.** Người dùng chỉ đúng luồng màn hình phải chuyển sang Đổi mật khẩu trước khi vào Lịch học. Cần kiểm thêm đường gọi API trực tiếp với token hợp lệ hoặc từ tab cũ. Tự kiểm bằng cách phân biệt bước điều hướng của frontend với phản hồi 403 của backend khi tài khoản còn `must_change_password`.
+
+## 21/11/2026 · Hàng đợi và năng lực xử lý
+
+- **Phản biện · 8/10.** Người dùng hỏi vì sao không tăng hàng đợi sau khi thấy phần chờ thread chiếm nhiều độ trễ. Hỏi đúng nơi quan sát được thời gian chờ. Cần phân biệt số request được chờ, số lượt được chạy đồng thời và số lượt hoàn tất mỗi giây. Tự kiểm bằng cách giữ quota 4 vCPU, dự đoán kết quả nếu tăng limiter login từ 8 lên 16, rồi so p95 HTTP, tỷ lệ lỗi và mức chạm quota của cả login lẫn đổi ca.
+- **Phản biện tiếp · 8/10.** Người dùng hỏi có còn tối ưu được code hay chỉ còn nâng máy. Câu hỏi phân biệt đúng hai nhóm can thiệp. Tự kiểm bằng cách so hai kịch bản trên cùng server, 500 lần xác minh mật khẩu mới và 500 lượt mở LMS trong đó 450 phiên còn hiệu lực. Đếm số lần bcrypt chạy và đo riêng độ trễ của thao tác đổi ca.
+- **Phản biện tiếp · 9/10.** Người dùng yêu cầu giải thích cách hệ thống lớn chịu được đợt xác thực bắt buộc khi mọi người cùng vào, sau đề xuất đăng nhập trước giờ. Chỉ đúng chỗ đề xuất giảm tải chưa đáp ứng tình huống bắt buộc. Tự kiểm bằng cách đổi mục tiêu p95 2 giây cho 500 lượt đến dồn thành ít nhất 475 lượt hoàn tất trong 2 giây, rồi xác định tài nguyên nào phải được dành riêng và cấp sẵn trước giờ cao điểm.
