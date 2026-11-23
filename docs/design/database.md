@@ -33,7 +33,7 @@ erDiagram
 3. Trên một MySQL dev mới, chạy chuỗi migration tới head rồi seed tài khoản, hồ sơ, hai tuần có buổi thuộc các khối khác nhau và dữ liệu đăng ký, đổi ca. Đối chiếu bảng, cột và khóa ngoại với model.
 4. Gọi Weekly trên một tuần **có buổi** và một tuần trống. Service trả sớm khi không có buổi, nên test tuần trống có thể vượt qua dù MySQL chưa có bảng đổi ca. Kiểm tra thêm dữ liệu ca gốc và ca đích qua hai tuần.
 
-SQLite in-memory đã được dùng để kiểm tra luồng API. Mốc kiểm chứng migration ở đây dùng MySQL do Alembic tạo schema. [Migration đăng ký lớp](../../backend/alembic/versions/5966677276d6_add_class_sessions.py) · [Migration buổi học](../../backend/alembic/versions/87c6e2eb12db_create_class_sessions_table.py) · [Service Weekly](../../backend/app/modules/schedule/weekly/service.py)
+SQLite in-memory đã được dùng để kiểm tra luồng API. Mốc kiểm chứng migration ở đây dùng MySQL do Alembic tạo schema. [Migration đăng ký lớp](../../backend/alembic/versions/5966677276d6_add_class_sessions.py) · [Migration buổi học](../../backend/alembic/versions/87c6e2eb12db_create_class_sessions_table.py) · [Service Weekly](../../backend/app/modules/schedule/student/weekly/service.py)
 
 ## Mô hình đề xuất cho các mốc sau
 

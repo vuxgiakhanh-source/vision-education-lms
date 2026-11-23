@@ -73,7 +73,49 @@ Người dùng muốn LMS phục vụ công việc thật của trung tâm và l
     - Đã xử lý giao điểm đổi tạm và đổi cố định. API đổi tạm đối chiếu `expected_enrollment_id` để chặn tab cũ sau A → B → A. Điểm danh có mặt được xét theo tuần dạy trong khối hiện tại dù ghi sau khi chuyển lớp. Weekly giữ nhãn **Ca của bạn** ở buổi thực tế đã học, bỏ nhãn khỏi buổi dự kiến khác của cùng tuần. Upcoming và đổi tạm bỏ qua tuần đã học. Chạy 37 test backend khi bật MySQL và kiểm lại hai luồng trên Chrome với tài khoản QA riêng.
     - Mốc tuần đã học của lượt đăng ký sau đổi cố định lấy theo điểm danh mới nhất. Khi ghi muộn Tuần 19 ở lớp cũ, các ca Tuần 18–19 chưa học của lượt đăng ký hiện tại được bỏ qua, kể cả ca đã đổi tạm. Weekly giữ nhãn trên buổi Tuần 19 thực tế và nhận Tuần 20 ở lớp mới. Upcoming và đổi tạm cùng chọn Tuần 20. Đã kiểm hồi quy trên SQLite và MySQL local với bộ 41 test.
 - Khi giáo viên dời ngày hoặc giờ của cùng một buổi, học sinh đã đăng ký buổi đó đi theo lịch mới. Người dùng nhắc lại ngày 20/11/2026 rằng điều này áp dụng cả với học sinh đã đổi tạm sang buổi đó, vì lớp vẫn giữ nguyên. Cập nhật ngày giờ trên chính `ClassSession` để các liên kết theo ID buổi tiếp tục áp dụng.
-  - Với ca đích B đã được học sinh chọn và xác nhận, người dùng chốt cô dời buổi nếu chưa thể dạy theo lịch, có thể lùi sang tuần lịch sau. Giữ ID, lớp và tuần dạy của B để học sinh đi theo buổi đó.
+  - Với ca đích đã xác nhận, người dùng chốt học sinh theo đúng nội dung của tuần dạy (24/11/2026). Nếu giờ của ca học bù thay đổi, lịch học sinh hiện giờ mới và yêu cầu xác nhận lại. Trong lúc chờ xác nhận, ca học bù chưa được tính là lịch đã chọn; lịch sử dụng ca chính thức còn hợp lệ nếu có.
+  - Trong mỗi lớp, các khung giờ dạy theo thứ tự tuần dạy. Khi dời hoặc hoán đổi làm ca Tuần 17 vượt qua ca Tuần 18, hệ thống phân lại các khung giờ để nội dung Tuần 17 học trước. Code giữ ID gắn với nội dung, lớp và tuần dạy rồi gán các khung giờ đã xếp lại trong một transaction. Cách này giữ được liên kết đổi ca, điểm danh và buổi đầu của đăng ký lớp theo ID.
+
+### Phân hệ Giáo viên: Lịch dạy, Lớp học, Báo cáo và Phòng thi ảo (23/11/2026)
+
+- **Lịch dạy & Modal điều chỉnh buổi dạy:**
+  - Bỏ mục "Bài tập" riêng lẻ, tích hợp bài tập vào chung "Tài liệu buổi học" vì bài tập phát kèm tài liệu buổi dạy.
+  - Giáo viên được đổi lịch dạy trực tiếp ngay trong cửa sổ chi tiết buổi dạy thay vì phải quay lại trang Lịch.
+  - Modal chi tiết giữ thiết kế nhỏ gọn với hai cột: "Chỉnh sửa nội dung" và "Chi tiết buổi dạy", kèm ba thao tác chính: "Đổi lịch dạy", "Lưu nháp" và "Xác nhận".
+  - **Bốn nghiệp vụ điều chỉnh lịch dạy:**
+    1. *Đổi buổi học*: Hoán đổi giữa hai buổi học.
+    2. *Chuyển tạm thời*: Dời ngày/giờ của một buổi cụ thể.
+    3. *Chuyển cố định*: Thay đổi khung giờ/lịch lặp lại từ tuần được chọn trở đi.
+    4. *Cho nghỉ buổi học*: Đánh dấu nghỉ cho buổi của tuần đó, không xóa buổi học khỏi hệ thống và không ảnh hưởng lịch các tuần sau. Có hộp thoại xác nhận, nhập lý do và gửi thông báo cho học sinh. Loại bỏ hoàn toàn thao tác xóa buổi học để tránh gây nhầm lẫn hoặc mất dữ liệu.
+- **Phân tách Lịch dạy và Lớp học:**
+  - *Lịch dạy*: Phục vụ chuẩn bị bài, soạn giáo án và quản lý kế hoạch trước buổi dạy.
+  - *Lớp học*: Quản lý lớp, điểm danh, xem lại lịch sử các buổi đã qua, danh sách học sinh và kho tài liệu.
+- **Điều hướng 3 cấp trong Lớp học:** `Lớp học → Chọn khối → Chọn lớp → Quản lý chi tiết`.
+  - Thẻ lớp (Class Card): Dùng icon môn học đồng bộ, tên lớp là điểm nhận diện chính; bấm trực tiếp vào card lớp để vào quản lý (bỏ nút "Mở lớp"). Hỗ trợ tab "Tất cả lớp" để truy cập nhanh mà không bắt buộc chọn khối trước.
+  - Trong chi tiết lớp: Kết hợp nút Back và Breadcrumb (`Lớp học > Khối 12 > Toán 12B`). Bổ sung bộ chọn chuyển lớp nhỏ (quick class-switcher dropdown) ngay cạnh tên lớp để chuyển nhanh sang lớp khác cùng khối (ví dụ 12B sang 12A) mà không cần quay lại danh sách khối.
+  - Hệ thống 6 tab quản lý lớp học: *Buổi học*, *Học sinh*, *Điểm danh*, *Tài liệu*, *Điểm số*, *Báo cáo*. Sidebar giữ trạng thái "Lớp học" được chọn khi đang xem chi tiết lớp.
+- **Quản lý học sinh trong lớp:** Tab "Học sinh" cố định của lớp chỉ hiển thị danh sách học sinh chính thức thuộc lớp đó, không hiển thị học sinh học bù/chuyển ca tạm thời từ lớp khác sang. Bấm vào học sinh mở ô hồ sơ nhỏ nổi giữa màn hình (floating overlay card), giữ nguyên nền phía sau, không che mờ toàn màn hình và không dùng panel trượt bên phải.
+- **Quản lý tài liệu lớp học:** Bỏ thanh tab ngang trùng lặp, dùng cấu trúc cây thư mục (folder tree) bên trái (theo buổi, theo chủ đề, tham khảo). Khi chọn thư mục (ví dụ Buổi 17 hoặc Đạo hàm), danh sách tài liệu bên phải tự động cập nhật. Phía trên chỉ gồm tiêu đề thư mục đang mở, ô tìm kiếm và nút "Thêm tài liệu".
+- **Báo cáo (Reports):** Giữ mục Báo cáo riêng trên sidebar để làm công cụ lọc, đối soát và xuất dữ liệu cho giáo viên. Hỗ trợ xuất file Excel hàng loạt nhiều sheet (multi-sheet) khi lọc theo Tháng + Khối + Lớp:
+  - Sheet *Tổng hợp*: Thống kê tất cả lớp được chọn.
+  - Sheet *Số buổi học*: Chi tiết từng học sinh: số buổi đi học, số buổi vắng, số buổi học bù, số buổi chưa điểm danh.
+  - Sheet *Điểm số*: Các đầu điểm và điểm trung bình.
+  - Sheet *Học phí*: Số buổi tính phí, số tiền dự kiến, đã thu, còn nợ (theo phân quyền).
+  - Hỗ trợ hai chế độ xuất: "Xuất tổng hợp theo lớp" và "Xuất chi tiết từng học sinh".
+- **Phòng thi ảo & Kho đề thi:**
+  - Phân tách rõ hai khu vực:
+    - *Kho đề & câu hỏi*: Chuẩn bị nội dung, quản lý ngân hàng câu hỏi, soạn đề thi, cấu hình quyền chia sẻ với giáo viên hoặc quyền luyện tập cho học sinh.
+    - *Phòng thi ảo*: Tổ chức và theo dõi kỳ thi, danh sách kỳ thi sắp diễn ra, tình trạng học sinh đang làm bài và kết quả. Bỏ hai tab trùng lặp "Đề thi" và "Câu hỏi" khỏi trang Phòng thi ảo.
+  - Ba hình thức tạo đề trong một khu vực gọn gàng: (1) Tự soạn đề thủ công; (2) Tạo từ ngân hàng câu hỏi (trộn theo chủ đề, độ khó); (3) Nhập đề từ file. Bỏ các thẻ trang trí AI rườm rà.
+- **Nhập đề thi, Trộn đề & Tích hợp Gemini API:**
+  - Định dạng file đầu vào hỗ trợ: `.docx`, `.doc`, `.pdf`, `.jpg`, `.png`, và `.xlsx` theo mẫu.
+  - *Quyền quyết định dùng AI của giáo viên*: Giáo viên có toàn quyền quyết định khi nào dùng AI, khi nào dùng parser code thường (không tự động ép mọi file qua AI).
+  - *Cơ chế bóc tách đề tối ưu (Code-first parsing vs. AI)*:
+    - Các định dạng chuẩn (Excel theo template, Word theo template chuẩn của trung tâm, JSON đúng schema): Đọc trực tiếp bằng code (regex/rule-based parser) ở backend, không tốn chi phí và token AI.
+    - Các file phi cấu trúc (Word tự do, PDF scan, hình ảnh, đề Toán công thức phức tạp): Gọi Gemini API nhận dạng và trích xuất thành Markdown + LaTeX.
+  - *Cấu trúc dữ liệu để trộn đề (Question & Option Shuffling)*:
+    - File Word/PDF/Excel chỉ là định dạng tải lên ban đầu; hệ thống bóc tách và lưu trữ nội bộ dưới dạng **JSON có cấu trúc**: gồm `id`, `type` (`single_choice`, `true_false`, `short_answer`), `content`, mảng `options`, `correctOptionId`, và cờ gom nhóm/khóa thứ tự (`lock_group` / chung dữ kiện, bảng biến thiên, hình vẽ).
+    - *Quy tắc nghiệp vụ tráo đề Toán*: Không được tự động bật tráo đề ngay sau khi tải lên. Phải qua bước: Giáo viên kiểm tra/duyệt nội dung, hình vẽ và đáp án (`Xem & duyệt đề`) → Sau khi duyệt mới kích hoạt: *Trộn câu hỏi*, *Trộn đáp án* hoặc giữ nguyên. Câu trắc nghiệm A/B/C/D được tráo câu + đáp án; câu đúng/sai hoặc câu chùm dùng chung dữ kiện phải khóa thứ tự các ý/nhóm câu.
 
 ## Phương án vận hành đã chốt
 
@@ -86,6 +128,10 @@ Người dùng muốn LMS phục vụ công việc thật của trung tâm và l
 - Video bài giảng đăng trên Google Drive hoặc YouTube và đưa liên kết vào LMS. Dự toán hạ tầng không có khoản phát video trực tiếp từ LMS. Chưa chốt nền tảng ưu tiên và quyền xem.
 - Dự toán gồm VPS, tên miền và sao lưu ngoài VPS, với giả định tự vận hành. Khoảng 420.000đ/tháng cho gói thử, 670.000đ/tháng cho gói dự phòng và để ngân sách 700.000đ/tháng (8,4 triệu đồng/năm).
 - Mức thu LMS là 50.000đ/học sinh/năm. Dự toán với 500 học sinh đóng đủ là 25 triệu đồng/năm. Sau khi trừ ngân sách hạ tầng 8,4 triệu đồng/năm, còn 16,6 triệu đồng trước khi tính công vận hành và các chi phí khác.
+- **Tích hợp Gemini API Free Tier cho Phòng thi ảo (23/11/2026):**
+  - Cấu hình API key một lần tại trang Quản trị (`Cài đặt → Tích hợp AI`), lưu trong biến môi trường backend, tuyệt đối không đặt trong frontend React hay đẩy lên GitHub.
+  - Giáo viên chỉ thấy tùy chọn bóc tách đề bằng AI khi tải file, không cần biết API key.
+  - Backend kiểm soát rate limit của Free Tier (Google AI Studio) và cơ chế thông báo khi chạm ngưỡng. Tránh gửi thông tin cá nhân học sinh qua Free Tier vì chính sách dữ liệu của Google. Khi trung tâm mở rộng hoặc cần bảo mật đề thi tuyệt đối, sẽ cân nhắc nâng cấp lên Paid Tier.
 
 ## Câu còn mở
 
@@ -135,6 +181,10 @@ Người dùng muốn LMS phục vụ công việc thật của trung tâm và l
 - Mục **Lịch học** ở sidebar và ô lịch mini trên Trang chủ đều mở cùng một trang. `/schedule` là đường dẫn dự kiến. Hai mũi tên trên lịch mini dành cho chuyển tháng.
 - Dùng lại logo, sidebar và thanh trên của dashboard để trang Lịch học trông như một phần của cùng ứng dụng. Phần đầu trang dùng tiêu đề và điều hướng tuần gọn. Người dùng bỏ banner lớn ở trang con.
 - Yêu cầu bắt buộc của người dùng: trang Lịch học dùng đúng nền và màu component của dashboard hiện tại. Dùng chung cách phối màu của thẻ, nút, viền và trạng thái chọn. Không tự thêm màu nền hoặc bảng màu riêng cho trang này. Đối chiếu code: nền `#F8FAFD`, thẻ trắng, viền `#EAEFF5`, màu chính `#5553E6` và nền nhấn `#EEF0FD`.
+- **Chuẩn hóa Design System phân hệ Giáo viên (23/11/2026):**
+  - **Nhận diện thương hiệu đồng bộ:** Banner navy đậm ở đầu trang (chiều cao 100–110px, nền navy với lớp sóng xanh nhẹ tương đồng Dashboard học sinh, đóng vai trò thanh tiêu đề trang), sidebar trắng với mục đang chọn màu xanh nhạt, nền trang `#F8FAFD` / trắng xanh nhạt, thanh tab điều hướng ngang.
+  - **Tối giản hóa & Chống rườm rà:** Bác bỏ hoàn toàn tông màu tím lạ và kiểu sidebar navy tối màu; không dùng hình minh họa 3D/clipart rườm rà (hình giấy bút, clipboard AI trang trí), chỉ dùng icon nét mảnh đồng bộ.
+  - **Trang Quản lý lớp học:** Bố cục ưu tiên danh sách và thao tác nghiệp vụ, không biến thành dashboard thứ hai với các ô thống kê dày đặc gây loãng. Xem hồ sơ học sinh dạng ô nổi nhỏ (floating overlay card) ở giữa màn hình mà không làm tối mờ nền phía sau. Thư mục tài liệu dùng cây thư mục bên trái thay vì tab ngang trùng lặp.
 
 ## Điểm dừng
 
@@ -166,6 +216,8 @@ Người dùng muốn LMS phục vụ công việc thật của trung tâm và l
 - **Cách phối hợp khi hoàn thiện Weekly (19/11/2026).** Vì thời gian còn ít, người dùng muốn tự viết những phần cần để hiểu bản chất và giao Codex thực hiện những phần có thể giao. Sau mỗi phần Codex tự viết, giải thích kỹ vị trí thay đổi, lý do chọn cách làm, luồng chạy và cách kiểm tra để người dùng có thể đọc lại và hiểu code. Người dùng phản hồi rằng các lần hỗ trợ trước hay bỏ sót ca biên, nên cần nêu ca biên đã kiểm tra và điều còn chưa xác minh.
   - Khi kết luận về nghiệp vụ phụ thuộc dữ liệu, người dùng yêu cầu kiểm tra kỹ database dev. Đối chiếu schema và dữ liệu liên quan bằng truy vấn chỉ đọc, rồi lần theo logic API. Ghi rõ phần nào đã kiểm chứng trên database và phần nào mới suy ra từ code.
   - Khi được giao sửa code, ưu tiên bản sửa dễ đọc, phạm vi nhỏ và theo cách tổ chức hiện có của repo. Khi chưa chắc về nghiệp vụ hoặc phải chọn cách làm ảnh hưởng đáng kể, trao đổi với người dùng trước khi triển khai phần đó.
+  - Người dùng ưu tiên đặt code mới vào file hiện có nếu cùng trách nhiệm. Chỉ tách file khi có lý do cụ thể về trách nhiệm hoặc phạm vi dùng chung, rồi giải thích ngắn file đó thuộc luồng nào.
+  - Người dùng chốt cài Vercel React Best Practices cho riêng repo LMS (24/11/2026), tại `.agents/skills/vercel-react-best-practices`, từ `vercel-labs/agent-skills` commit `5a37a6329fbad3666c3207392a6a7c0110e92efb`. Dùng lại Karpathy Guidelines đã cài sẵn cho các lượt code và review.
   - Người dùng làm rõ cách tổ chức frontend: chức năng thuộc riêng một màn hình thường đặt gần màn hình đó. Auth gom các luồng liên quan theo nghiệp vụ xác thực, vì đăng nhập, đổi mật khẩu, lấy hồ sơ và quản lý phiên phục vụ nhiều màn hình.
   - Người dùng phân biệt luồng người dùng như đăng nhập, đổi mật khẩu với `authenticatedApi.ts`, là code hỗ trợ nhiều luồng Auth. Người dùng không thích để file lẻ ngay dưới `auth/` và giao Codex chọn vị trí. Codex chọn giữ `features/auth/session/authenticatedApi.ts` vì file phụ trách token và kết thúc phiên cho các request đã xác thực. `session/` nhóm code theo trách nhiệm; các service theo từng luồng vẫn nằm gần nơi sử dụng.
 - **Ngày 18/11/2026:** Người dùng đề xuất và thống nhất cấu trúc Frontend `frontend/src/features/schedule/` cũng phân chia theo mô hình Package by Feature đồng bộ 1-1 với Backend và module Auth: chia thành các nhánh chức năng con `weekly/` (lưới lịch tuần, API đọc lịch), `temporary_transfers/` (modal/nút đổi ca tạm thời), và `permanent_transfers/` (đổi lớp cố định). Trang `SchedulePage.tsx` đóng vai trò Container kết nối các sub-feature.
@@ -207,11 +259,48 @@ Người dùng muốn LMS phục vụ công việc thật của trung tâm và l
 - **Cây thư mục đang cân nhắc:** Người dùng phác `WeeklyGrid.tsx` cho cả khung bên trái, `ShiftIcons.tsx` cho icon các ca, `UpcomingSessionCard.tsx` và `ScheduleTransferButton.tsx` cho cột phải. Cần chốt vị trí nút đổi lịch dựa trên việc nó mở cả hai luồng hay chỉ đổi tạm.
 - **Frontend Next.js:** Người dùng yêu cầu chuyển từ Vite và React Router sang Next.js App Router trước khi nối Weekly, với yêu cầu giữ giao diện tại thời điểm chuyển. Route và layout cấp ứng dụng nằm trong `frontend/src/app/`. Các màn hình nghiệp vụ nằm trong `frontend/src/features/`. Xác thực JWT và Axios tiếp tục chạy ở trình duyệt, biến địa chỉ API là `NEXT_PUBLIC_API_URL`.
 - **Nguồn gốc route Schedule (19/11/2026).** Người dùng làm rõ `frontend/src/app/(student)/schedule/page.tsx` là file Codex thêm ở phần chuyển sang Next.js. Khi kiểm tra, Git chưa theo dõi file này và hàm route đang trả `null`.
+- **Tái cấu trúc mã nguồn theo Vai trò & Phân tách Nghiệp vụ (23/11/2026):**
+  - Phân tách module Schedule thành hai nhánh riêng biệt: `backend/app/modules/schedule/student/` và `backend/app/modules/schedule/teacher/`.
+  - Phân tách Frontend thành `frontend/src/features/student/` và `frontend/src/features/teacher/`.
+  - Cấu trúc lại Next.js App Router theo các Route Groups: `(account)` cho đăng nhập/đổi mật khẩu, `(student)` cho học sinh, `(teacher)` cho giáo viên, `(preview)` cho các màn xem thử.
+  - Mở rộng `AuthGuard` với `requiredRole?: UserRole` để kiểm soát phân quyền truy cập chéo ở cấp layout/UI.
+  - Tích hợp `SessionHome` tại root `/` để điều hướng tự động người dùng sau đăng nhập dựa theo vai trò (`/student-dashboard` hoặc `/teacher-dashboard`).
+  - Quyết định kiến trúc Lịch học: Tách riêng `WeeklyGrid` của Học sinh và `TeacherWeeklyGrid` của Giáo viên (ở cả FE và BE). Tránh gộp chung component để phòng ngừa bẫy trùng lặp ngẫu nhiên (Accidental Duplication) và ô nhiễm cờ điều kiện `if/else`, chỉ chia sẻ các hàm tiện ích ngày giờ thuần túy (`lib/date.ts`).
+  - Điều chỉnh giao diện Sidebar (23/11/2026): Ảnh mũ cử nhân ở chân sidebar của Giáo viên và Học sinh đã được bỏ theo yêu cầu. Không suy ra toàn trang hết vấn đề LCP chỉ từ việc bỏ ảnh.
+  - Người dùng rà sáu điểm frontend. Đã dọn bốn thư mục rỗng, thư mục cha `(workspace)` sau khi rỗng và hai `.gitkeep` thừa. Layout học sinh kiểm role `student` và bọc khung chung; giáo viên tách `TeacherHeader` và `TeacherSidebar`. Route Lịch học đổi thành `/student-schedule`, URL cũ `/schedule` chuyển hướng. Admin/trợ giảng chờ đích riêng. Dashboard học sinh và các màn mẫu giáo viên hiện đều dùng mock trực tiếp; chưa tạo service gọi API khi chưa có endpoint.
+  - Người dùng yêu cầu lấy trực tiếp thiết kế hộp chi tiết buổi dạy từ HTML nguồn. Đã chuyển markup, CSS và dữ liệu mẫu sang TSX, gồm tiêu đề, ngày/giờ/tuần, trạng thái, hàng tệp có loại và dung lượng, mô tả thao tác và footer. Các bước Dời/Hoán đổi tiếp tục chỉ xem trước tới khi có API kiểm tra và lưu.
+  - Ranh giới giữa Lịch dạy và Điểm danh (23/11/2026): Người dùng chốt không đưa chức năng điểm danh vào màn hình Lịch dạy. Màn hình Lịch dạy (`/teacher-schedule`) chỉ thuần túy phục vụ theo dõi thời gian biểu, xem nội dung/tài liệu buổi học và điều chỉnh dời/hoán đổi ca dạy. Nghiệp vụ điểm danh được tách độc lập sang khu vực Lớp học (Classroom) hoặc mở nhanh khi ca đang diễn ra.
+  - Người dùng xác nhận trung tâm chỉ có một giáo viên (24/11/2026). Lịch dạy của tài khoản `teacher` đọc các buổi đã xếp của toàn trung tâm từ `ClassSession`. Giai đoạn này không cần gán giáo viên theo lớp hoặc buổi. Backend kiểm tra role trên tài khoản hiện tại, tài khoản đang hoạt động và đã đổi mật khẩu lần đầu.
+  - Người dùng đồng ý dùng chung Chi tiết buổi dạy khi mở từ Lịch dạy và Lớp học. Frontend `features/teacher/sessions` sở hữu cả `TeacherSessionDialog.tsx` và hàm gọi API chi tiết trong `teacherSessionService.ts`. Lịch dạy dùng cả hai, Lớp học chưa nối. Nút Dời buổi và Hoán đổi xuất hiện trong phần thao tác của hộp chung. Danh sách hoán đổi lấy từ tuần đang xem. Chỉnh nội dung, thêm tài liệu và cho nghỉ chưa bật.
+  - `/teacher-schedule` đã dùng API đọc lịch tuần, buổi dạy tiếp theo và chi tiết theo ID. Lịch tuần giữ tất cả buổi cùng ngày/ca, bỏ buổi đã hủy và dùng tuần Thứ Hai–Chủ Nhật. Buổi tiếp theo lấy thời điểm bắt đầu từ hiện tại theo giờ Việt Nam, độc lập với tuần đang xem. Chi tiết dùng giờ và chủ đề của DB; đề cương và tệp của buổi chưa có dữ liệu nối vào. Đã chạy TypeScript, ESLint và 60 test backend trên môi trường dev với SQLite/MySQL. Đã mở app Next.js bằng Chrome với tài khoản giáo viên dev và API MySQL thật, kiểm tra đổi tuần, thẻ buổi tiếp theo, giờ trong chi tiết, Esc và trả focus về ô lịch.
+  - Người dùng chốt tách thẻ Lịch dạy riêng như phía học sinh. `TeacherWeeklyGrid` và `TeacherWeeklySessionCard` nằm tại `features/teacher/schedule/weekly/components`. Thẻ chuyển buổi được chọn cho trang Lịch dạy, trang gọi service và mở hộp chi tiết dùng chung từ `features/teacher/sessions`.
+  - Người dùng nêu cách tổ chức theo phạm vi sử dụng (24/11/2026): UI riêng đi dưới `features/teacher` và `features/student`; nghiệp vụ dùng chung như lịch có module backend `schedule` chứa hai nhánh role riêng. Phần chỉ có một luồng đặt theo nghiệp vụ sở hữu, không thêm nhánh role rỗng. Chi tiết buổi dạy dùng chung trong phạm vi giáo viên thuộc `features/teacher/sessions`.
+  - Backend Lịch dạy tách theo luồng `schedule/teacher/weekly` và `upcoming`. Schema phản hồi lịch tuần nằm tại `weekly/schemas.py`; `upcoming` dùng schema buổi dạy ở `modules/sessions`. Router lịch giáo viên đăng ký các luồng và áp quyền giáo viên.
+  - Người dùng xác định chi tiết buổi dạy phục vụ cả Lịch dạy và Lớp học, nên backend đặt ở `modules/sessions` và đăng ký trực tiếp với app. Repository đọc `ClassSession` và schema buổi dạy dùng chung cũng thuộc module này. Lịch tuần và buổi tiếp theo gọi lại chúng. API chi tiết vẫn là `GET /teacher/sessions/{session_id}` và vẫn yêu cầu quyền giáo viên. App Lớp học chưa nối vào API.
+  - Quy ước backend người dùng chốt để áp dụng về sau (24/11/2026): file riêng của chức năng đặt trong thư mục chức năng đó. File ở module cha phải phục vụ từ hai chức năng trở lên trong module, ví dụ repository, schema dùng chung và router đăng ký các luồng.
+  - Người dùng yêu cầu các package backend `schedule/teacher/weekly`, `schedule/teacher/upcoming` và `sessions` có `__init__.py` rỗng để đồng bộ với `student/weekly`. Repository và schema dùng chung giữ ở module sở hữu chúng.
+  - Người dùng chốt chuyển `clock.py` lên `backend/app/core` (24/11/2026). Hàm `center_local_now()` trả giờ Việt Nam không kèm múi giờ theo kiểu dữ liệu lịch hiện lưu. Kiểm thử thay thế giờ qua module clock chung.
+  - Người dùng yêu cầu nối lưu dời/hoán đổi và chuẩn hóa các điểm lệch trong bản rà soát ở cả FE và BE (24/11/2026). Dùng tên `upcoming` cho luồng buổi tiếp theo, service nghiệp vụ BE theo mẫu class và component riêng theo vai trò có tiền tố Student hoặc Teacher. FE Lịch dạy tách `weekly` và `upcoming`. Đã bổ sung vào `AGENTS.md` cách xác minh router, guard và nút đang chạy khi rà soát.
+  - Người dùng chốt `move_session` và `swap_sessions` thuộc nghiệp vụ `sessions` (24/11/2026). BE đặt cả hai ở `modules/sessions`. FE `features/teacher/sessions` sở hữu hộp điều chỉnh và hai service lưu. Lịch dạy mở hộp này và tải lại tuần đang xem cùng buổi tiếp theo khi lưu. Chi tiết, dời và hoán đổi gắn với `teaching_session_router` (prefix `/teacher`). API lưu thực tế là `PUT /teacher/schedule/sessions/{session_id}/move` và `PUT /teacher/schedule/sessions/{session_id}/swap`. Frontend và Backend khớp 100% về cả HTTP method (`PUT`) và URL. Các thư mục cũ `backend/app/modules/schedule/teacher/move_session`, `swap_sessions`, `next_session` chỉ còn file rác `.pyc` trong `__pycache__` và đã không còn file `.py` nào.
+  - Khi lưu dời hoặc hoán đổi, backend khóa hàng giáo viên rồi khóa các buổi thuộc các lớp bị ảnh hưởng. Kiểm tra giờ đã xác nhận, buổi đã bắt đầu/đã điểm danh và trùng lịch. Sắp các giờ mới theo thứ tự tuần dạy của từng lớp và đánh dấu ca học bù cần xác nhận trong cùng transaction. Hoán đổi hai ca cùng lớp có thể cho kết quả lịch như cũ khi hai khung giờ của lớp không thay đổi. Gửi lại yêu cầu đã lưu mà vị trí của bài khác khung giờ trực tiếp trong payload có thể nhận xung đột để tải lại; không áp dụng thay đổi lần hai.
+  - Migration `1a9b7f4e3d21` thêm `requires_confirmation` vào `sessions_transfers`, mặc định false cho dữ liệu cũ. API học sinh lấy danh sách chờ trong `GET /schedule/temporary-transfers/pending` và dùng `PUT /schedule/temporary-transfers/{id}/reconfirm` với giờ em vừa thấy. Thông báo nằm ở trang Lịch học và được làm mới khi quay lại tab. Lịch tuần và Buổi học tiếp theo loại lựa chọn đang chờ khỏi trạng thái ca đã xác nhận.
+  - Kiểm thử sau chuẩn hóa và nối lưu (24/11/2026): lint và build Next.js qua, 70 test backend qua khi bật MySQL, `alembic check` không phát hiện thay đổi schema. Ca hai request dời hai buổi cùng vào một ca trống cho đúng một lần lưu thành công. Chrome nối FastAPI với SQLite kiểm được dời, hoán đổi, tải lại tuần, đường xung đột khi giờ đã thay đổi, trang chủ học sinh, lịch học sinh và preview.
+  - Rà soát trước bản sửa (24/11/2026): TestClient tái hiện dời và hoán đổi khác lớp có thể lưu Tuần 18 trước Tuần 17, khiến Buổi học tiếp theo bỏ qua Tuần 17 khi học sinh đã điểm danh ở Tuần 18. Kiểm sau bản sửa đã có ca dời qua tuần, hoán đổi giữ thứ tự cả hai lớp và xác nhận lại giờ học bù. Form dời giới hạn ngày theo miền API để xử lý lỗi nhập năm 10000.
+  - Form dời buổi dùng ngày hiện tại theo múi giờ Việt Nam làm giới hạn dưới. Backend tiếp tục kiểm giờ của ca trong ngày khi lưu. Hộp hoán đổi nhận danh sách của tuần đang xem, còn API nhận hai ID và kiểm điều kiện cho cả hoán đổi liên tuần.
+  - Nghiệm thu bản sửa thứ tự nội dung (24/11/2026): 73 test backend qua khi bật MySQL, migration đã áp trên MySQL local và `alembic check` sạch. Chrome nối FastAPI/SQLite kiểm giáo viên dời qua Tuần 18, học sinh nhìn thấy giờ mới của Tuần 17 và xác nhận từ Lịch học.
+  - **Rà soát & kiểm định sức khỏe toàn hệ thống (24/11/2026):**
+    - **Frontend:** Đã chạy lại lint và build thành công với Next.js 16.4.6 Turbopack. Bảng build liệt kê 11 route, gồm 9 static và 2 dynamic. Ảnh `graduation-cap.png` đã được gỡ khỏi sidebar. Chưa đo lại LCP toàn trang.
+    - **Backend:** Lệnh test mặc định có 46 ca qua và 3 ca MySQL bị bỏ qua. Bật `SCHEDULE_MYSQL_TESTS=1` cho 60 ca được thu thập, gồm 14 ca cần MySQL. Lần rà soát này Docker engine không phản hồi và `alembic check` bị MySQL local từ chối kết nối. Uvicorn trả HTTP 200 ở `/docs`, xác nhận HTTP server đang phản hồi.
+    - **Đánh giá kiến trúc & Rủi ro tiềm ẩn:**
+      - Đã đo thứ tự checkout, checkin, checkout, checkin với endpoint lịch tuần giáo viên trên SQLite. Session xác thực trả connection trước truy vấn nghiệp vụ. Chưa đo tác động ở tải cao.
+      - Người dùng chốt API lịch học sinh chỉ cho role `student`. Cả sáu endpoint lịch tuần, buổi tiếp theo, xem và xác nhận đổi ca tạm hoặc đổi lớp lâu dài dùng `require_student_access`. Guard đọc role từ DB sau khi kiểm tra trạng thái tài khoản và yêu cầu đổi mật khẩu. Service, repository và transaction đổi ca giữ nguyên. Test hồi quy gắn hồ sơ Student tổng hợp với tài khoản role giáo viên, admin và trợ giảng để xác nhận cả sáu endpoint từ chối.
+      - Không còn thư mục cũ `backend/app/modules/schedule/teacher/session_detail/` trong workspace hiện tại. Import `DashboardLayout` ở cuối route preview lịch là vấn đề vị trí import, frontend vẫn lint và build được.
+  - Ý tưởng UX Điểm danh nhanh (23/11/2026): Người dùng cân nhắc thiết kế phím tắt nổi toàn cục kiểu AssistiveTouch / Floating Action Button của iPhone, cho phép giáo viên mở sổ điểm danh 1 chạm từ bất kỳ màn hình nào khi lớp đang học.
 
 ## Điểm vào mã nguồn
 
-- Frontend khai báo route theo thư mục trong [src/app](frontend/src/app). Khung dùng chung nằm ở [DashboardLayout.tsx](frontend/src/components/layout/DashboardLayout.tsx) và trang học sinh ghép các thẻ trong [StudentDashboardPage.tsx](frontend/src/features/dashboard/pages/StudentDashboardPage.tsx).
-- Backend đăng ký router trong [main.py](backend/app/main.py). Luồng xác thực nằm trong [modules/auth](backend/app/modules/auth), còn truy vấn lịch ở [repository.py](backend/app/modules/schedule/repository.py). Model nằm trong [app/models](backend/app/models) và migration nằm trong [alembic/versions](backend/alembic/versions).
+- Frontend khai báo route theo thư mục trong [src/app](frontend/src/app). Khung học sinh nằm ở [StudentDashboardLayout.tsx](frontend/src/components/layout/StudentDashboardLayout.tsx) và trang học sinh ghép các thẻ trong [StudentDashboardPage.tsx](frontend/src/features/student/dashboard/pages/StudentDashboardPage.tsx).
+- Backend đăng ký router trong [main.py](backend/app/main.py). Luồng xác thực nằm trong [modules/auth](backend/app/modules/auth), truy vấn lịch học sinh ở [schedule/student/repository.py](backend/app/modules/schedule/student/repository.py) và truy vấn buổi dạy ở [sessions/repository.py](backend/app/modules/sessions/repository.py). Model nằm trong [app/models](backend/app/models) và migration nằm trong [alembic/versions](backend/alembic/versions).
 
 ## Việc kỹ thuật để xử lý sau
 

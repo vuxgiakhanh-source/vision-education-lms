@@ -33,7 +33,7 @@ export function ChangePasswordForm() {
             const res = await changePasswordService.changePassword(data)
             setSuccessMessage(res.message)
             setTimeout(() => {
-                router.push('/dashboard')
+                router.replace('/')
             }, 1500)
         } catch (error) {
             const detail = isAxiosError<{ detail?: unknown }>(error) ? error.response?.data?.detail : undefined

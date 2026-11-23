@@ -21,6 +21,7 @@ from app.core.logger import logger
 from app.core.security import create_access_token, hash_password
 from app.database.database import engine as local_engine, get_session_factory
 from app.main import app
+from app.models.student import Student
 from app.models.user import User
 from app.modules.auth.login import service as login_service
 from app.modules.auth.login.router import MAX_CONCURRENT_LOGINS, get_login_limiter, login_router
@@ -59,6 +60,46 @@ def test_phone_is_a_database_constraint(auth_api):
         ))
         with pytest.raises(IntegrityError):
             db.commit()
+
+
+@pytest.mark.parametrize("role", [UserRole.TEACHER, UserRole.ADMIN, UserRole.TEACHING_ASSISTANT])
+def test_student_schedule_requires_student_role_even_with_profile(auth_api, role):
+    client, headers, engine = auth_api
+    with Session(engine) as db:
+        user = db.get(User, 1)
+        user.role = role
+        user.must_change_password = False
+        db.add(Student(user_id=user.id, grade=12))
+        db.commit()
+
+    requests = (
+        ("GET", "/schedule/weekly?week_start=2026-11-23", None),
+        ("GET", "/schedule/upcoming", None),
+        ("GET", "/schedule/temporary-transfers/options", None),
+        ("GET", "/schedule/temporary-transfers/pending", None),
+        ("GET", "/schedule/permanent-transfers/options", None),
+        ("PUT", "/schedule/temporary-transfers/1", {
+            "expected_enrollment_id": 1,
+            "expected_current_session_id": 1,
+            "target_session_id": 2,
+            "expected_target_starts_at": "2026-11-23T14:00:00",
+            "expected_target_ends_at": "2026-11-23T17:00:00",
+        }),
+        ("POST", "/schedule/permanent-transfers", {
+            "target_class_id": 2,
+            "expected_current_enrollment_id": 1,
+            "expected_first_session": None,
+        }),
+        ("PUT", "/schedule/temporary-transfers/1/reconfirm", {
+            "target_session_id": 2,
+            "expected_target_starts_at": "2026-11-23T14:00:00",
+            "expected_target_ends_at": "2026-11-23T17:00:00",
+        }),
+    )
+    for method, path, body in requests:
+        response = client.request(method, path, headers=headers, json=body)
+        assert response.status_code == 403, f"{method} {path}: {response.text}"
+        assert response.json()["detail"] == "Chỉ học sinh mới có quyền truy cập"
 
 
 @pytest.mark.parametrize("password", ["a" * 73, "é" * 37])

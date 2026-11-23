@@ -3,7 +3,12 @@
 import { createContext, useContext, useEffect, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { meService } from '../me/services/meService'
-import type { MeResponse } from '../me/types/meTypes'
+import type { MeResponse, UserRole } from '../me/types/meTypes'
+
+type AuthGuardProps = {
+    children: ReactNode
+    requiredRole?: UserRole
+}
 
 const AuthProfileContext = createContext<MeResponse | null>(null)
 
@@ -19,7 +24,7 @@ function subscribeToStorage(onChange: () => void) {
 const getAccessToken = () => localStorage.getItem('access_token')
 const getServerSnapshot = () => undefined
 
-export function AuthGuard({ children }: { children: ReactNode }) {
+export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
     const router = useRouter()
     const pathname = usePathname()
     const token = useSyncExternalStore(subscribeToStorage, getAccessToken, getServerSnapshot)
@@ -31,10 +36,10 @@ export function AuthGuard({ children }: { children: ReactNode }) {
     if (!token) return null
     if (pathname === '/change-password') return children
 
-    return <PasswordChangeGuard key={token}>{children}</PasswordChangeGuard>
+    return <PasswordChangeGuard key={token} requiredRole={requiredRole}>{children}</PasswordChangeGuard>
 }
 
-function PasswordChangeGuard({ children }: { children: ReactNode }) {
+function PasswordChangeGuard({ children, requiredRole }: AuthGuardProps) {
     const router = useRouter()
     const [profileCheck, setProfileCheck] = useState<MeResponse | 'checking' | 'failed'>('checking')
 
@@ -77,6 +82,15 @@ function PasswordChangeGuard({ children }: { children: ReactNode }) {
     }
 
     if (profileCheck === 'checking') return <p role="status" className="p-6 text-center">Đang xác minh tài khoản…</p>
+
+    if (requiredRole && profileCheck.role !== requiredRole) {
+        return (
+            <main className="p-6">
+                <h1 className="text-xl font-semibold">Không có quyền truy cập</h1>
+                <p className="mt-2">Tài khoản của bạn chưa được cấp quyền vào khu vực này.</p>
+            </main>
+        )
+    }
 
     return <AuthProfileContext.Provider value={profileCheck}>{children}</AuthProfileContext.Provider>
 }

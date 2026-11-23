@@ -15,7 +15,7 @@ from app.models.classroom import Class, ClassEnrollment
 from app.models.schedule import ClassSession, SessionAttendance, SessionsTransfer
 from app.models.student import Student
 from app.models.user import User
-from app.modules.schedule import service as schedule_service
+from app.core import clock
 
 
 OPTIONS_URL = "/schedule/temporary-transfers/options"
@@ -95,7 +95,7 @@ def schedule_api():
 
 def read_options(client, now):
     with pytest.MonkeyPatch.context() as monkeypatch:
-        monkeypatch.setattr(schedule_service, "schedule_now", lambda: now)
+        monkeypatch.setattr(clock, "center_local_now", lambda: now)
         response = client.get(OPTIONS_URL)
     assert response.status_code == 200, response.text
     return response.json()
@@ -103,7 +103,7 @@ def read_options(client, now):
 
 def read_upcoming(client, now):
     with pytest.MonkeyPatch.context() as monkeypatch:
-        monkeypatch.setattr(schedule_service, "schedule_now", lambda: now)
+        monkeypatch.setattr(clock, "center_local_now", lambda: now)
         response = client.get("/schedule/upcoming")
     assert response.status_code == 200, response.text
     return response.json()
@@ -244,7 +244,7 @@ def confirm_transfer(
     client, now, *, original_id=1, current_id=2, target_id, target_start, target_end=None
 ):
     with pytest.MonkeyPatch.context() as monkeypatch:
-        monkeypatch.setattr(schedule_service, "schedule_now", lambda: now)
+        monkeypatch.setattr(clock, "center_local_now", lambda: now)
         return client.put(
             f"/schedule/temporary-transfers/{original_id}",
             json={

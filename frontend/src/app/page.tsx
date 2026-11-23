@@ -1,5 +1,1 @@
-import { redirect } from 'next/navigation'
-
-export default function Home() {
-  redirect('/dashboard')
-}
+export { SessionHome as default } from '../features/auth/session/SessionHome'

@@ -1,0 +1,93 @@
+.dialog {
+  width:min(52.5rem, calc(100% - 24px)); max-height:calc(100dvh - 26px);
+  margin:auto; padding:0; overflow:auto; color:#101832; font:400 .95rem/1.45 var(--font-sans);
+  border:1px solid #e9eef8; border-radius:1.4rem; background:#f8fafd; box-shadow:0 24px 60px #13244950;
+  inset:0;
+}
+.dialog:modal { overscroll-behavior:contain; }
+.dialog::backdrop { background:#202f52a0; overflow:hidden; overscroll-behavior:contain; }
+.dialog svg { width:1.25em; height:1.25em; display:block; flex:none; stroke-width:1.8; }
+.dialog h2 { font-size:1.48rem; font-weight:800; letter-spacing:-.035em; line-height:1.2; }
+.dialog h3 { margin:0; font-size:1.13rem; font-weight:800; letter-spacing:-.032em; }
+.dialog .dialog-head { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:start; gap:1rem; padding:1rem 1.1rem .8rem; }
+.dialog-avatar { display:grid; place-items:center; width:3.75rem; aspect-ratio:1; border-radius:.85rem; background:#e5edff; color:#1459c1; font-size:1.6rem; }
+.dialog-meta { display:flex; flex-wrap:wrap; gap:.35rem .85rem; margin-top:.35rem; font-size:.9rem; font-weight:600; color:#244b80; }
+.dialog-meta span { display:inline-flex; align-items:center; gap:.4rem; }
+.dialog form { margin:0; }
+.dialog-close { display:grid; place-items:center; width:2.5rem; height:2.5rem; padding:0; border:0; border-radius:.62rem; background:none; color:#224b86; }
+.dialog-close:hover { background:#e6effb; }
+.dialog-body { display:grid; gap:.62rem; padding:0 1.1rem 1.1rem; }
+.dialog .dialog-button {
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.55rem .85rem;
+  border:0; border-radius:.7rem; background:#e5edff; color:#104d9f; font-size:.85rem; font-weight:700;
+}
+.dialog .dialog-primary { background:#0751ab; color:#fff; }
+.dialog button:disabled { cursor:default; opacity:.77; }
+.dialog-section { padding:.75rem; border:1px solid #eef2fa; border-radius:1rem; background:#fbfcfe; box-shadow:0 3px 8px #244c8010; }
+.dialog-section-head { display:flex; align-items:center; gap:.55rem; flex-wrap:wrap; margin-bottom:.55rem; }
+.dialog-section-head h3 { display:flex; align-items:center; gap:.62rem; margin-right:auto; }
+.dialog-section-head h3 svg { color:#1b5caa; }
+.dialog-status { display:inline-flex; align-items:center; gap:.36rem; border-radius:999px; padding:.34rem .62rem; color:#167344; background:#dcf3e7; font-size:.78rem; font-weight:750; }
+.dialog-note { background:#eaf1fd; padding:.58rem .85rem; border-radius:.75rem; font-size:.9rem; }
+.dialog-note ul { list-style:disc; padding-left:1.22rem; margin-top:.25rem; }
+.dialog-note li + li { margin-top:.13rem; }
+.dialog-files { display:grid; gap:.3rem; }
+.dialog-file { display:flex; align-items:center; gap:.6rem; padding:.42rem .64rem; border-radius:.65rem; background:#eef3fc; font-size:.86rem; }
+.dialog-file > span:first-child { color:#b94336; font-size:.72rem; font-weight:800; }
+.dialog-file strong { flex:1; overflow-wrap:anywhere; }
+.dialog-file-size { color:#315683; white-space:nowrap; }
+.dialog-empty { color:#4b6284; font-size:.86rem; }
+.dialog-footer { display:flex; justify-content:flex-end; align-items:center; gap:.55rem; padding:.85rem 1.1rem; border-top:1px solid #e5ecf9; }
+.dialog-footer form { margin-right:auto; }
+@media (max-width:620px) {
+  .dialog { font-size:.88rem; border-radius:.95rem; }
+  .dialog .dialog-head { padding:.7rem .72rem; gap:.65rem; }
+  .dialog-avatar { width:2.7rem; font-size:1.2rem; }
+  .dialog-body,.dialog-footer { padding-inline:.72rem; }
+  .dialog-footer { flex-wrap:wrap; }
+  .dialog .dialog-button { padding-inline:.55rem; }
+}
+
+.dialog-adjustments { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.5rem; }
+.dialog-adjustments .adjustment-button { justify-content:flex-start; text-align:start; color:#20395e; background:#eef3fd; border:1px solid #e6eefb; }
+.adjustment-button > svg { color:#155db4; }
+.adjustment-button strong,.adjustment-button small { display:block; }
+.adjustment-button small { color:#36577d; font-weight:500; margin-top:.12rem; }
+.dialog-adjustments .adjustment-button:not(:disabled):hover { background:#e1edff; }
+.reschedule-section { display:grid; gap:.95rem; padding:1rem; }
+.reschedule-heading { display:flex; align-items:center; flex-wrap:wrap; gap:.65rem; }
+.reschedule-heading > span { margin-left:auto; background:#ecf2fc; color:#315581; }
+.reschedule-date { display:grid; gap:.38rem; justify-items:start; }
+.reschedule-date label,.reschedule-shifts legend { font-weight:750; }
+.reschedule-date input {
+  width:min(100%, 16rem); min-height:3rem; padding:.5rem .72rem; border:1px solid #94a8c3;
+  border-radius:.65rem; color:#142c4e; background:#fff; font:inherit; font-size:1rem;
+}
+.swap-select { display:grid; gap:.38rem; }
+.swap-select label { font-weight:750; }
+.swap-select select {
+  width:100%; min-width:0; min-height:3rem; padding:.5rem .72rem; border:1px solid #94a8c3;
+  border-radius:.65rem; color:#142c4e; background:#fff; font:inherit; font-size:1rem;
+}
+.swap-review-title { font-size:.94rem; font-weight:750; color:#172d50; }
+.reschedule-shifts { min-width:0; margin:0; padding:0; border:0; }
+.reschedule-shifts legend { margin-bottom:.45rem; }
+.reschedule-options,.reschedule-comparison { display:grid; gap:.55rem; }
+.reschedule-options { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.reschedule-option {
+  display:flex; align-items:center; gap:.55rem; min-height:3.3rem; padding:.55rem .62rem;
+  border:1px solid #d4e2f5; border-radius:.7rem; background:#f7faff; cursor:pointer;
+}
+.reschedule-option:has(:checked) { border-color:#2568b7; background:#e8f2ff; }
+.reschedule-option input { flex:none; width:1.1rem; height:1.1rem; margin:0; accent-color:#155cb0; }
+.reschedule-option strong,.reschedule-option small { display:block; }
+.reschedule-option small { color:#36577d; }
+.reschedule-comparison { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.reschedule-time { display:grid; gap:.34rem; padding:.8rem; border-radius:.7rem; background:#eef3fb; }
+.reschedule-time.new { background:#e5f1ff; color:#174985; }
+.reschedule-time .time-range { font-weight:750; }
+.reschedule-footer button { min-height:3rem; }
+.reschedule-footer .dialog-back { margin-right:auto; }
+@media (max-width:620px) {
+  .dialog-adjustments,.reschedule-options,.reschedule-comparison { grid-template-columns:minmax(0,1fr); }
+}

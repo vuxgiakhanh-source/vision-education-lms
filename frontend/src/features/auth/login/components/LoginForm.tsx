@@ -25,10 +25,10 @@ export function LoginForm() {
             const res = await authService.login(data)
             localStorage.setItem('access_token', res.access_token)
             if (res.must_change_password) {
-                router.push('/change-password')
+                router.replace('/change-password')
             }
             else {
-                router.push('/dashboard')
+                router.replace('/')
             }
         } catch (error) {
             let message = 'Đăng nhập thất bại. Vui lòng thử lại.'

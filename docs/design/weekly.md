@@ -9,7 +9,7 @@ Cập nhật ngày 19/11/2026. Mốc này giúp học sinh mở `/schedule`, xem
 3. FastAPI xác thực JWT qua `get_current_user_id` rồi gọi `get_weekly_schedule` → `WeeklyScheduleService.get_weekly_sessions`. Service tìm khối và tính khoảng từ thứ Hai 00:00 đến trước thứ Hai kế tiếp. Repository chỉ lấy buổi `scheduled` của đúng khối trong khoảng đó. Khi có buổi, service đối chiếu đăng ký có hiệu lực và lần đổi để phân loại ID.
 4. FE dùng một response để cập nhật cả khoảng ngày và danh sách. Tại thời điểm kiểm tra, `WeeklyGrid` đã gọi service và log `week_start`. State phản hồi, bảng và thao tác hai mũi tên cần làm tiếp.
 
-[Route Schedule](<../../frontend/src/app/(student)/schedule/page.tsx>) · [WeeklyGrid](../../frontend/src/features/schedule/weekly/components/WeeklyGrid.tsx) · [Router Weekly](../../backend/app/modules/schedule/weekly/router.py)
+[Route Schedule](<../../frontend/src/app/(student)/student-schedule/page.tsx>) · [WeeklyGrid](../../frontend/src/features/student/schedule/weekly/components/WeeklyGrid.tsx) · [Router Weekly](../../backend/app/modules/schedule/student/weekly/router.py)
 
 ## Hợp đồng API đang có
 
@@ -31,7 +31,7 @@ Cập nhật ngày 19/11/2026. Mốc này giúp học sinh mở `/schedule`, xem
 | `my_session_ids` | Mảng số | Buổi được service xác định là ca của học sinh. |
 | `transferred_session_ids` | Mảng số | Buổi gốc đã chuyển ca được service đánh dấu trong tuần đang xem. |
 
-Tuần trống là `200` với danh sách rỗng. Router trả `403` nếu tài khoản thiếu hồ sơ học sinh. Ngày sai định dạng bị validation từ chối. Xử lý lỗi mạng và lỗi máy chủ bằng thông báo phù hợp. Với lỗi có thể thử lại, dùng ngày đang chọn cho request tiếp theo. [Schema API](../../backend/app/modules/schedule/weekly/schemas.py) · [Dependency xác thực](../../backend/app/core/dependencies.py)
+Tuần trống là `200` với danh sách rỗng. Router trả `403` nếu tài khoản thiếu hồ sơ học sinh. Ngày sai định dạng bị validation từ chối. Xử lý lỗi mạng và lỗi máy chủ bằng thông báo phù hợp. Với lỗi có thể thử lại, dùng ngày đang chọn cho request tiếp theo. [Schema API](../../backend/app/modules/schedule/student/weekly/schemas.py) · [Dependency xác thực](../../backend/app/core/dependencies.py)
 
 ## Thiết kế phần FE tiếp theo
 

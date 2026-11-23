@@ -36,3 +36,4 @@ class SessionsTransfer(Base):
     original_session_id = Column(Integer, ForeignKey("class_sessions.id"), primary_key=True)
     replacement_sessions_id = Column(Integer, ForeignKey("class_sessions.id"), nullable=True, default=None)
     superseded_at = Column(DateTime, nullable=True)
+    requires_confirmation = Column(Boolean, nullable=False, server_default="0")

@@ -15,13 +15,15 @@
 - Khi luồng có truy cập DB hoặc thao tác đồng thời, lần theo thời điểm mở và đóng session, lấy và trả connection, bắt đầu và kết thúc transaction. Xem điều gì xảy ra khi hai request chạy cùng lúc, người dùng gửi lại request hoặc dữ liệu thay đổi sau khi họ mở màn hình. Chọn ca biên theo rủi ro thực tế của luồng.
 - Với mỗi rủi ro đáng kể, chỉ ra đoạn code liên quan, điều kiện gây lỗi, ảnh hưởng và cách tái hiện nhỏ nhất. Cho người dùng thử dự đoán kết quả hoặc đề xuất cách kiểm trước, rồi đối chiếu với code và test.
 - Trước khi chốt một tính năng, báo rõ ca nào đã chạy, trên môi trường nào và phần nào mới suy ra từ code. Kết luận về tải cần số đo trên môi trường và kịch bản phù hợp.
+- Khi kiểm tra báo cáo rà soát, xác minh trên cây code và bản đang chạy trước khi ghi một lỗi là hiện hành. Với API, lần từ `main.py` qua router và dependency rồi kiểm route hoặc gọi test. Với nút frontend, xem cả handler lẫn điều kiện disable. Ghi rõ khác biệt cách tổ chức, lỗi đã tái hiện và nhận định từ bản cũ.
 
 ## Tổ chức code frontend và backend
 
 - Chia FE và BE theo nghiệp vụ, rồi chia trách nhiệm bên trong từng nghiệp vụ. Tên tầng giống nhau có thể mang trách nhiệm khác nhau. Ví dụ service Weekly ở FE gửi request HTTP, còn service Weekly ở BE áp dụng quy tắc lịch học và gọi repository để lấy dữ liệu.
-- Chọn vị trí code theo nghiệp vụ sở hữu nó và phạm vi sử dụng. Code riêng cho một màn hình hoặc luồng thì để gần chỗ dùng. Code nhiều luồng cùng nghiệp vụ cần thì để ở module cha. Ví dụ Weekly dùng `ScheduleRepository` trong `modules/schedule` vì repository này chứa truy vấn về đăng ký lớp và đổi ca.
+- Chọn vị trí code theo nghiệp vụ sở hữu nó và phạm vi sử dụng. Code riêng cho một màn hình hoặc luồng thì để gần chỗ dùng. Code nhiều luồng cùng nghiệp vụ cần thì để ở module cha. Ví dụ Weekly dùng `ScheduleRepository` trong `modules/schedule/student` vì repository này chứa truy vấn về đăng ký lớp và đổi ca.
 - Code dùng được qua nhiều nghiệp vụ thì đặt ở khu vực chung phù hợp với trách nhiệm. Ví dụ `frontend/src/lib/axios.ts` lo HTTP, `frontend/src/lib/date.ts` chứa hàm định dạng ngày dùng chung, `backend/app/core` chứa phần xác thực dùng chung và `backend/app/database` quản lý phiên làm việc với cơ sở dữ liệu.
 - Khi chọn vị trí, xét cả những luồng sắp tới đã biết của LMS. Có thể tách dùng chung ngay từ lần dùng đầu nếu đã thấy các luồng khác cần cùng hành vi và giao diện của hàm đủ rõ. Số nơi gọi chỉ là một dấu hiệu. Kiểm tra các giả định có ảnh hưởng đến kết quả, như định dạng và múi giờ khi dùng chung hàm ngày.
+- Dùng cùng tên luồng xuyên suốt FE và BE khi hai bên nói về cùng một chức năng, ví dụ `upcoming`. Component chỉ dùng cho một vai trò dùng tiền tố `Student` hoặc `Teacher`. Service nghiệp vụ backend theo mẫu class nhận repository qua constructor. Đặt service HTTP frontend trong thư mục chức năng của nó.
 
 ## Theo dõi tiến bộ
 

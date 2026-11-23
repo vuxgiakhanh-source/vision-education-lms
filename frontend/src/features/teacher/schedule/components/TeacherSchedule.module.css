@@ -1,0 +1,217 @@
+.page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 20px;
+    max-width: 1752px;
+    margin-inline: auto;
+    padding: 18px 26px 26px;
+    background: #f2f5fb;
+    color: #091a38;
+}
+
+.weekPanel, .nextCard {
+    min-width: 0;
+    border: 1px solid #e1eaf6;
+    border-radius: 24px;
+    background: #f9fbfd;
+}
+
+.weekPanel {
+    container: teacher-week / inline-size;
+    overflow: hidden;
+}
+
+.weekHeader {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    min-height: 57px;
+    padding: 10px 16px;
+    background: linear-gradient(151deg, transparent 43%, #244f82 43.1%), linear-gradient(100deg, #13294b, #17375f);
+    color: white;
+}
+
+.weekControls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.weekButton {
+    display: grid;
+    width: 32px;
+    aspect-ratio: 1;
+    place-items: center;
+    flex: none;
+    border: 1px solid #e5edf8;
+    border-radius: 50%;
+    background: white;
+    color: #3e5878;
+    cursor: pointer;
+}
+
+.weekButton:hover { background: #e9f1fc; }
+
+.scrollHint {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px 2px;
+    color: #36587b;
+    font-size: 12px;
+}
+
+.tableScroll {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding: 2px 6px 6px;
+}
+
+.weekTable {
+    width: 100%;
+    min-width: 672px;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 6px;
+    font-size: 12px;
+}
+
+.corner, .day, .slot, .shift {
+    border-radius: 16px;
+}
+
+.corner, .day {
+    height: 48px;
+    background: #eaf0f8;
+    text-align: center;
+}
+
+.day span {
+    display: block;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.day time {
+    display: block;
+    margin-top: 3px;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.day[data-highlight] {
+    background: linear-gradient(125deg, #214a7d, #28629d);
+    color: white;
+}
+
+.slot, .shift {
+    height: clamp(156px, calc((100dvh - 270px) / 3), 230px);
+}
+
+.shift {
+    padding: 8px 3px;
+    border: 1px solid var(--shift-border);
+    background: var(--shift-background);
+    color: var(--shift-color);
+}
+
+.shift[data-shift='morning'] { --shift-background: #dfeafb; --shift-border: #c5d9f3; --shift-color: #244d89; }
+.shift[data-shift='afternoon'] { --shift-background: #f9edda; --shift-border: #eed4aa; --shift-color: #774511; }
+.shift[data-shift='evening'] { --shift-background: #ebe7f9; --shift-border: #dad2f0; --shift-color: #4c4285; }
+
+.shift div {
+    display: flex;
+    gap: 7px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.shift strong { margin-top: 3px; font-weight: 800; }
+.shift span { color: #36587b; font-weight: 500; white-space: nowrap; }
+
+.slot {
+    position: relative;
+    background: #f3f6fa;
+}
+
+.slot[data-highlight] { background: #e8f0fb; }
+
+.slotSessions {
+    position: absolute;
+    inset: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: auto;
+    scrollbar-width: thin;
+}
+
+.session {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    border: 1px solid #d3e2f7;
+    border-left: 4px solid #3673ba;
+    border-radius: 15px;
+    padding: 9px 8px 8px 10px;
+    background: #edf3fc;
+    text-align: start;
+    color: #091a38;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+}
+
+.session:hover { background: #e4efff; border-color: #90b5e5; }
+.session:focus-visible { outline: 2px solid #216bce; outline-offset: -2px; z-index: 1; }
+
+.nextCard {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 23px 18px 17px;
+    background: linear-gradient(150deg, #fbfcfe, #f8fafd);
+    box-shadow: 0 12px 24px #21457909, 0 2px 5px #21457904;
+}
+
+.nextCard::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    width: 92px;
+    height: 92px;
+    inset: -51px -42px auto auto;
+    border-radius: 50%;
+    background: #dce9fb;
+    box-shadow: 0 0 0 16px #eaf1fb;
+}
+
+@media (min-width: 1200px) {
+    .page { grid-template-columns: minmax(0, 1fr) minmax(250px, 280px); }
+}
+
+@media (min-width: 1800px) {
+    .page { grid-template-columns: minmax(0, 1fr) minmax(280px, 332px); }
+}
+
+@media (max-width: 767px) {
+    .page { padding: 8px 16px 22px; gap: 16px; }
+    .slot, .shift { height: clamp(166px, 47vw, 190px); }
+}
+
+@container teacher-week (max-width: 683px) {
+    .scrollHint { display: flex; }
+    .corner, .shift { position: sticky; left: 0; z-index: 2; }
+}
+
+@container teacher-week (max-width: 480px) {
+    .weekHeader { grid-template-columns: minmax(0, 1fr); padding-block: 13px 10px; }
+    .weekControls { justify-content: space-between; }
+    .weekButton { width: 44px; }
+}

@@ -19,8 +19,8 @@ from app.models.classroom import Class, ClassEnrollment
 from app.models.schedule import ClassSession, SessionAttendance, SessionsTransfer
 from app.models.student import Student
 from app.models.user import User
-from app.modules.schedule import service as schedule_service
-from app.modules.schedule.permanent_transfers.repository import PermanentTransferRepository
+from app.core import clock
+from app.modules.schedule.student.permanent_transfers.repository import PermanentTransferRepository
 
 
 URL = "/schedule/permanent-transfers"
@@ -48,7 +48,7 @@ def schedule_engine(request):
 
 @pytest.fixture
 def open_api(monkeypatch):
-    monkeypatch.setattr(schedule_service, "schedule_now", lambda: NOW)
+    monkeypatch.setattr(clock, "center_local_now", lambda: NOW)
 
     def api(engine):
         session_factory = sessionmaker(bind=engine)
@@ -472,7 +472,7 @@ def test_require_reconfirmation_if_first_session_reaches_end(schedule_engine, se
     headers = auth(ids["students"][0])
     with open_api(schedule_engine) as client:
         _, choice = get_choice(client, headers, ids["target"])
-        monkeypatch.setattr(schedule_service, "schedule_now", lambda: NOW + timedelta(hours=2))
+        monkeypatch.setattr(clock, "center_local_now", lambda: NOW + timedelta(hours=2))
         response = client.post(URL, headers=headers, json=choice)
         assert response.status_code == 409, response.text
         assert response.json()["detail"]["code"] == "FIRST_SESSION_CHANGED"

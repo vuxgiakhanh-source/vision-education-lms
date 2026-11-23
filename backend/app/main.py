@@ -4,10 +4,12 @@ from fastapi.responses import JSONResponse
 from app.modules.auth.login.router import login_router
 from app.modules.auth.change_password.router import change_password_router
 from app.modules.auth.me.router import me_router
-from app.modules.schedule.permanent_transfers.router import permanent_transfer_router
-from app.modules.schedule.router import schedule_router
-from app.modules.schedule.temporary_transfers.router import temporary_transfer_router
-from app.modules.schedule.weekly.router import weekly_schedule_router
+from app.modules.schedule.student.permanent_transfers.router import permanent_transfer_router
+from app.modules.schedule.student.upcoming.router import student_upcoming_router
+from app.modules.schedule.student.temporary_transfers.router import temporary_transfer_router
+from app.modules.schedule.student.weekly.router import weekly_schedule_router
+from app.modules.schedule.teacher.router import teacher_schedule_router
+from app.modules.sessions.router import teaching_session_router
 from app.core.config import settings
 from app.core.logger import log_unhandled_request
 
@@ -16,10 +18,12 @@ app = FastAPI()
 app.include_router(login_router)
 app.include_router(change_password_router)
 app.include_router(me_router)
-app.include_router(schedule_router)
+app.include_router(student_upcoming_router)
 app.include_router(weekly_schedule_router)
 app.include_router(temporary_transfer_router)
 app.include_router(permanent_transfer_router)
+app.include_router(teacher_schedule_router)
+app.include_router(teaching_session_router)
 
 
 @app.middleware("http")
