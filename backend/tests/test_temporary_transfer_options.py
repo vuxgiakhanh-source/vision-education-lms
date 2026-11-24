@@ -2,11 +2,8 @@ from datetime import datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.pool import StaticPool
 
-from app.core.base import Base
 from app.core.dependencies import get_current_user_id
 from app.core.enums.user_role import UserRole
 from app.database.database import get_session_factory
@@ -40,11 +37,8 @@ def add_session(db, session_id, class_id, week, starts_at, *, ends_at=None, stat
 
 
 @pytest.fixture
-def schedule_api():
-    engine = create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-    )
-    Base.metadata.create_all(engine)
+def schedule_api(sqlite_engine):
+    engine = sqlite_engine
     with Session(engine) as db:
         db.add_all(
             [

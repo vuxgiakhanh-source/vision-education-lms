@@ -6,11 +6,9 @@ from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, delete
+from sqlalchemy import delete
 from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.pool import StaticPool
 
-from app.core.base import Base
 from app.core.enums.user_role import UserRole
 from app.core.security import create_access_token
 from app.database.database import engine as local_engine, get_session_factory
@@ -28,9 +26,8 @@ MONDAY = datetime(2026, 11, 23)
 
 
 @pytest.fixture
-def teacher_api(monkeypatch):
-    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
-    Base.metadata.create_all(engine)
+def teacher_api(monkeypatch, sqlite_engine):
+    engine = sqlite_engine
 
     with Session(engine) as db:
         for user_id, role, active, must_change in (
@@ -63,7 +60,6 @@ def teacher_api(monkeypatch):
     monkeypatch.setitem(app.dependency_overrides, get_session_factory, lambda: session_factory)
     with TestClient(app) as client:
         yield client
-    engine.dispose()
 
 
 def authorization(user_id=1):

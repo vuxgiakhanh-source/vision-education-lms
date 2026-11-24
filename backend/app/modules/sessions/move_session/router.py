@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Path, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import require_teacher_access
-from app.database.database import get_db
+from app.database.database import DbSession
 
 from ..repository import ScheduleAdjustmentRepository
 from .schemas import MoveSessionRequest
@@ -14,7 +14,7 @@ from .service import MoveSessionService
 move_session_router = APIRouter()
 
 
-def get_move_session_service(db: Annotated[Session, Depends(get_db)]) -> MoveSessionService:
+def get_move_session_service(db: DbSession) -> MoveSessionService:
     return MoveSessionService(ScheduleAdjustmentRepository(db))
 
 

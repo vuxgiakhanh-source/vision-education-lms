@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import require_teacher_access
-from app.database.database import get_db
+from app.database.database import DbSession
 
 from .move_session.router import move_session_router
 from .repository import TeachingSessionRepository
@@ -21,7 +21,7 @@ teaching_session_router.include_router(move_session_router)
 teaching_session_router.include_router(swap_sessions_router)
 
 
-def get_teaching_session_service(db: Annotated[Session, Depends(get_db)]) -> TeachingSessionService:
+def get_teaching_session_service(db: DbSession) -> TeachingSessionService:
     return TeachingSessionService(TeachingSessionRepository(db))
 
 

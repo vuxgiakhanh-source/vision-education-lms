@@ -8,9 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, delete, func, select
 from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.pool import StaticPool
 
-from app.core.base import Base
 from app.core.enums.user_role import UserRole
 from app.core.security import create_access_token
 from app.database.database import engine as local_engine, get_session_factory
@@ -36,14 +34,7 @@ def schedule_engine(request):
         yield local_engine
         return
 
-    engine = create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-    )
-    Base.metadata.create_all(engine)
-    try:
-        yield engine
-    finally:
-        engine.dispose()
+    yield request.getfixturevalue("sqlite_engine")
 
 
 @pytest.fixture

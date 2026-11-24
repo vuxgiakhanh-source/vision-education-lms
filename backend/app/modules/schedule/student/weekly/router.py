@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import require_student_access
-from app.database.database import get_db
+from app.database.database import DbSession
 
 from ..exceptions import StudentGradeNotFoundException
 from ..repository import ScheduleRepository
@@ -17,7 +17,7 @@ from .service import WeeklyScheduleService
 weekly_schedule_router = APIRouter()
 
 
-def get_weekly_schedule_service(db: Annotated[Session, Depends(get_db)]) -> WeeklyScheduleService:
+def get_weekly_schedule_service(db: DbSession) -> WeeklyScheduleService:
     return WeeklyScheduleService(WeeklyScheduleRepository(db), ScheduleRepository(db))
 
 

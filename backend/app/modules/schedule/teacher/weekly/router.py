@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
-from app.database.database import get_db
+from app.database.database import DbSession
 from app.modules.sessions.repository import TeachingSessionRepository
 
 from .schemas import TeacherWeeklyScheduleResponse
@@ -15,7 +15,7 @@ weekly_router = APIRouter()
 
 
 def get_teacher_weekly_service(
-    db: Annotated[Session, Depends(get_db)],
+    db: DbSession,
 ) -> TeacherWeeklyScheduleService:
     return TeacherWeeklyScheduleService(TeachingSessionRepository(db))
 

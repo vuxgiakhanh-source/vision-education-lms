@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.database.database import get_db
+from app.database.database import DbSession
 from app.modules.sessions.repository import TeachingSessionRepository
 from app.modules.sessions.schemas import TeachingSessionResponse
 
@@ -14,7 +14,7 @@ teacher_upcoming_router = APIRouter()
 
 
 def get_teacher_upcoming_service(
-    db: Annotated[Session, Depends(get_db)],
+    db: DbSession,
 ) -> TeacherUpcomingSessionService:
     return TeacherUpcomingSessionService(TeachingSessionRepository(db))
 

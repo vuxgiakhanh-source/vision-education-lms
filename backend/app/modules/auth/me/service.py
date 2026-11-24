@@ -4,7 +4,7 @@ from app.models.user import User
 from .schemas import MeResponse
 from sqlalchemy.orm import Session
 from fastapi import Depends
-from app.database.database import get_db
+from app.database.database import DbSession
 
 
 
@@ -28,6 +28,6 @@ def create_me_service(user: User) -> MeResponse:
         must_change_password=user.must_change_password, 
         is_active=user.is_active
     )
-def get_me_service(db: Session = Depends(get_db)):
+def get_me_service(db: DbSession):
     repository = MeRepository(db)
     return MeService(repository)

@@ -6,10 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.core.base import Base
-from app.models.user import User
-from app.models.classroom import Class, ClassEnrollment
-from app.models.schedule import ClassSession
-from app.models.student import Student
+import app.models  # noqa: F401  nạp mọi model để autogenerate thấy đủ bảng
 
 from app.core.config import settings
 

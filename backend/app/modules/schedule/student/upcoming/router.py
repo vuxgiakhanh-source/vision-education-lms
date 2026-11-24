@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import require_student_access
-from app.database.database import get_db
+from app.database.database import DbSession
 
 from ..exceptions import StudentGradeNotFoundException
 from ..repository import ScheduleRepository
@@ -15,7 +15,7 @@ from .service import StudentUpcomingSessionService
 student_upcoming_router = APIRouter()
 
 
-def get_student_upcoming_service(db: Annotated[Session, Depends(get_db)]) -> StudentUpcomingSessionService:
+def get_student_upcoming_service(db: DbSession) -> StudentUpcomingSessionService:
     return StudentUpcomingSessionService(ScheduleRepository(db))
 
 

@@ -8,10 +8,24 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    # Chỉ cho máy chủ này kết nối. Không dùng "3306:3306" vì cổng đó mở ra mọi giao diện mạng,
+    # trên VPS nghĩa là cả Internet.
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
+    # Mặc định MySQL chỉ có innodb_buffer_pool_size = 128M. Bản dev dùng 512M.
+    # Trên VPS thật đặt MYSQL_BUFFER_POOL_SIZE theo RAM (khoảng 50-60% RAM nếu máy chỉ chạy MySQL,
+    # thấp hơn khi chạy chung với API) rồi đo lại ở M3.
+    # max_connections phải lớn hơn (DB_POOL_SIZE + DB_MAX_OVERFLOW) x số tiến trình API.
+    command:
+      - --innodb-buffer-pool-size=${MYSQL_BUFFER_POOL_SIZE:-512M}
+      - --max-connections=${MYSQL_MAX_CONNECTIONS:-200}
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     volumes:
       - mysql_data:/var/lib/mysql
 volumes:
   mysql_data:
-    

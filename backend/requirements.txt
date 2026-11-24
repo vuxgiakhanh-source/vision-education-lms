@@ -1,12 +1,16 @@
-fastapi
-anyio
-uvicorn
-bcrypt
-sqlalchemy
-pymysql
-python-dotenv
-alembic
-python-jose
-loguru
-pytest
-httpx
+# Thư viện chạy API. Phiên bản đã ghim theo môi trường đang chạy tốt (24/11/2026).
+# Cài: pip install -r requirements.txt -c constraints.txt
+# Nâng cấp có chủ đích: đổi số ở đây, chạy lại test, rồi cập nhật constraints.txt (xem README).
+fastapi==0.143.0
+anyio==4.15.1
+# [standard] thêm httptools (và uvloop trên Linux). Chưa đo được lợi ích: trên Windows chênh nằm trong nhiễu.
+# M3 phải A/B lại trên VPS: uvicorn --http h11 so với --http httptools --loop uvloop.
+uvicorn[standard]==0.54.0
+bcrypt==5.0.0
+sqlalchemy==2.1.4
+pymysql==1.2.3
+python-dotenv==1.2.4
+alembic==1.20.0
+python-jose==3.5.0
+loguru==0.7.3
+python-multipart==0.0.34

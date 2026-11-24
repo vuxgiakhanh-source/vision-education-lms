@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import require_student_access
-from app.database.database import get_db
+from app.database.database import DbSession
 
 from ..exceptions import StudentGradeNotFoundException
 from ..repository import ScheduleRepository
@@ -21,7 +21,7 @@ permanent_transfer_router = APIRouter(prefix="/schedule/permanent-transfers")
 
 
 def get_permanent_transfer_service(
-    db: Annotated[Session, Depends(get_db)],
+    db: DbSession,
 ) -> PermanentTransferService:
     return PermanentTransferService(PermanentTransferRepository(db), ScheduleRepository(db))
 

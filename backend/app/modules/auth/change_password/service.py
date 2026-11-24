@@ -9,7 +9,7 @@ from .repository import ChangePasswordRepository
 from app.core.security import hash_password, validate_new_password_length, verify_password
 from sqlalchemy.orm import Session
 from fastapi import Depends
-from app.database.database import get_db
+from app.database.database import DbSession
 
 
 class ChangePasswordService:
@@ -32,6 +32,6 @@ class ChangePasswordService:
 def create_change_password_response() -> ChangePasswordResponse:
     return ChangePasswordResponse(message="Đổi mật khẩu thành công")
 #Để ở cuối
-def get_change_password_service(db: Session = Depends(get_db)):
+def get_change_password_service(db: DbSession):
     repository = ChangePasswordRepository(db)
     return ChangePasswordService(repository)
