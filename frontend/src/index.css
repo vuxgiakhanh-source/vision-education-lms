@@ -1,7 +1,12 @@
 @import "tailwindcss";
 
+/* --font-plus-jakarta-sans do next/font khai báo trên thẻ <html> (app/layout.tsx).
+   `inline` để Tailwind nhúng nguyên chuỗi var(...) vào tiện ích font-sans thay vì tự phân giải. */
+@theme inline {
+  --font-sans: var(--font-plus-jakarta-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
 @theme {
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --breakpoint-wide: 112.5rem;
   --breakpoint-ultrawide: 150rem;
   --color-brand-primary: #5553E6;
@@ -10,7 +15,7 @@
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-plus-jakarta-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #F8FAFD;

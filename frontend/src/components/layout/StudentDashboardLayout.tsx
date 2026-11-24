@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useAuthProfile } from '../../features/auth/guards/AuthGuard'
-import { getShortName } from '../../utils/getShortName'
+import { getShortName } from '../../lib/getShortName'
 import { StudentSidebar } from './StudentSidebar'
 import { StudentHeader } from './StudentHeader'
 import type { UserProfile } from './layoutTypes'

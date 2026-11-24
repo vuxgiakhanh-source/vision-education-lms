@@ -15,7 +15,7 @@ import {
 } from '../mock/dashboard.mock'
 import { useAuthProfile } from '../../../auth/guards/AuthGuard'
 import { meService } from '../../../auth/me/services/meService'
-import { getShortName } from '../../../../utils/getShortName'
+import { getShortName } from '../../../../lib/getShortName'
 import type { MeResponse } from '../../../auth/me/types/meTypes'
 
 export function StudentDashboardPreview() {
