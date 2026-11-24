@@ -13,9 +13,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, delete, event
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.pool import StaticPool
 
-from app.core.base import Base
 from app.core.enums.user_role import UserRole
 from app.core.logger import logger
 from app.core.security import create_access_token, hash_password
@@ -33,9 +31,8 @@ LEGACY_PASSWORD = "old123"
 
 
 @pytest.fixture
-def auth_api(monkeypatch):
-    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
-    Base.metadata.create_all(engine)
+def auth_api(monkeypatch, sqlite_engine):
+    engine = sqlite_engine
     with Session(engine) as db:
         db.add(User(
             id=1, full_name="Auth fixture", phone_number=PHONE, role=UserRole.STUDENT,
@@ -48,7 +45,6 @@ def auth_api(monkeypatch):
     token = create_access_token({"id": 1}, timedelta(minutes=5))
     with TestClient(app) as client:
         yield client, {"Authorization": f"Bearer {token}"}, engine
-    engine.dispose()
 
 
 def test_phone_is_a_database_constraint(auth_api):
@@ -204,11 +200,17 @@ def test_mysql_login_returns_connection_before_bcrypt(monkeypatch):
         monkeypatch.setitem(app.dependency_overrides, get_session_factory, lambda: session_factory)
 
         with TestClient(app) as client:
-            for password, expected_status in ((LEGACY_PASSWORD, 200), ("incorrect-password", 401)):
+            # Bất biến cần giữ: KHÔNG giữ kết nối trong lúc bcrypt chạy (đã kiểm trong verify_after_checkin).
+            # Đăng nhập sai còn ghi bộ đếm giới hạn sau bcrypt: mượn rồi trả ngay, pool_size=1 không bị kẹt.
+            for password, expected_status, expected_actions in (
+                (LEGACY_PASSWORD, 200, ["checkout", "checkin", "bcrypt"]),
+                ("incorrect-password", 401, ["checkout", "checkin", "bcrypt", "checkout", "checkin"]),
+            ):
                 actions.clear()
                 response = client.post("/login", json={"phone_number": phone, "password": password})
                 assert response.status_code == expected_status, response.text
-                assert actions == ["checkout", "checkin", "bcrypt"]
+                assert actions == expected_actions
+                assert engine.pool.checkedout() == 0
                 if expected_status == 200:
                     assert response.json()["must_change_password"] is True
                     assert response.json()["access_token"]
