@@ -1,0 +1,20 @@
+# MẪU, CHƯA CHẠY THỬ. Cài vào /etc/systemd/system/lms-api.service
+[Unit]
+Description=Vision Education LMS - API (FastAPI)
+After=network.target mysql.service
+
+[Service]
+User=lms
+Group=lms
+WorkingDirectory=/opt/lms/backend
+EnvironmentFile=/opt/lms/backend/.env
+Environment=ENVIRONMENT=production
+# Số worker chọn theo số đo ở M3 (thử 2 rồi 4). Mỗi worker có pool riêng:
+# tổng kết nối = (DB_POOL_SIZE + DB_MAX_OVERFLOW) x workers, phải nhỏ hơn MYSQL max_connections.
+ExecStart=/opt/lms/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 4 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=always
+RestartSec=3
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

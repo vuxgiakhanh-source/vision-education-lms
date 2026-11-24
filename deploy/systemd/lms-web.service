@@ -1,0 +1,17 @@
+# MẪU, CHƯA CHẠY THỬ. Cài vào /etc/systemd/system/lms-web.service
+# Trước đó phải build với biến NEXT_PUBLIC_API_URL: cd /opt/lms/frontend && npm ci && npm run build
+[Unit]
+Description=Vision Education LMS - Web (Next.js)
+After=network.target
+
+[Service]
+User=lms
+Group=lms
+WorkingDirectory=/opt/lms/frontend
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
