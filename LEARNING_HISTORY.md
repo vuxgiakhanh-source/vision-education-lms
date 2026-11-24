@@ -7,6 +7,44 @@
 - **5–6** · Nêu được vấn đề, nhưng căn cứ còn yếu hoặc kết luận đi xa hơn dữ kiện.
 - **1–4** · Nhầm vấn đề chính hoặc dựa vào giả định sai làm đổi kết luận.
 
+## 24/11/2026 · Hạn token trong ca thi
+
+- **Đề xuất · 7/10.** Người dùng đề xuất token tồn tại 3 tiếng cho phòng thi. Con số đúng chỗ: phủ một ca 90 phút nếu em đăng nhập trong khoảng 1,5 giờ trước hạn nộp, và không làm yếu việc khóa tài khoản vì mỗi request kiểm tra `is_active` trong DB. Còn thiếu căn cứ tính và hai rủi ro: em đăng nhập quá sớm vẫn hết hạn giữa giờ, và máy dùng chung giữ phiên 3 giờ. **Cần luyện** suy ra thời hạn từ mốc giờ xấu nhất (giờ đăng nhập sớm nhất → hạn nộp muộn nhất). Tự kiểm: phòng 08:00–10:00, bài 90 phút, vào muộn 45 phút, tính giờ đăng nhập mà token 3 giờ không còn đủ.
+
+## 24/11/2026 · Cấu hình VPS cho phòng thi 500 em
+
+- **Phản biện cấu hình · 8/10.** Người dùng hỏi có nhất thiết cần 4 vCPU và 8 GB RAM, tức đặt lại một con số đã chốt trước khi có số đo. Câu hỏi dẫn tới việc tính tải từng thời điểm và phát hiện giới hạn thật là băng thông phát PDF, bcrypt lúc đăng nhập dồn và token 30 phút, không phải số nhân cho API lưu/nộp. **Cần luyện** ước lượng năng lực từ tải: câu hỏi chưa kèm căn cứ như số yêu cầu mỗi giây hay chi phí mỗi yêu cầu. Tự kiểm: với ba thời điểm mở đề, đồng bộ, nộp bài, tính (số yêu cầu/giây × CPU mỗi yêu cầu) và (số byte × số em / thời gian), rồi so với gói đang chọn trước khi kết luận.
+
+## 24/11/2026 · Kiểm tra lại báo cáo hạ tầng Phòng thi ảo
+
+- **Rà căn cứ và thứ tự ưu tiên · 8/10.** Người dùng yêu cầu kiểm chứng báo cáo trước khi làm theo. Báo cáo ghi rõ căn cứ và các phần chưa chạy. **Cần luyện** phân biệt lỗi chặn luồng tải PDF với lỗi chỉ xuất hiện khi chạy nhiều worker hoặc mở phòng. Tự kiểm bằng cách gắn từng lỗi với thao tác đầu tiên có thể tái hiện, rồi xác nhận bằng migration, build hoặc ca end-to-end tương ứng.
+
+## 24/11/2026 · Chọn loại câu trong đề PDF
+
+- **Phản biện mô hình phiếu · 10/10.** Người dùng nêu đề toàn trắc nghiệm, toàn trả lời ngắn hoặc toàn tự luận và làm rõ cô có thể chọn loại từng câu. Các ca này kiểm trực tiếp độ bao phủ nghiệp vụ: ba trường đếm đã bàn biểu diễn được đề chỉ có trắc nghiệm hoặc trả lời ngắn, nhưng thiếu tự luận và không lưu được thứ tự loại câu khi chúng xen kẽ.
+
+## 24/11/2026 · Diện tích màn duyệt đề DOCX/XLSX
+
+- **Phản biện bố cục · 9/10.** Người dùng chỉ ra hai khung trong bản chạy thử quá nhỏ cho thao tác vừa đọc đề vừa đặt đáp án, và đề xuất dành gần toàn bộ màn hình cho hai thao tác này.
+  - **Lần rà tiếp theo · 10/10.** Sau khi xem bản mở rộng, người dùng chỉ đúng hai dải chiếm chiều cao mà cô không cần khi đối chiếu. Đề xuất thay banner bằng nút quay lại để vẫn giữ lối về form.
+  - **Thử biểu tượng trên dòng tệp · 8/10. Cần luyện** kiểm tra khả năng nhận ra hành động sau khi thay chữ bằng biểu tượng. Cho cô thử tìm nút duyệt và nút đổi tệp một lần bằng chuột, một lần bằng bàn phím.
+  - **Rà kích thước ở zoom 100% · 9/10.** Người dùng nêu mức zoom khi thấy giao diện quá to, giúp phân biệt diện tích rộng của hai khung với cỡ chữ và độ thưa của nội dung trong từng khung.
+  - **Rà diện tích khi chưa có câu · 10/10.** Ảnh tệp DOCX thực tế cho thấy trình xem đề phải cuộn trong khi nửa màn hình đặt đáp án đang trống. Ca này cho thấy cần chia diện tích theo trạng thái câu hỏi, kể cả khi bố cục đã gần toàn màn hình.
+
+## 24/11/2026 · Hình thức kỳ thi trong Phòng thi ảo
+
+- **Phản biện ngữ cảnh form · 10/10.** Người dùng chỉ ra ô Hình thức chỉ có một giá trị và ngữ cảnh Phòng thi ảo đã xác định kỳ thi trực tuyến. Có thể bỏ ô chọn và giữ giá trị mặc định khi tạo.
+
+## 24/11/2026 · Đối chiếu PDF khi khai phiếu
+
+- **Phản biện luồng duyệt · 10/10.** Người dùng chỉ ra hộp xem PDF khiến cô phải rời đề để sửa phiếu. Đề xuất để các trang gốc và phần khai số câu, đặt đáp án cạnh nhau giúp cô đối chiếu ngay trong lúc nhập.
+  - **Rà thanh công cụ PDF · 9/10.** Người dùng chỉ đúng thanh công cụ mặc định đang chiếm diện tích đọc đề. Giữ một lối mở trình xem đầy đủ để cô vẫn có thể phóng to hoặc tìm trang khi cần.
+  - **Đối chiếu kết quả trích câu · 10/10.** Người dùng đưa ảnh cùng một câu trước và sau khi trích, chỉ ra chuỗi chữ làm mất vị trí số mũ và thứ tự ký hiệu. Phép kiểm xác định trường hợp bộ đếm tìm được câu nhưng nội dung dùng để duyệt vẫn sai.
+  - **Phân biệt đọc ảnh và đọc dữ liệu PDF · 10/10.** Người dùng chỉ ra ví dụ chuyển sang LaTeX được đọc từ ảnh, nên chưa kiểm chứng cách lấy công thức trực tiếp từ tệp. Kiểm lại bằng tọa độ ký tự khôi phục được công thức Câu 1, còn lớp ký tự của Câu 2 vẫn mất dấu trừ ở tọa độ.
+  - **Rà thuật toán dựng chữ · 9/10.** Người dùng thử bản cải tiến, thấy kết quả vẫn sai và hỏi cách đọc khác. Câu hỏi dẫn tới kiểm tra thành phần đồ họa trong tệp và xác định ba dấu trừ ở Câu 2 nằm trong mặt nạ ảnh nhúng.
+  - **Rà đầu ra nhập đề · 10/10.** Người dùng đưa ảnh cho thấy phương án bị mất dấu đến mức A giống B và C giống D, đồng thời yêu cầu tách phương án và từng ý thành các trường riêng. Ca này kiểm cả độ đúng của ký hiệu lẫn cấu trúc dữ liệu cô cần duyệt.
+  - **Rà bố cục duyệt PDF · 10/10.** Người dùng chỉ ra việc xếp mọi ô sửa vào danh sách cuộn lồng nhau làm khung phải chật. Ảnh tham chiếu thể hiện rõ hướng sửa: một thẻ câu đủ lớn để đọc và đặt đáp án, chỉ hiện các ô khi cần chỉnh.
+
 ## 24/11/2026 · Phát hiện "Bóng ma Bytecode" (__pycache__) & Lỗi Đọc Code Cũ
 
 - **Phản biện & Chất vấn Hiện trạng Codebase · 10/10.** Người dùng bắt bẻ cực kỳ chuẩn xác và kịp thời: *"hả kiểm tra lại đi có đang đọc nhầm code cũ ko"*.

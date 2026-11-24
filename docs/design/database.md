@@ -43,5 +43,5 @@ SQLite in-memory đã được dùng để kiểm tra luồng API. Mốc kiểm 
 | Đổi cố định | Khoảng hiệu lực lớp cũ và lớp mới | Ai có quyền duyệt, có cho chuyển vào buổi đang diễn ra hay không và kiểm soát đăng ký chồng thời gian. |
 | Điểm danh | Danh sách dự kiến theo buổi, trạng thái thực tế và người ghi nhận | Khi nào cố định danh sách, cách sửa điểm danh và cách giữ dấu hiệu đã đổi ca ở buổi gốc. |
 | Nội dung | Chương trình, tuần dạy, tài liệu và bài tập | Khóa nào chia sẻ nội dung, ai được xem và cách xử lý tiến độ khi nghỉ hoặc học bù. |
-| Thi online | Phiên bản đề, thứ tự đề theo lượt thi, đáp án đã lưu, thời điểm nộp và kết quả | Cố định đề mỗi lượt, thời điểm khóa bài và cách trả cùng kết quả khi học sinh gửi lại yêu cầu nộp do lỗi mạng. |
+| Thi online | Đã thiết kế chi tiết 9 bảng `exam_*` (tệp, job nhập đề, đề, đáp án chuẩn, kỳ thi, người dự thi, lượt thi, sự kiện, bài gửi muộn, lịch sử chấm) trong [Phòng thi ảo, mục 4](exam-room.md#4-mô-hình-dữ-liệu). Chưa có model hay migration. | Các câu hỏi cũ đã được trả lời trong thiết kế: đề khóa khi phát hành, `UNIQUE(exam_id, student_id)` cho một lượt mỗi em, nộp lặp trả lại cùng biên nhận. Còn chờ cô chốt ân hạn nộp và thang điểm. |
 | Thống kê và cộng đồng | Kết quả đã công bố, quyền theo khối, bài viết và thành tích | Quy tắc hiển thị, chia sẻ và quản trị trước khi xây từng luồng. |
