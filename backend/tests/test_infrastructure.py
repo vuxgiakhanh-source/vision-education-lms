@@ -338,3 +338,50 @@ def test_unhandled_error_becomes_500_json_with_cors_headers_and_is_logged(client
 
 def test_http_exceptions_are_not_turned_into_500(client):
     assert client.get("/no-such-route").status_code == 404
+
+
+# ----- quá tải tạm thời trả 503 kèm Retry-After, không phải 500 -----
+def _app_with_failing_session(exc):
+    def broken_factory():
+        raise exc
+
+    app.dependency_overrides[get_session_factory] = lambda: broken_factory
+    return TestClient(app, raise_server_exceptions=False)
+
+
+def test_exhausted_connection_pool_returns_503_with_retry_after():
+    from sqlalchemy.exc import TimeoutError as PoolTimeout
+
+    c = _app_with_failing_session(PoolTimeout("QueuePool limit of size 10 overflow 5 reached"))
+    try:
+        response = c.get("/health/ready")
+    finally:
+        app.dependency_overrides.clear()
+    assert response.status_code == 503
+    assert response.headers["retry-after"] == "2"
+    assert "thử lại" in response.json()["detail"]
+
+
+@pytest.mark.parametrize("code", [1040, 2003, 2006, 2013])
+def test_transient_mysql_errors_return_503(code):
+    from sqlalchemy.exc import OperationalError
+
+    c = _app_with_failing_session(OperationalError("SELECT 1", {}, Exception(code, "mysql")))
+    try:
+        response = c.get("/health/ready")
+    finally:
+        app.dependency_overrides.clear()
+    assert response.status_code == 503
+    assert response.headers["retry-after"] == "2"
+
+
+def test_other_database_errors_stay_500_so_real_bugs_are_not_hidden():
+    from sqlalchemy.exc import OperationalError
+
+    c = _app_with_failing_session(OperationalError("SELECT 1", {}, Exception(1054, "Unknown column")))
+    try:
+        response = c.get("/health/ready")
+    finally:
+        app.dependency_overrides.clear()
+    assert response.status_code == 500
+    assert "retry-after" not in response.headers

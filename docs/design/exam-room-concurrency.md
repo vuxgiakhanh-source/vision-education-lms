@@ -248,3 +248,18 @@ Mỗi lần chạy kết thúc bằng **công cụ đối soát** (`scripts/exam
 | MySQL gán cột `SET` từ trái sang phải | Câu SQL in ra | `ordered_values` |
 | SQLite bỏ qua `FOR UPDATE`, khóa ngoại mặc định tắt | Đọc tài liệu, đã gặp ở test tranh chấp | Test khóa chạy trên MySQL |
 | Phép đo tải trên máy dev bị nhiễu bởi chính máy phát tải | `/health` không DB cũng có đuôi 2 giây | Đo ở M3 từ máy khác, so sánh với endpoint không DB làm mốc |
+
+## 10. Đã đo: bão nộp bài (24/11/2026)
+
+Đo trên máy phát triển (Docker MySQL, loopback, một tiến trình nhiều luồng), **không phải VPS**. Mỗi bài có 22 câu, nộp bằng `AttemptService.submit` thật (khóa dòng, đọc khóa đáp án, chấm, cập nhật, ghi lịch sử, commit). Kết quả chỉ cho biết hình dạng, chưa phải năng lực của VPS.
+
+| Kịch bản | Tổng | Thông lượng | Trung vị | p95 | p99 |
+| --- | --- | --- | --- | --- | --- |
+| 125 em, pool 15, 15 luồng (phần của một worker) | 0,41 s | 305 bài/s | 47 ms | 55 ms | 58 ms |
+| 500 em, pool 60, 60 luồng (bốn worker gộp) | 1,62 s | 308 bài/s | 164 ms | 233 ms | 260 ms |
+| 500 em ập vào pool 15 (60 luồng chờ pool) | 3,12 s | 160 bài/s | 90 ms | 2443 ms | 2545 ms |
+
+- Một lần nộp giữ kết nối khoảng 47 ms khi 15 luồng chạy song song, không phải 20 ms. Nhưng cả 500 bài vẫn xong trong 1,6–3,1 s và không bài nào bị `503`, vì `DB_POOL_TIMEOUT` là 10 s.
+- Chờ pool lâu nhất đo được khoảng 2,5 s, khi mọi em nộp **đúng một thời điểm**. Cho nên giao diện phải **trễ ngẫu nhiên 0–2 s trước khi tự nộp lúc hết giờ** (nhỏ hơn nhiều so với ân hạn 30 s). Quy tắc này chưa có trong mục 5.
+- Chấm 22 câu trong bộ nhớ tốn khoảng chục micro-giây đến vài chục micro-giây, nhỏ so với thời gian truy cập DB.
+- Ảnh trang đề: dùng `Cache-Control: private` (không phải `public`) vì URL có chữ ký và đề chưa được phép lọt vào bộ nhớ đệm dùng chung.

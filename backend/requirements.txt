@@ -14,3 +14,8 @@ alembic==1.20.0
 python-jose==3.5.0
 loguru==0.7.3
 python-multipart==0.0.34
+# Bộ đọc đề (PDF). Tránh PyMuPDF vì giấy phép AGPL.
+pdfminer.six==20260107
+pypdfium2==5.15.2
+pillow==13.0.0
+olefile==0.47
