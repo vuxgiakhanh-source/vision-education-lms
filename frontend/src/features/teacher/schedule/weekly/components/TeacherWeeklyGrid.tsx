@@ -55,13 +55,13 @@ export function TeacherWeeklyGrid({ weekStart, highlightedDate, sessions, notice
                     <span className="grid size-8 shrink-0 place-items-center rounded-[11px] bg-[#eaf2ff] text-[#0856bd]">
                         <CalendarDays size={18} strokeWidth={2.2} aria-hidden="true" />
                     </span>
-                    <h1 id="teacher-schedule-title" className="text-[21px] leading-tight font-extrabold tracking-[-.05em]">Lịch dạy</h1>
+                    <h1 id="teacher-schedule-title" className={styles.weekTitle}>Lịch dạy</h1>
                 </div>
                 <div className={styles.weekControls}>
                     <button type="button" className={styles.weekButton} aria-label="Tuần trước" onClick={() => onWeekChange(addCalendarDays(weekStart, -7))}>
                         <ChevronLeft size={16} aria-hidden="true" />
                     </button>
-                    <span role="status" className="rounded-full bg-white px-4 py-2 text-[13px] leading-4 font-semibold whitespace-nowrap text-[#142d52]">
+                    <span role="status" className="rounded-full bg-white px-4 py-2 text-[13px] leading-[17.5px] font-semibold whitespace-nowrap text-[#142d52]">
                         {formatWeekLabel(weekStart)}
                     </span>
                     <button type="button" className={styles.weekButton} aria-label="Tuần sau" onClick={() => onWeekChange(addCalendarDays(weekStart, 7))}>
@@ -69,11 +69,10 @@ export function TeacherWeeklyGrid({ weekStart, highlightedDate, sessions, notice
                     </button>
                 </div>
             </header>
-            {notice && <p role="status" className="mb-3 text-sm text-[#345476]">{notice}</p>}
             <p className={styles.scrollHint}><MoveHorizontal size={14} aria-hidden="true" />Cuộn ngang để xem các ngày còn lại</p>
             <div className={styles.tableScroll} role="region" aria-label="Lưới lịch dạy theo tuần" tabIndex={0}>
-                <table className={styles.weekTable}>
-                    <caption className="sr-only">Các ca dạy từ {formatWeekLabel(weekStart)}</caption>
+                <table className={styles.weekTable} aria-label={`Các ca dạy từ ${formatWeekLabel(weekStart)}`}>
+                    <colgroup><col /><col span={weekdays.length} /></colgroup>
                     <thead>
                         <tr>
                             <th scope="col" className={styles.corner}><span className="sr-only">Ca dạy</span></th>
@@ -119,6 +118,7 @@ export function TeacherWeeklyGrid({ weekStart, highlightedDate, sessions, notice
                     </tbody>
                 </table>
             </div>
+            {notice && <p role="status" className={styles.notice}>{notice}</p>}
         </section>
     )
 }
