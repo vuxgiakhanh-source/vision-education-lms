@@ -84,6 +84,14 @@ def test_nine_failures_do_not_block(env):
     assert env.attempt("good").access_token
 
 
+def test_login_returns_role_for_direct_dashboard_navigation(env):
+    app.dependency_overrides[get_session_factory] = lambda: env.factory
+    with TestClient(app) as client:
+        response = client.post("/login", json={"phone_number": PHONE, "password": "good"})
+    assert response.status_code == 200
+    assert response.json()["role"] == "student"
+
+
 def test_correct_password_after_cooldown_works_and_resets_the_counter(env):
     fail_times(env, MAX_FAILED_ATTEMPTS)
     env.clock["now"] = T0 + COOLDOWN + timedelta(seconds=1)

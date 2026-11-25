@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { StudentDashboardLayout } from '../../../../components/layout/StudentDashboardLayout'
+import { StudentDashboardLayout } from '../../../../components/layout/student/StudentDashboardLayout'
 import { StudentWelcomeBanner } from '../components/StudentWelcomeBanner'
 import { StudentKpiStatCards } from '../components/StudentKpiStatCards'
 import { StudentTaskListCard } from '../components/StudentTaskListCard'

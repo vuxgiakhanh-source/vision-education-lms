@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useAuthProfile } from '../../features/auth/guards/AuthGuard'
-import { getShortName } from '../../lib/getShortName'
+import { useAuthProfile } from '../../../features/auth/guards/AuthGuard'
+import { getShortName } from '../../../lib/getShortName'
 import { StudentSidebar } from './StudentSidebar'
 import { StudentHeader } from './StudentHeader'
 import type { UserProfile } from './layoutTypes'

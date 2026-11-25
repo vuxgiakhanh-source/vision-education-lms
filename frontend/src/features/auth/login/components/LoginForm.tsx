@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { loginSchema } from '../schemas/loginSchema'
 import { authService } from '../services/loginService'
 import type { LoginFormData } from '../types/loginTypes'
+import { dashboardPath } from '../../session/dashboardPath'
 import logoImage from '../../../../assets/images/logo.webp'
 
 export function LoginForm() {
@@ -28,7 +29,7 @@ export function LoginForm() {
                 router.replace('/change-password')
             }
             else {
-                router.replace('/')
+                router.replace(dashboardPath(res.role) ?? '/')
             }
         } catch (error) {
             let message = 'Đăng nhập thất bại. Vui lòng thử lại.'

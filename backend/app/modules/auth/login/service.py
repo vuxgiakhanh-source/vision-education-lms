@@ -91,7 +91,10 @@ def create_token_payload(user: LoginAccount) -> dict:
 def create_login_response(user: LoginAccount) -> LoginResponse:
     access_token = create_access_token(create_token_payload(user), timedelta(minutes=settings.access_token_expire_minutes))
     token_type = "bearer"
-    return LoginResponse(access_token=access_token, token_type=token_type, must_change_password=user.must_change_password)
+    return LoginResponse(
+        access_token=access_token, token_type=token_type,
+        must_change_password=user.must_change_password, role=user.role,
+    )
 
 
 

@@ -1,4 +1,4 @@
-import type { UserProfile } from '../../../../components/layout/layoutTypes'
+import type { UserProfile } from '../../../../components/layout/student/layoutTypes'
 import type {
   KpiStats,
   TaskItem,

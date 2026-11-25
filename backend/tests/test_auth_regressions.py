@@ -133,7 +133,7 @@ def test_saturated_login_admission_keeps_shared_worker_available():
     class BlockingLoginService:
         def login(self, request):
             assert release.wait(timeout=15)
-            return {"access_token": "synthetic", "token_type": "bearer", "must_change_password": False}
+            return {"access_token": "synthetic", "token_type": "bearer", "must_change_password": False, "role": "teacher"}
 
     @test_app.get("/sync-probe")
     def sync_probe():

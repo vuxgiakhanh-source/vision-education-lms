@@ -9,6 +9,7 @@ class LoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     must_change_password: bool
+    role: UserRole
 
 class UserResponse(BaseModel):
     id: int

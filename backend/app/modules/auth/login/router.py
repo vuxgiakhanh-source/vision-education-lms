@@ -17,7 +17,7 @@ from .exceptions import (
     UserNotFoundException,
     WrongPasswordException,
 )
-from .schemas import LoginRequest
+from .schemas import LoginRequest, LoginResponse
 from .service import LoginService, get_auth_service
 
 
@@ -34,7 +34,7 @@ def get_login_limiter() -> CapacityLimiter:
     return limiter
 
 
-@login_router.post("/login")
+@login_router.post("/login", response_model=LoginResponse)
 async def login(
     login_request: LoginRequest,
     auth_service: Annotated[LoginService, Depends(get_auth_service)],

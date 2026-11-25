@@ -10,7 +10,7 @@ import {
   Settings,
   X,
 } from 'lucide-react'
-import logoImg from '../../assets/images/logo.webp'
+import logoImg from '../../../assets/images/logo.webp'
 
 interface NavItem {
   id: string

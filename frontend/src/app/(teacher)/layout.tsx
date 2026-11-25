@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
-import { TeacherDashboardLayout } from '../../components/layout/TeacherDashboardLayout'
+import { TeacherDashboardLayout } from '../../components/layout/teacher/TeacherDashboardLayout'
 import { AuthGuard } from '../../features/auth/guards/AuthGuard'
+import '../../components/layout/teacher/TeacherShell.css'
 
 export default function TeacherLayout({ children }: { children: ReactNode }) {
     return (

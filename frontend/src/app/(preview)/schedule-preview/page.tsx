@@ -1,4 +1,4 @@
-import { StudentDashboardLayout } from '../../../components/layout/StudentDashboardLayout'
+import { StudentDashboardLayout } from '../../../components/layout/student/StudentDashboardLayout'
 import { StudentSchedulePage } from '../../../features/student/schedule/pages/StudentSchedulePage'
 import { weeklyPreview } from '../../../features/student/schedule/weekly/mock/schedule.mock'
 

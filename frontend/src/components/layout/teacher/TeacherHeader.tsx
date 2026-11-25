@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Bell, ChevronDown, Menu, Search } from 'lucide-react'
-import { useAuthProfile } from '../../features/auth/guards/AuthGuard'
+import { useAuthProfile } from '../../../features/auth/guards/AuthGuard'
 
 const dashboardSections = [
     { label: 'Lịch dạy hôm nay', href: '#lich-day-hom-nay' },
@@ -20,10 +20,13 @@ function normalizeSearch(value: string) {
 export function TeacherHeader({ menuOpen, onOpenMenu }: { menuOpen: boolean; onOpenMenu: () => void }) {
     const profile = useAuthProfile()
     const router = useRouter()
+    const pathname = usePathname()
     const [search, setSearch] = useState('')
     const [searchOpen, setSearchOpen] = useState(false)
     const teacherName = profile?.full_name || 'Giáo viên'
     const initials = teacherName.trim().split(/\s+/).slice(-2).map(word => word[0]).join('').toUpperCase()
+    const isExamPage = pathname === '/teacher-exams' || pathname.startsWith('/teacher-exams/')
+    const placeholder = isExamPage ? 'Tìm theo tên kỳ thi…' : 'Tìm kiếm lớp học, học sinh, bài tập, tài liệu...'
     const query = normalizeSearch(search)
     const results = query ? dashboardSections.filter(section => normalizeSearch(section.label).includes(query)) : []
 
@@ -41,11 +44,22 @@ export function TeacherHeader({ menuOpen, onOpenMenu }: { menuOpen: boolean; onO
             <Menu size={21} aria-hidden="true" />
         </button>
         <div className="relative min-w-0 flex-1 lg:max-w-[39.2rem]" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setSearchOpen(false) }}>
-            <form role="search" className="flex min-h-12 items-center gap-3.5 rounded-full border border-[#e4ecf8] bg-[#fbfcfe] px-[17px] text-[#314d72] shadow-[0_5px_12px_#274a7808] focus-within:border-[#8cb8ef] max-[480px]:min-h-10 max-[480px]:gap-1.5 max-[480px]:px-2.5" onSubmit={event => { event.preventDefault(); setSearchOpen(true) }}>
+            <form role="search" className="flex min-h-12 items-center gap-3.5 rounded-full border border-[#e4ecf8] bg-[#fbfcfe] px-[17px] text-[#314d72] shadow-[0_5px_12px_#274a7808] focus-within:border-[#8cb8ef] max-[480px]:min-h-10 max-[480px]:gap-1.5 max-[480px]:px-2.5" onSubmit={event => {
+                event.preventDefault()
+                if (isExamPage) {
+                    const searchParams = new URLSearchParams()
+                    if (search.trim()) searchParams.set('q', search.trim())
+                    const preview = new URLSearchParams(window.location.search).get('preview')
+                    if (preview !== null) searchParams.set('preview', preview)
+                    router.push('/teacher-exams?' + searchParams.toString())
+                } else {
+                    setSearchOpen(true)
+                }
+            }}>
                 <Search className="size-[23px] shrink-0 max-[480px]:size-4" strokeWidth={1.8} aria-hidden="true" />
-                <input type="search" aria-label="Tìm kiếm" value={search} onChange={event => { setSearch(event.target.value); setSearchOpen(true) }} onFocus={() => setSearchOpen(true)} onKeyDown={event => { if (event.key === 'Escape') setSearchOpen(false) }} className="min-w-0 flex-1 bg-transparent py-2 text-[15.5px] tracking-[-.04em] outline-none placeholder:text-[#526a8b] max-[480px]:text-[13px]" placeholder="Tìm kiếm lớp học, học sinh, bài tập, tài liệu..." />
+                <input type="search" aria-label="Tìm kiếm" value={search} onChange={event => { setSearch(event.target.value); setSearchOpen(true) }} onFocus={() => setSearchOpen(true)} onKeyDown={event => { if (event.key === 'Escape') setSearchOpen(false) }} className="min-w-0 flex-1 bg-transparent py-2 text-[15.5px] tracking-[-.04em] outline-none placeholder:text-[#526a8b] max-[480px]:text-[13px]" placeholder={placeholder} />
             </form>
-            {searchOpen && query && (
+            {!isExamPage && searchOpen && query && (
                 <ul className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-20 rounded-2xl border border-[#e6edf7] bg-white p-2 text-sm shadow-lg">
                     {results.length ? results.map(result => (
                         <li key={result.href}><Link href={`/teacher-dashboard${result.href}`} onClick={() => setSearchOpen(false)} className="block rounded-md px-3 py-2 hover:bg-[#eaf2fd]">{result.label}</Link></li>
@@ -53,7 +67,7 @@ export function TeacherHeader({ menuOpen, onOpenMenu }: { menuOpen: boolean; onO
                 </ul>
             )}
         </div>
-        <div className="flex shrink-0 items-center gap-6 max-lg:gap-2 max-[480px]:gap-1.5">
+        <div data-teacher-header-actions className="flex shrink-0 items-center gap-6 max-lg:gap-2 max-[480px]:gap-1.5">
             <button type="button" aria-label="Thông báo" popoverTarget="teacher-notifications" className={`relative ${iconButton}`}>
                 <Bell className="size-[26px] max-[480px]:size-5" strokeWidth={1.8} aria-hidden="true" />
                 <span className="absolute top-[5px] right-[1px] size-3 rounded-full border-2 border-white bg-[#fa515b]" aria-hidden="true" />
